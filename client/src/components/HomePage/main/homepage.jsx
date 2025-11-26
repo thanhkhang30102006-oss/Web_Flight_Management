@@ -1,0 +1,101 @@
+import React from "react";
+
+function SimpleInfo() {
+  return (
+    <div className="introduce">
+      <h1>FlightHK – Nơi mọi chuyến bay trở nên đơn giản hơn.</h1>
+      <text>
+        Từ tra cứu vé, lịch trình đến cập nhật trạng thái chuyến bay, tất cả chỉ
+        trong một nền tảng duy nhất.
+      </text>
+    </div>
+  );
+}
+
+function FastChecking() {
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    // Xử lý giử thông tin tìm chuyến bay
+  };
+  return (
+    <div className="info-container">
+      <div className="type">
+        <ul>
+          <li>Một chiều</li>
+        </ul>
+      </div>
+      <form className="form-group" onSubmit={handleSubmit}>
+        <div className="box">
+          <label for="departure">Từ</label>
+          <input
+            type="text"
+            name="departurePoint"
+            placeholder="Sân bay khởi hành"
+          ></input>
+        </div>
+        <div className="box">
+          <label for="arrive">Đến</label>
+          <input
+            type="text"
+            name="arrivePoint"
+            placeholder="Sân bay đến"
+          ></input>
+        </div>
+        <div className="box">
+          <label for="day">Ngày đi</label>
+          <input
+            type="date"
+            name="departureDay"
+            placeholder="mm/dd/yyyy"
+          ></input>
+        </div>
+        <div className="box">
+          <label for="passenger">Hành khách</label>
+          <select id="typeNumber">
+            <option id="one-passenger" value={1}>
+              1 người
+            </option>
+            <option id="couple" value={2}>
+              2 người
+            </option>
+          </select>
+        </div>
+        <button type="submit">Tìm chuyến bay</button>
+      </form>
+    </div>
+  );
+}
+
+function TopRating() {
+  // Hàm này xử lý nạp động dữ liệu địa điểm
+}
+
+function AboutUs() {
+  return (
+    <>
+      <h1>TẠI SAO CHỌN CHÚNG TÔI</h1>
+      <div class="4-box">
+        <div className="mini-box">
+          <img></img>
+          <h3>An Toàn & Bảo Mật</h3>
+          <p>Thông tin của bạn được và bảo vệ tuyệt đối</p>
+        </div>
+        <div className="mini-box">
+          <img></img>
+          <h3>Đặt Vé Nhanh Chóng</h3>
+          <p>Chỉ mất 3 phút để hoàn tất đặt vé của bạn</p>
+        </div>
+        <div className="mini-box">
+          <img></img>
+          <h3>Thanh Toán Đa Dạng</h3>
+          <p>Hỗ trợ nhiều hình thức thanh toán tiện lợi</p>
+        </div>
+        <div className="mini-box">
+          <img></img>
+          <h3>Hỗ Trợ 24/7</h3>
+          <p>Đội ngũ chăm sóc khách hàng luôn sẵn sàng</p>
+        </div>
+      </div>
+    </>
+  );
+}
