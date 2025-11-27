@@ -24,9 +24,9 @@ function FastChecking() {
           <li>Một chiều</li>
         </ul>
       </div>
-      <form className="form-group" onSubmit={handleSubmit}>
+      <form className="htmlhtmlForm-group" onSubmit={handleSubmit}>
         <div className="box">
-          <label for="departure">Từ</label>
+          <label htmlFor="departure">Từ</label>
           <input
             type="text"
             name="departurePoint"
@@ -34,7 +34,7 @@ function FastChecking() {
           ></input>
         </div>
         <div className="box">
-          <label for="arrive">Đến</label>
+          <label htmlFor="arrive">Đến</label>
           <input
             type="text"
             name="arrivePoint"
@@ -42,7 +42,7 @@ function FastChecking() {
           ></input>
         </div>
         <div className="box">
-          <label for="day">Ngày đi</label>
+          <label htmlFor="day">Ngày đi</label>
           <input
             type="date"
             name="departureDay"
@@ -50,7 +50,7 @@ function FastChecking() {
           ></input>
         </div>
         <div className="box">
-          <label for="passenger">Hành khách</label>
+          <label htmlFor="passenger">Hành khách</label>
           <select id="typeNumber">
             <option id="one-passenger" value={1}>
               1 người
@@ -74,7 +74,7 @@ function AboutUs() {
   return (
     <>
       <h1>TẠI SAO CHỌN CHÚNG TÔI</h1>
-      <div class="4-box">
+      <div className="box-container">
         <div className="mini-box">
           <img></img>
           <h3>An Toàn & Bảo Mật</h3>
@@ -99,3 +99,4 @@ function AboutUs() {
     </>
   );
 }
+export { SimpleInfo, FastChecking, TopRating, AboutUs };
