@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 function SimpleInfo() {
   return (
@@ -13,56 +13,94 @@ function SimpleInfo() {
 }
 
 function FastChecking() {
-  const handleSubmit = (event) => {
+  const [formData, setFormData] = useState({
+    departure: "",
+    arrive: "",
+    departureDay: "",
+    typeNumber: 1,
+  });
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    // Xử lý giử thông tin tìm chuyến bay
+    // Xử lý  thông tin tìm chuyến bay
+
+    try {
+      const response = await fetch(`/api/flights/search`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        throw new Error("Request failed");
+      }
+
+      const data = await response.json();
+    } catch (error) {
+      console.error("Error: ", error);
+    }
+  };
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
   return (
-    <div className="info-container">
-      <div className="type">
-        <ul>
-          <li>Một chiều</li>
-        </ul>
+    <>
+      <div className="info-container">
+        <div className="type">
+          <ul>
+            <li>Một chiều</li>
+          </ul>
+        </div>
+        <form className="form-group" onSubmit={handleSubmit}>
+          <div className="box">
+            <label htmlFor="departure">Từ</label>
+            <input
+              type="text"
+              name="departure"
+              placeholder="Sân bay khởi hành"
+              onChange={handleChange}
+              value={formData.departure}
+            ></input>
+          </div>
+          <div className="box">
+            <label htmlFor="arrive">Đến</label>
+            <input
+              type="text"
+              name="arrive"
+              placeholder="Sân bay đến"
+              onChange={handleChange}
+              value={formData.arrive}
+            ></input>
+          </div>
+          <div className="box">
+            <label htmlFor="day">Ngày đi</label>
+            <input
+              type="date"
+              name="departureDay"
+              placeholder="mm/dd/yyyy"
+              onChange={handleChange}
+              value={formData.departureDay}
+            ></input>
+          </div>
+          <div className="box">
+            <label htmlFor="passenger">Hành khách</label>
+            <select
+              name="typeNumber"
+              onChange={handleChange}
+              value={formData.typeNumber}
+            >
+              <option id="one-passenger" value={1}>
+                1 người
+              </option>
+              <option id="couple" value={2}>
+                2 người
+              </option>
+            </select>
+          </div>
+          <button type="submit">Tìm chuyến bay</button>
+        </form>
       </div>
-      <form className="htmlhtmlForm-group" onSubmit={handleSubmit}>
-        <div className="box">
-          <label htmlFor="departure">Từ</label>
-          <input
-            type="text"
-            name="departurePoint"
-            placeholder="Sân bay khởi hành"
-          ></input>
-        </div>
-        <div className="box">
-          <label htmlFor="arrive">Đến</label>
-          <input
-            type="text"
-            name="arrivePoint"
-            placeholder="Sân bay đến"
-          ></input>
-        </div>
-        <div className="box">
-          <label htmlFor="day">Ngày đi</label>
-          <input
-            type="date"
-            name="departureDay"
-            placeholder="mm/dd/yyyy"
-          ></input>
-        </div>
-        <div className="box">
-          <label htmlFor="passenger">Hành khách</label>
-          <select id="typeNumber">
-            <option id="one-passenger" value={1}>
-              1 người
-            </option>
-            <option id="couple" value={2}>
-              2 người
-            </option>
-          </select>
-        </div>
-        <button type="submit">Tìm chuyến bay</button>
-      </form>
-    </div>
+      <div className="flight-box"></div>
+    </>
   );
 }
 
