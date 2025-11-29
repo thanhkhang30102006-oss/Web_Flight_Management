@@ -1,0 +1,57 @@
+{
+    "header": {
+        "home": "Home",
+        "planes": "Flights",
+        "about": "About",
+        "search": "Search...",
+        "searchBtn": "Go",
+        "login": "Login",
+        "register": "Register"
+    },
+    "hero": {
+        "title": "FlightHK – Where every flight becomes simpler.",
+        "desc": "From ticket search, schedules to flight status updates, all in one platform."
+    },
+    "fastChecking": {
+        "oneWay": "One way",
+        "from": "From",
+        "fromdesc": "Departure airport",
+        "to": "To",
+        "todesc": "Arrival airport",
+        "depart": "Departure date",
+        "passengers": "Passengers",
+        "passengerOptions": [
+            "1 Passenger",
+            "2 Passengers",
+            "3 Passengers",
+            "4+ Passengers"
+        ],
+        "search": "Search flights"
+    },
+    "topRating": "Most Loved Destinations",
+    "about": {
+        "title": "Why Choose Us",
+        "subtitle": "Professional and convenient flight booking experience",
+        "security": "Safe & Secure",
+        "securityDesc": "Your information is encrypted and absolutely protected",
+        "fast": "Fast Booking",
+        "fastDesc": "Complete booking in just 3 minutes",
+        "payment": "Multiple Payment Methods",
+        "paymentDesc": "Support various convenient payment methods",
+        "support": "24/7 Support",
+        "supportDesc": "Customer care team always ready to assist"
+    },
+    "footer": {
+        "desc": "Smart flight booking system – Fast • Safe • Affordable",
+        "contact": "Contact Us",
+        "university": "Vietnam-Korea University of Information and Communication Technology, Da Nang",
+        "team": "Development Team",
+        "other": "Others",
+        "terms": "Terms of Service",
+        "privacy": "Privacy Policy",
+        "support": "Customer Support",
+        "aboutUs": "About Us",
+        "project": "Web Programming Course Project",
+        "developedBy": "Developed by"
+    }
+}

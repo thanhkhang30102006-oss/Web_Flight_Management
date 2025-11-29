@@ -1,0 +1,57 @@
+{
+    "header": {
+        "home": "Trang chủ",
+        "planes": "Máy bay",
+        "about": "Giới thiệu",
+        "search": "Tìm kiếm...",
+        "searchBtn": "Tìm",
+        "login": "Đăng nhập",
+        "register": "Đăng ký"
+    },
+    "hero": {
+        "title": "FlightHK – Nơi mọi chuyến bay trở nên đơn giản hơn.",
+        "desc": "Từ tra cứu vé, lịch trình đến cập nhật trạng thái chuyến bay, tất cả chỉ trong một nền tảng duy nhất."
+    },
+    "fastChecking": {
+        "oneWay": "Một chiều",
+        "from": "Từ",
+        "fromdesc": "Sân bay khởi hành",
+        "to": "To",
+        "todesc": "Sân bay đến",
+        "depart": "Ngày đi",
+        "passengers": "Hành khách",
+        "passengerOptions": [
+            "1 người",
+            "2 người",
+            "3 người",
+            "4+ người"
+        ],
+        "search": "Tìm chuyến bay"
+    },
+    "topRating": "Điểm Đến Được Yêu Thích Nhất",
+    "about": {
+        "title": "Tại Sao Chọn Chúng Tôi",
+        "subtitle": "Trải nghiệm dịch vụ đặt vé máy bay chuyên nghiệp và tiện lợi nhất",
+        "security": "An Toàn & Bảo Mật",
+        "securityDesc": "Thông tin của bạn được mã hoá và bảo vệ tuyệt đối",
+        "fast": "Đặt Vé Nhanh Chóng",
+        "fastDesc": "Chỉ mất 3 phút để hoàn tất đặt vé của bạn",
+        "payment": "Thanh Toán Đa Dạng",
+        "paymentDesc": "Hỗ trợ nhiều hình thức thanh toán tiện lợi",
+        "support": "Hỗ Trợ 24/7",
+        "supportDesc": "Đội ngũ chăm sóc khách hàng luôn sẵn sàng"
+    },
+    "footer": {
+        "desc": "Hệ thống quản lý chuyến bay – Nhanh chóng • An toàn • Tiết kiệm",
+        "contact": "Liên Hệ Với Chúng Tôi",
+        "university": "Đại học Công nghệ Thông tin & Truyền thông Việt – Hàn, Đà Nẵng",
+        "team": "Nhóm Phát Triển",
+        "other": "Khác",
+        "terms": "Điều khoản dịch vụ",
+        "privacy": "Chính sách bảo mật",
+        "support": "Hỗ trợ khách hàng",
+        "aboutUs": "Về chúng tôi",
+        "project": "Đồ án môn học Lập trình Web",
+        "developedBy": "Phát triển bởi"
+    }
+}
