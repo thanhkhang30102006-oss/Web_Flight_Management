@@ -1,4 +1,3 @@
-
 /* Reset & Fullscreen */
 *,
 *::before,
@@ -8,18 +7,21 @@
   box-sizing: border-box;
 }
 
-html, body, #root {
+html,
+body,
+#root {
   height: 100%;
   width: 100%;
   overflow-x: hidden;
   overflow: hidden;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
 /* Video Background */
 .background-video {
   position: fixed;
-  top: 0; left: 0;
+  top: 0;
+  left: 0;
   width: 100vw;
   height: 100vh;
   object-fit: cover;
@@ -28,7 +30,8 @@ html, body, #root {
 
 .video-overlay {
   position: fixed;
-  top: 0; left: 0;
+  top: 0;
+  left: 0;
   width: 100vw;
   height: 100vh;
   background: rgba(0, 0, 0, 0.45);
@@ -77,29 +80,31 @@ html, body, #root {
   font-size: 4.5rem;
   font-weight: 900;
   margin-bottom: 24px;
-  text-shadow: 4px 4px 15px rgba(0,0,0,0.8);
+  text-shadow: 4px 4px 15px rgba(0, 0, 0, 0.8);
 }
 
 .simple-info-text {
   font-size: 1.6rem;
-  text-shadow: 2px 2px 10px rgba(0,0,0,0.8);
+  text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.8);
   line-height: 1.7;
 }
 
 /* Slider ảnh du lịch (giữ nguyên đẹp như cũ) */
 .travel-slider {
   position: absolute;
-  top: 0; left: 0;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   border-radius: 20px;
   overflow: hidden;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
 }
 
 .travel-slide {
   position: absolute;
-  top: 0; left: 0;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -107,7 +112,9 @@ html, body, #root {
   transition: opacity 1.8s ease-in-out;
 }
 
-.travel-slide.active { opacity: 1; }
+.travel-slide.active {
+  opacity: 1;
+}
 
 .slider-arrow {
   position: absolute;
@@ -123,12 +130,16 @@ html, body, #root {
 }
 
 .slider-arrow:hover {
-  color: #3399FF;
+  color: #3399ff;
   transform: translateY(-50%) scale(1.3);
 }
 
-.slider-arrow.left  { left: 30px; }
-.slider-arrow.right { right: 30px; }
+.slider-arrow.left {
+  left: 30px;
+}
+.slider-arrow.right {
+  right: 30px;
+}
 
 /* ==================== FAST CHECKING + MÁY BAY BAY ==================== */
 .fast-checking-container {
@@ -139,7 +150,7 @@ html, body, #root {
   max-width: 1200px;
   width: 90%;
   border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
   position: relative;
   overflow: hidden;
   margin-top: -175px;
@@ -156,17 +167,17 @@ html, body, #root {
 .flight-type-item {
   padding: 12px 32px;
   border-radius: 30px;
-  background: rgba(255,255,255,0.2);
+  background: rgba(255, 255, 255, 0.2);
   color: white;
   cursor: pointer;
   transition: all 0.3s;
-  border: 1px solid rgba(255,255,255,0.4);
+  border: 1px solid rgba(255, 255, 255, 0.4);
   font-weight: 500;
 }
 
 .flight-type-item.active,
 .flight-type-item:hover {
-  background: #3399FF;
+  background: #3399ff;
   color: white;
   font-weight: bold;
 }
@@ -181,7 +192,7 @@ html, body, #root {
   color: white;
   font-size: 1rem;
   margin-bottom: 8px;
-  text-shadow: 1px 1px 3px rgba(0,0,0,0.6);
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.6);
 }
 
 .form-input,
@@ -197,7 +208,7 @@ html, body, #root {
 .form-button {
   grid-column: 1 / -1;
   padding: 18px;
-  background: #3399FF;
+  background: #3399ff;
   color: white;
   border: none;
   border-radius: 12px;
@@ -209,9 +220,9 @@ html, body, #root {
 
 .form-button:hover {
   background: white;
-  color: #3399FF;
+  color: #3399ff;
   transform: translateY(-4px);
-  box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
 }
 
 /* Hiệu ứng máy bay bay khi bấm Tìm */
@@ -227,8 +238,15 @@ html, body, #root {
 }
 
 @keyframes flyAcross {
-  0%   {width: 650px; left: -650px; top: 80% }
-  100% { left: 110vw; top: 20% }
+  0% {
+    width: 650px;
+    left: -650px;
+    top: 80%;
+  }
+  100% {
+    left: 110vw;
+    top: 20%;
+  }
 }
 
 /* ==================== TOP RATING – 15 ĐIỂM ĐẾN ==================== */
@@ -238,13 +256,12 @@ html, body, #root {
   max-width: 1400px;
   text-align: center;
   color: white;
-  
 }
 
 .top-rating h2 {
   font-size: 3.8rem;
   margin-bottom: 70px;
-  text-shadow: 4px 4px 15px rgba(0,0,0,0.7);
+  text-shadow: 4px 4px 15px rgba(0, 0, 0, 0.7);
 }
 
 .destinations-grid {
@@ -257,7 +274,7 @@ html, body, #root {
 .destination-card {
   border-radius: 20px;
   overflow: hidden;
-  box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
   transition: transform 0.4s ease;
 }
 
@@ -288,16 +305,20 @@ html, body, #root {
   border: 1px solid rgba(255, 255, 255, 0.2);
   padding: 5px;
   margin-top: -150px;
-  box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
   position: relative;
   overflow: hidden;
 }
 
 .about-us-new::before {
-  content: '';
+  content: "";
   position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: url('https://images.unsplash.com/photo-1557682250-33bd709cbe85?w=2000') center/cover no-repeat;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url("https://images.unsplash.com/photo-1557682250-33bd709cbe85?w=2000")
+    center/cover no-repeat;
   opacity: 0.01;
   z-index: 0;
 }
@@ -310,7 +331,7 @@ html, body, #root {
   margin-top: 10px;
   max-width: 100%;
   text-align: center;
-  text-shadow: 0 4px 20px rgba(0,0,0,0.6);
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
 }
 
 .about-subtitle {
@@ -319,8 +340,7 @@ html, body, #root {
   margin-bottom: 80px;
   max-width: 100%;
   text-align: center;
-  text-shadow: 0 4px 20px rgba(0,0,0,0.6);
-
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
 }
 
 .features-grid {
@@ -349,14 +369,14 @@ html, body, #root {
 .feature-card:hover {
   transform: translateY(-16px);
   background: rgba(30, 41 59 / 0.9);
-  border-color: #3399FF;
+  border-color: #3399ff;
   box-shadow: 0 25px 50px rgba(51, 153, 255, 0.2);
 }
 
 .icon-circle {
   width: 100px;
   height: 100px;
-  background: linear-gradient(135deg, #3399FF, #60a5fa);
+  background: linear-gradient(135deg, #3399ff, #60a5fa);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -383,31 +403,192 @@ html, body, #root {
   color: #cbd5e1;
   line-height: 1.7;
 }
+/* 1. KHUNG DANH SÁCH (Horizontal Scroll) */
+.flight-box {
+  display: flex;
+  flex-direction: row; /* Xếp ngang */
+  gap: 15px; /* Giảm khoảng cách giữa các thẻ */
 
+  overflow-x: auto;
+  overflow-y: hidden;
 
+  padding: 15px 5px; /* Padding nhỏ lại */
+  margin-top: 10px;
+  scroll-behavior: smooth;
+}
+
+/* Thanh cuộn nhỏ nhắn */
+.flight-box::-webkit-scrollbar {
+  height: 6px;
+}
+.flight-box::-webkit-scrollbar-track {
+  background: #f5f5f5;
+  border-radius: 3px;
+}
+.flight-box::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 3px;
+}
+
+/* 2. THẺ VÉ (Compact Card) */
+.flight-card {
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e0e0e0;
+  overflow: hidden;
+  transition: transform 0.2s ease;
+
+  /* --- KÍCH THƯỚC NHỎ LẠI TẠI ĐÂY --- */
+  min-width: 280px; /* Trước là 350px */
+  max-width: 280px;
+  flex-shrink: 0;
+}
+
+.flight-card:hover {
+  transform: translateY(-3px);
+  border-color: #007bff;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* --- HEADER NHỎ GỌN --- */
+.flight-header {
+  background-color: #f0f7ff;
+  color: #007bff;
+  padding: 8px 15px; /* Giảm padding header */
+  font-weight: bold;
+  font-size: 0.95rem; /* Chữ nhỏ hơn chút */
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* --- BODY COMPACT --- */
+.flight-body {
+  padding: 12px 15px; /* Giảm padding body */
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* Giảm khoảng cách các dòng bên trong */
+}
+
+/* Phần thông tin hành trình */
+.flight-info {
+  border-bottom: 1px dashed #eee;
+  padding-bottom: 8px;
+}
+
+.plane-type {
+  font-size: 0.8rem;
+  color: #888;
+  margin-bottom: 2px;
+}
+
+/* Điểm đi/đến vừa phải */
+.departure-point,
+.arrive-point {
+  font-size: 1rem; /* Giảm từ 1.1rem xuống 1rem */
+  font-weight: 700;
+  color: #333;
+}
+
+.arrive-point::before {
+  content: "↓ ";
+  color: #999;
+  margin-right: 5px;
+  font-size: 0.9rem;
+}
+
+.total-seat {
+  font-size: 0.8rem;
+  color: #666;
+  margin-top: 4px;
+}
+
+/* Phần thời gian & Trạng thái */
+.time {
+  background-color: #f9f9f9;
+  padding: 8px;
+  border-radius: 6px;
+  text-align: center;
+  border: 1px solid #eee;
+}
+
+.time p {
+  margin: 2px 0;
+  font-size: 0.85rem; /* Chữ ngày giờ nhỏ lại */
+  color: #555;
+}
+
+.flight-state {
+  align-self: flex-start;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.7rem; /* Tag trạng thái bé xinh */
+  font-weight: bold;
+  text-transform: uppercase;
+  background-color: #e8f5e9;
+  color: #2e7d32;
+  margin-top: 5px;
+}
 
 /* ==================== RESPONSIVE ==================== */
 @media (max-width: 1024px) {
-  .simple-info-title { font-size: 3.5rem; }
-  .top-rating h2, .about-us-title { font-size: 3rem; }
+  .simple-info-title {
+    font-size: 3.5rem;
+  }
+  .top-rating h2,
+  .about-us-title {
+    font-size: 3rem;
+  }
 }
 
 @media (max-width: 768px) {
-  .simple-info-title { font-size: 2.8rem; }
-  .simple-info-text { padding: 20px; }
-  .simple-info-text { font-size: 1.3rem; }
-  .flight-form { grid-template-columns: 1fr; }
-  .fast-checking-container { padding: 40px 20px; }
-  .slider-arrow { font-size: 2.5rem; }
-  .slider-arrow.left  { left: 15px; }
-  .slider-arrow.right { right: 15px; }
-  .top-rating h2 { font-size: 2.5rem; }
+  .simple-info-title {
+    font-size: 2.8rem;
+  }
+  .simple-info-text {
+    padding: 20px;
+  }
+  .simple-info-text {
+    font-size: 1.3rem;
+  }
+  .flight-form {
+    grid-template-columns: 1fr;
+  }
+  .fast-checking-container {
+    padding: 40px 20px;
+  }
+  .slider-arrow {
+    font-size: 2.5rem;
+  }
+  .slider-arrow.left {
+    left: 15px;
+  }
+  .slider-arrow.right {
+    right: 15px;
+  }
+  .top-rating h2 {
+    font-size: 2.5rem;
+  }
 }
 /* Responsive */
 @media (max-width: 768px) {
-  .about-title { font-size: 2.8rem; }
-  .about-subtitle { font-size: 1.2rem; margin-bottom: 60px; }
-  .feature-card { padding: 40px 24px; }
-  .icon-circle { width: 80px; height: 80px; }
-  .feature-card:hover .icon-circle { transform: scale(1.1); }
+  .about-title {
+    font-size: 2.8rem;
+  }
+  .about-subtitle {
+    font-size: 1.2rem;
+    margin-bottom: 60px;
+  }
+  .feature-card {
+    padding: 40px 24px;
+  }
+  .icon-circle {
+    width: 80px;
+    height: 80px;
+  }
+  .feature-card:hover .icon-circle {
+    transform: scale(1.1);
+  }
 }

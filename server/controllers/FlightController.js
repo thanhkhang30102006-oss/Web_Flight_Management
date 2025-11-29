@@ -1,4 +1,5 @@
-const Flight = require("../models/flightinformation");
+const db = require("../models");
+const Flight = db.FlightInformation;
 
 const searchFlights = async (req, res) => {
   try {
@@ -6,12 +7,13 @@ const searchFlights = async (req, res) => {
     if (!departure || !arrive || !departureDay || !typeNumber) {
       return res.status(400).json({ message: "Thiếu thông tin để tìm kiếm" });
     }
-    const flights = Flight.findAll({
+    const flights = await Flight.findAll({
       where: {
         departurePoint: departure,
         arrivePoint: arrive,
         departureDay: departureDay,
       },
+      limit: 4,
     });
     res.status(200).json(flights);
   } catch (error) {

@@ -23,7 +23,10 @@ function FastChecking({ setIsFlying }) {
     departureDay: "",
     typeNumber: 1,
   });
-
+  const [flights, setFlights] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [hasSearch, setHasSearched] = useState(false);
+  const [error, setError] = useState(null);
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -31,7 +34,10 @@ function FastChecking({ setIsFlying }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    setIsLoading(true);
+    setHasSearched(true);
+    setError(null);
+    setFlights([]);
     // Bật hiệu ứng máy bay
     setIsFlying?.(true);
 
@@ -45,6 +51,7 @@ function FastChecking({ setIsFlying }) {
       if (!response.ok) throw new Error("Request failed");
 
       const data = await response.json();
+      setFlights(data);
       console.log("Kết quả tìm kiếm:", data);
 
       // Ở đây bạn có thể redirect hoặc lưu kết quả vào context/store
@@ -54,77 +61,114 @@ function FastChecking({ setIsFlying }) {
       alert("Có lỗi xảy ra, vui lòng thử lại!");
     } finally {
       setTimeout(() => setIsFlying?.(false), 3000);
+      setIsLoading(false);
     }
   };
   return (
-    <div className="fast-checking-container">
-      <div className="type">
-        <ul className="flight-type-list">
-          <li className="flight-type-item active">
-            {t("fastChecking.oneWay")}
-          </li>
-        </ul>
+    <>
+      <div className="fast-checking-container">
+        <div className="type">
+          <ul className="flight-type-list">
+            <li className="flight-type-item active">
+              {t("fastChecking.oneWay")}
+            </li>
+          </ul>
+        </div>
+
+        <form className="flight-form" onSubmit={handleSubmit}>
+          <div className="form-box">
+            <label className="form-label">{t("fastChecking.from")}</label>
+            <input
+              type="text"
+              name="departure"
+              placeholder={t("fastChecking.fromdesc")}
+              className="form-input"
+              required
+              value={formData.departure}
+              onChange={handleChange}
+            />
+          </div>
+          <div className="form-box">
+            <label className="form-label">{t("fastChecking.to")}</label>
+            <input
+              type="text"
+              name="arrive"
+              placeholder={t("fastChecking.todesc")}
+              className="form-input"
+              required
+              value={formData.arrive}
+              onChange={handleChange}
+            />
+          </div>
+          <div className="form-box">
+            <label className="form-label">{t("fastChecking.depart")}</label>
+            <input
+              type="date"
+              name="departureDay"
+              className="form-input"
+              required
+              value={formData.departureDay}
+              onChange={handleChange}
+            />
+          </div>
+          <div className="form-box">
+            <label className="form-label">{t("fastChecking.passengers")}</label>
+            <select
+              name="typeNumber"
+              className="form-select"
+              value={formData.typeNumber}
+              onChange={handleChange}
+            >
+              {t("fastChecking.passengerOptions", { returnObjects: true }).map(
+                (option, i) => (
+                  <option key={i} value={i + 1}>
+                    {option}
+                  </option>
+                )
+              )}
+            </select>
+          </div>
+
+          <button type="submit" className="form-button">
+            {t("fastChecking.search")}
+          </button>
+        </form>
       </div>
-
-      <form className="flight-form" onSubmit={handleSubmit}>
-        <div className="form-box">
-          <label className="form-label">{t("fastChecking.from")}</label>
-          <input
-            type="text"
-            name="departure"
-            placeholder={t("fastChecking.fromdesc")}
-            className="form-input"
-            required
-            value={formData.departure}
-            onChange={handleChange}
-          />
-        </div>
-        <div className="form-box">
-          <label className="form-label">{t("fastChecking.to")}</label>
-          <input
-            type="text"
-            name="arrive"
-            placeholder={t("fastChecking.todesc")}
-            className="form-input"
-            required
-            value={formData.arrive}
-            onChange={handleChange}
-          />
-        </div>
-        <div className="form-box">
-          <label className="form-label">{t("fastChecking.depart")}</label>
-          <input
-            type="date"
-            name="departureDay"
-            className="form-input"
-            required
-            value={formData.departureDay}
-            onChange={handleChange}
-          />
-        </div>
-        <div className="form-box">
-          <label className="form-label">{t("fastChecking.passengers")}</label>
-          <select
-            name="typeNumber"
-            className="form-select"
-            value={formData.typeNumber}
-            onChange={handleChange}
-          >
-            {t("fastChecking.passengerOptions", { returnObjects: true }).map(
-              (option, i) => (
-                <option key={i} value={i + 1}>
-                  {option}
-                </option>
-              )
-            )}
-          </select>
-        </div>
-
-        <button type="submit" className="form-button">
-          {t("fastChecking.search")}
-        </button>
-      </form>
-    </div>
+      <div className="flight-container">
+        {isLoading && <p>Đang tìm kiếm chuyến bay...</p>}
+        {error && <p style={{ color: "red" }}>{error}</p>}
+        {flights.length > 0 ? (
+          <div className="flight-box">
+            {flights.map((flight) => {
+              return (
+                <div key={flight.flightNumber} className="flight-card">
+                  <div className="flight-header">{flight.flightNumber}</div>
+                  <div className="flight-body">
+                    <div className="flight-info">
+                      <div className="plane-type">{flight.planeType}</div>
+                      <div className="departure-point">
+                        {flight.departurePoint}
+                      </div>
+                      <div className="arrive-point">{flight.arrivePoint}</div>
+                      <div className="total-seat">{flight.flightTotalSeat}</div>
+                      <div className="flight-state">{flight.flightState}</div>
+                    </div>
+                    <div className="time">
+                      <p>Ngày: {flight.departureDay}</p>
+                      <p>Giờ: {flight.departureTime}</p>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          hasSearch &&
+          !isLoading &&
+          flights.length === 0 && <p>Chưa có kết quả nào.</p>
+        )}
+      </div>
+    </>
   );
 }
 
