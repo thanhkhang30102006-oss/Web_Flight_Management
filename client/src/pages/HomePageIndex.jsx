@@ -165,7 +165,9 @@ function FastChecking({ setIsFlying }) {
         ) : (
           hasSearch &&
           !isLoading &&
-          flights.length === 0 && <p>Chưa có kết quả nào.</p>
+          flights.length === 0 && (
+            <p className="no-results">Chưa có kết quả nào.</p>
+          )
         )}
       </div>
     </>

@@ -1,5 +1,5 @@
-'use strict';
-const {Model} = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class Passenger extends Model {
     /**
@@ -11,59 +11,62 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
     }
   }
-  Passenger.init({
-    passengerID: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      primaryKey: true
+  Passenger.init(
+    {
+      passengerID: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        primaryKey: true,
+      },
+      passengerName: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      passengerGender: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+      },
+      passengerNationality: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      passengerPassport: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      passengerEmail: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      passengerMobile: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      passengerImage: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+      passengerAccountName: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+      passengerPassword: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      passengerState: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        defaultValue: "active",
+      },
     },
-    passengerName: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
-    passengerGender: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false
-    },
-    passengerNationality: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
-    passengerPassport: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
-    passengerEmail: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
-    passengerMobile: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
-    passengerImage: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
-    passengerAccountName: {
-      type: DataTypes.STRING,
-      allowNull: true
-    },
-    passengerPassword: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
-    passengerState: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      defaultValue: 'active'
+    {
+      sequelize,
+      modelName: "Passenger",
+      tableName: "passengers",
+      timestamps: true,
     }
-  }, {
-    sequelize,
-    modelName: 'Passenger', 
-    tableName: 'passengers', 
-    timestamps: true,
-  });
-  
+  );
+
   return Passenger;
 };

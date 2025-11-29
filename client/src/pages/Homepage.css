@@ -531,7 +531,20 @@ body,
   color: #2e7d32;
   margin-top: 5px;
 }
+.no-results {
+  text-align: center;
+  width: 100%;
+  padding: 30px 20px;
 
+  color: #ffffff;
+  font-size: 0.95rem;
+  font-style: italic;
+
+  background: none;
+  border-radius: 10px;
+
+  margin-top: 15px;
+}
 /* ==================== RESPONSIVE ==================== */
 @media (max-width: 1024px) {
   .simple-info-title {

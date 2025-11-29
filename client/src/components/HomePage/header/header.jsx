@@ -111,7 +111,6 @@ function Header() {
             </li>
           </ul>
 
-          {/* NÚT ĐỔI NGÔN NGỮ VI/EN – ĐẸP NHƯ WEB QUỐC TẾ */}
           <LanguageSwitcher />
         </div>
       </div>
