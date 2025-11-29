@@ -1,273 +1,121 @@
-.flight-page {
-  min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 20px;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
+/* src/components/HomePage/main/Flight.css */
+/* CHỈ COPY-PASTE TOÀN BỘ ĐOẠN NÀY THAY THẾ FILE CŨ */
 
-.flight-header {
-  text-align: center;
-  margin-bottom: 30px;
-  color: white;
-}
-
-.flight-header h1 {
-  font-size: 2.5rem;
-  margin-bottom: 10px;
-  font-weight: 700;
-}
-
-.flight-header p {
-  font-size: 1.1rem;
-  opacity: 0.9;
-}
-
-.flight-content {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 30px;
-  max-width: 1400px;
-  margin: 0 auto;
-}
-
-/* Flights Panel */
-.flights-panel {
-  background: white;
-  border-radius: 15px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-  overflow: hidden;
-}
-
-.flights-header {
-  background: #2c3e50;
-  color: white;
-  padding: 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.flights-header h2 {
+*,
+*::before,
+*::after {
   margin: 0;
-  font-size: 1.5rem;
-}
-
-.flight-stats .stat {
-  background: rgba(255, 255, 255, 0.2);
-  padding: 5px 15px;
-  border-radius: 20px;
-  font-size: 0.9rem;
-}
-
-.flights-list {
-  max-height: 600px;
-  overflow-y: auto;
   padding: 0;
+  box-sizing: border-box;
 }
 
-.flight-card {
-  padding: 20px;
-  border-bottom: 1px solid #eee;
-  cursor: pointer;
-  transition: all 0.3s ease;
+/* Video background giống hệt trang chủ */
+.background-video {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  z-index: -2;
 }
 
-.flight-card:hover {
-  background: #f8f9fa;
-  transform: translateX(5px);
+.video-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: -1;
 }
 
-.flight-card.selected {
-  background: #e3f2fd;
-  border-left: 4px solid #2196f3;
-}
-
-.flight-header-info {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 15px;
-}
-
-.flight-number strong {
-  font-size: 1.2rem;
-  color: #2c3e50;
-}
-
-.airline {
-  display: block;
-  font-size: 0.9rem;
-  color: #666;
-  margin-top: 2px;
-}
-
-.flight-status {
-  font-weight: bold;
-  font-size: 0.9rem;
-  padding: 5px 10px;
-  border-radius: 15px;
-  background: rgba(0, 0, 0, 0.1);
-}
-
-.flight-route {
-  margin-bottom: 15px;
-}
-
-.route-info {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.departure, .arrival {
-  text-align: center;
-  flex: 1;
-}
-
-.airport-code {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-.city-name {
-  font-size: 0.9rem;
-  color: #666;
-  margin: 5px 0;
-}
-
-.time {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #007bff;
-}
-
-.route-line {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 20px;
+/* Dùng lại đúng class của trang chủ để hiển thị tiêu đề đẹp */
+.flight-page {
   position: relative;
-}
-
-.airplane-icon {
-  font-size: 1.5rem;
-  z-index: 2;
-  background: white;
-  padding: 0 10px;
-}
-
-.line {
-  position: absolute;
+  min-height: 100vh;
   width: 100%;
-  height: 2px;
-  background: #ddd;
-  z-index: 1;
-}
-
-.flight-details {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.9rem;
-  color: #666;
-}
-
-.aircraft, .gate {
-  background: #f8f9fa;
-  padding: 5px 10px;
-  border-radius: 10px;
-}
-
-/* Map Panel */
-.map-panel {
-  background: white;
-  border-radius: 15px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  color: white;
+  text-align: center;
+  padding-top: 0px;
+  margin-bottom: 100px;
   overflow: hidden;
 }
 
-.map-header {
-  background: #34495e;
-  color: white;
-  padding: 20px;
-}
-
-.map-header h2 {
-  margin: 0 0 5px 0;
-  font-size: 1.5rem;
-}
-
-.map-header p {
-  margin: 0;
-  opacity: 0.9;
-  font-size: 0.9rem;
-}
-
-.flight-map {
-  width: 100%;
-  height: 600px;
-}
-
-/* Loading */
-.loading {
+/* Copy nguyên kiểu hero + simple-info từ Homepage.css */
+.flight-page .hero {
+  position: relative;
   display: flex;
   flex-direction: column;
-  align-items: center;
   justify-content: center;
-  min-height: 400px;
-  color: white;
+  align-items: center;
 }
 
-.loading-spinner {
-  width: 40px;
-  height: 40px;
-  border: 4px solid rgba(255, 255, 255, 0.3);
-  border-top: 4px solid white;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin-bottom: 20px;
+.flight-page .simple-info {
+  position: relative;
+  z-index: 10;
+  max-width: 1000px;
 }
 
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+.flight-page .simple-info-title {
+  font-size: 4.2rem;
+  font-weight: 800;
+  margin-bottom: 24px;
+  text-shadow: 4px 4px 15px rgba(83, 181, 226, 0.407);
+  color: #3399FF;
 }
 
-/* Responsive */
+.flight-page .simple-info-text {
+  font-size: 1.6rem;
+  text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.8);
+  line-height: 1.7;
+  color: #e0f2fe;
+}
+
+/* Nội dung bên dưới (danh sách + bản đồ) – đẩy xuống dưới tiêu đề */
+.flight-content {
+  position: relative;
+  z-index: 10;
+  width: 90%;
+  max-width: 1400px;
+  margin: -50px auto 0; /* Kéo lên chồng nhẹ với tiêu đề cho đẹp */
+  display: flex;
+  gap: 30px;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding: 60px 0;
+}
+
+/* Các phần còn lại giữ nguyên đẹp như cũ */
+.flights-panel,
+.map-panel {
+  flex: 1;
+  min-width: 300px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(15px);
+  border-radius: 30px;
+  padding: 40px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+}
+
+.flights-panel h2,
+.map-panel h2 {
+  font-size: 2.8rem;
+  margin-bottom: 30px;
+  text-shadow: 4px 4px 15px rgba(0, 0, 0, 0.7);
+}
+
+/* Responsive giống hệt trang chủ */
 @media (max-width: 1024px) {
-  .flight-content {
-    grid-template-columns: 1fr;
-    gap: 20px;
-  }
-  
-  .flight-map {
-    height: 400px;
-  }
+  .flight-page .simple-info-title { font-size: 3.5rem; }
+  .flight-page .simple-info-text { font-size: 1.4rem; }
 }
 
 @media (max-width: 768px) {
   .flight-page {
-    padding: 10px;
+    padding-top: 160px;
   }
-  
-  .flight-header h1 {
-    font-size: 2rem;
-  }
-  
-  .route-info {
-    flex-direction: column;
-    gap: 15px;
-  }
-  
-  .route-line {
-    transform: rotate(90deg);
-    margin: 10px 0;
-  }
-  
-  .flights-header {
-    flex-direction: column;
-    gap: 10px;
-    text-align: center;
-  }
+  .flight-page .simple-info-title { font-size: 2.8rem; }
+  .flight-page .simple-info-text { font-size: 1.3rem; }
+  .flight-content { margin-top: -50px; }
+  .flights-panel, .map-panel { padding: 30px 20px; }
 }
