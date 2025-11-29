@@ -30,10 +30,10 @@ function Header() {
     const path = location.pathname;
     if (path === "/" || path === "/home") {
       setActiveLink("homepage");
-    } else if (path === "/planes") {
-      setActiveLink("plane"); // Assuming you have a route like /planes
+    } else if (path === "/flights") {
+      setActiveLink("flight");
     } else if (path === "/about") {
-      setActiveLink("introduction"); // Assuming you have a route like /about
+      setActiveLink("introduction");
     } else {
       setActiveLink(null);
     }
@@ -62,10 +62,10 @@ function Header() {
             {t("header.home")}
           </li>
           <li
-            className={`list-item ${activeLink === "plane" ? "active" : ""}`}
-            onClick={() => handleNavigation("/planes", "plane")}
+            className={`list-item ${activeLink === "flight" ? "active" : ""}`}
+            onClick={() => handleNavigation("/flights", "flight")}
           >
-            {t("header.planes", "Máy bay")}
+            {t("header.flight", "Chuyến bay")}
           </li>
           <li
             className={`list-item ${
