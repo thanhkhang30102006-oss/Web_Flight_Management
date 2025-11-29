@@ -1,7 +1,7 @@
 {
     "header": {
         "home": "Home",
-        "planes": "Flights",
+        "flight": "Flights",
         "about": "About",
         "search": "Search...",
         "searchBtn": "Go",
