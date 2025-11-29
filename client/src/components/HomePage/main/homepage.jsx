@@ -19,10 +19,17 @@ function FastChecking() {
     departureDay: "",
     typeNumber: 1,
   });
+
+  const [flights, setFlights] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     // Xử lý  thông tin tìm chuyến bay
-
+    setIsLoading(true);
+    setError(null);
+    setFlights([]);
     try {
       const response = await fetch(`/api/flights/search`, {
         method: "POST",
@@ -35,8 +42,13 @@ function FastChecking() {
       }
 
       const data = await response.json();
+
+      setFlights(data);
     } catch (error) {
       console.error("Error: ", error);
+      setError("Có lỗi xảy ra");
+    } finally {
+      setIsLoading(false);
     }
   };
   const handleChange = (e) => {
