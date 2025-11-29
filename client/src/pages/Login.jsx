@@ -1,6 +1,6 @@
 import React from "react";
 import { useState } from "react";
-import Login from "../components/Login/login";
+import Login from "../components/Login/LoginRegis";
 function LoginPage() {
   return (
     <>

@@ -12,20 +12,24 @@ export default function LanguageSwitcher() {
   const currentLang = i18n.resolvedLanguage || "vi";
 
   return (
-    <div className="language-switcher">
-      <button
+    <div className="lang-toggle-container">
+      <div
+        className={`lang-item ${currentLang === "vi" ? "active" : ""}`}
         onClick={() => changeLanguage("vi")}
-        className={`lang-btn ${currentLang === "vi" ? "active" : ""}`}
       >
         VI
-      </button>
-      <span className="separator">|</span>
-      <button
+      </div>
+
+      <div
+        className={`lang-item ${currentLang === "en" ? "active" : ""}`}
         onClick={() => changeLanguage("en")}
-        className={`lang-btn ${currentLang === "en" ? "active" : ""}`}
       >
         EN
-      </button>
+      </div>
+
+      <div
+        className={`lang-slider ${currentLang === "en" ? "slide-right" : ""}`}
+      ></div>
     </div>
   );
 }

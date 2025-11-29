@@ -92,24 +92,12 @@ function Header() {
         {/* Auth buttons + Language Switcher */}
 
         <div className="auth-and-lang">
-          <ul className="auth-buttons">
-            <li>
-              <button
-                className="sign-button"
-                onClick={() => navigate("/login")}
-              >
-                {t("header.login", "Đăng nhập")}
-              </button>
-            </li>
-            <li>
-              <button
-                className="sign-button signup"
-                onClick={() => navigate("/register")}
-              >
-                {t("header.register", "Đăng ký")}
-              </button>
-            </li>
-          </ul>
+          <button
+            className="neon-capsule-btn"
+            onClick={() => navigate("/loginsignup")}
+          >
+            {t("header.logsign", "Log/Sign")}
+          </button>
 
           <LanguageSwitcher />
         </div>

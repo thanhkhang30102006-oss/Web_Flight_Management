@@ -41,6 +41,27 @@
         "support": "24/7 Support",
         "supportDesc": "Customer care team always ready to assist"
     },
+    "flight": {
+        "title": "Flight Information",
+        "desc": "Track active and upcoming flights",
+        "list": "Flight List",
+        "map": "Route Map",
+        "showing": "Showing",
+        "instruction": "Click on a flight to view the route on the map",
+        "legend": "Legend",
+        "loading": "Loading flight information...",
+        "seats": "Seats",
+        "noFlights": "No active flights available.",
+        "departure": "Departure",
+        "arrival": "Arrival",
+        "flight": "Flight",
+        "time": "Time",
+        "date": "Date",
+        "plane": "Aircraft",
+        "active": "Active",
+        "boarding": "Boarding",
+        "unknown": "Unknown"
+    },
     "footer": {
         "desc": "Smart flight booking system – Fast • Safe • Affordable",
         "contact": "Contact Us",
@@ -53,5 +74,39 @@
         "aboutUs": "About Us",
         "project": "Web Programming Course Project",
         "developedBy": "Developed by"
+    },
+    "auth": {
+        "login_title": "Login",
+        "register_title": "Register",
+        "login_button": "Login",
+        "register_button": "Register",
+        "personal_info": "Personal Info",
+        "account_info": "Account Info",
+        "male": "Male",
+        "female": "Female",
+        "no_account": "Don't have an account?",
+        "have_account": "Already have an account?",
+        "register_now": "Register now",
+        "login_now": "Login"
+    },
+    "placeholder": {
+        "username": "Username",
+        "email": "Email",
+        "phone": "Phone number",
+        "password": "Password",
+        "fullname": "Full name",
+        "nationality": "Nationality",
+        "passport": "Passport number",
+        "account_name": "Account name (username)",
+        "re_password": "Confirm password"
+    },
+    "validation": {
+        "check_password": "Please check your password criteria!",
+        "password_mismatch": "Passwords do not match!",
+        "min_length": "Minimum 8 characters",
+        "uppercase": "Uppercase letter",
+        "lowercase": "Lowercase letter",
+        "number": "Number",
+        "special_char": "Special character"
     }
 }

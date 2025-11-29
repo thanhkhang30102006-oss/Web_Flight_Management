@@ -1,0 +1,242 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
+
+:root {
+  --body-bg: rgb(31, 32, 41);
+  --text-color: #c4c3ca;
+  --accent-color: #ffeba7;
+  --dark-bg: #2a2b383d;
+  --input-bg: #1f2029;
+  --dark-bg-toggle: rgba(0, 0, 0, 0.6);
+}
+* {
+  box-sizing: border-box;
+}
+.auth-body {
+  font-family: 'Poppins', sans-serif;
+  background-color: var(--body-bg);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-color);
+  padding: 20px;
+
+}
+
+.section-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 450px; 
+  perspective: 1000px;
+  z-index: 10; 
+}
+#tsparticles {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+
+/* Container chính của nút gạt */
+.toggle-switch-container {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  width: 140px; 
+  background: var(--dark-bg-toggle);
+  border-radius: 30px; 
+  border: 1px solid rgba(255, 235, 167, 0.2); 
+  margin: -5px auto 20px; 
+  padding: 4px;
+  z-index: 20;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+}
+
+/* Các item (icon) */
+.toggle-item {
+  position: relative;
+  z-index: 2;
+  width: 50%;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.4); 
+  transition: color 0.4s ease;
+}
+
+.toggle-item.active {
+  color: #000;
+  font-weight: bold;
+}
+
+/* Thanh trượt nền */
+.slider-indicator {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: calc(50% - 4px);
+  height: 40px;
+  background: var(--accent-color);
+  border-radius: 25px;
+  transition: transform 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+  z-index: 1;
+  box-shadow: 0 0 15px var(--accent-color); 
+}
+
+.slide-right {
+  transform: translateX(100%);
+}
+
+/* 3D Card Wrapper */
+.card-3d-wrapper {
+  width: 100%;
+  min-height: 700px; 
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+}
+
+
+/* Khi không phải Login thì xoay 180 độ */
+.card-3d-wrapper.show-register {
+  transform: rotateY(180deg);
+}
+
+/* Mặt trước và mặt sau */
+
+.card-front, .card-back {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: var(--dark-bg);
+  backdrop-filter: blur(4px);
+  border-radius: 20px;
+  padding: 40px 30px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  overflow-y: auto;
+}
+
+.card-back {
+  transform: rotateY(180deg);
+}
+
+/* Form Styles */
+h2 {
+  text-align: center;
+  margin-bottom: 30px;
+  color: var(--accent-color);
+  font-weight: 600;
+  font-size: 24px;
+}
+
+.section-title {
+  font-size: 14px;
+  color: #fff;
+  margin-top: 15px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #444;
+  padding-bottom: 5px;
+}
+
+.input-wrapper {
+  position: relative;
+  margin-bottom: 15px;
+}
+
+.input-icon {
+  position: absolute;
+  left: 15px;
+  top: 12px;
+  color: var(--accent-color);
+}
+
+input {
+  width: 100%;
+  background-color: var(--input-bg);
+  border: none;
+  padding: 13px 20px 13px 45px;
+  border-radius: 4px;
+  color: #fff;
+  font-size: 14px;
+  transition: all 0.3s linear;
+  box-shadow: 0 4px 8px 0 rgba(21,21,21,.2);
+}
+
+input:focus {
+  outline: none;
+  box-shadow: 0 4px 8px 0 rgba(255, 235, 167, 0.2);
+}
+
+/* Custom Checkbox cho giới tính */
+.gender-group {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 15px;
+}
+.gender-label {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Password Toggle Eye */
+.toggle-password {
+  position: absolute;
+  right: 15px;
+  top: 12px;
+  cursor: pointer;
+  z-index: 2;
+  color: var(--text-color);
+}
+
+/* Password Criteria */
+.password-criteria {
+  background: #1f2029;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  font-size: 12px;
+}
+.password-criteria ul { list-style: none; padding: 0; margin: 0; }
+.password-criteria li.valid { color: #00ff00; }
+.password-criteria li.invalid { color: #666; }
+
+/* Button */
+button.btn-submit {
+  width: 100%;
+  background-color: var(--accent-color);
+  color: #000;
+  font-weight: 600;
+  border: none;
+  padding: 13px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 20px;
+  box-shadow: 0 4px 6px rgba(255, 235, 167, 0.2);
+  transition: all 0.2s;
+}
+
+button.btn-submit:hover {
+  background-color: #fff;
+  transform: translateY(-2px);
+}
+
+.switch-text {
+  text-align: center;
+  margin-top: 15px;
+  font-size: 13px;
+  cursor: pointer;
+}
+.switch-text a {
+  color: var(--accent-color);
+  font-weight: bold;
+}

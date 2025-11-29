@@ -41,6 +41,27 @@
         "support": "Hỗ Trợ 24/7",
         "supportDesc": "Đội ngũ chăm sóc khách hàng luôn sẵn sàng"
     },
+    "flight": {
+        "title": "Thông Tin Chuyến Bay",
+        "desc": "Theo dõi các chuyến bay đang hoạt động và sắp khởi hành",
+        "list": "Danh Sách Chuyến Bay",
+        "map": "Bản Đồ Đường Bay",
+        "showing": "Đang hiển thị",
+        "instruction": "Nhấp vào chuyến bay để xem đường bay trên bản đồ",
+        "legend": "Chú thích",
+        "loading": "Đang tải thông tin chuyến bay...",
+        "seats": "Ghế",
+        "noFlights": "Không có chuyến bay nào đang hoạt động.",
+        "departure": "Khởi hành",
+        "arrival": "Đến",
+        "flight": "Chuyến bay",
+        "time": "Thời gian",
+        "date": "Ngày",
+        "plane": "Máy bay",
+        "active": "Hoạt động",
+        "boarding": "Đang lên máy bay",
+        "unknown": "Không xác định"
+    },
     "footer": {
         "desc": "Hệ thống quản lý chuyến bay – Nhanh chóng • An toàn • Tiết kiệm",
         "contact": "Liên Hệ Với Chúng Tôi",
@@ -53,5 +74,39 @@
         "aboutUs": "Về chúng tôi",
         "project": "Đồ án môn học Lập trình Web",
         "developedBy": "Phát triển bởi"
+    },
+    "auth": {
+        "login_title": "Đăng Nhập",
+        "register_title": "Đăng Ký",
+        "login_button": "Đăng nhập",
+        "register_button": "Đăng ký",
+        "personal_info": "Thông tin cá nhân",
+        "account_info": "Thông tin tài khoản",
+        "male": "Nam",
+        "female": "Nữ",
+        "no_account": "Chưa có tài khoản?",
+        "have_account": "Đã có tài khoản?",
+        "register_now": "Đăng ký ngay",
+        "login_now": "Đăng nhập"
+    },
+    "placeholder": {
+        "username": "Tên người dùng",
+        "email": "Email",
+        "phone": "Số điện thoại",
+        "password": "Mật khẩu",
+        "fullname": "Họ và tên đầy đủ",
+        "nationality": "Quốc tịch",
+        "passport": "Số hộ chiếu",
+        "account_name": "Tên tài khoản (username)",
+        "re_password": "Nhập lại mật khẩu"
+    },
+    "validation": {
+        "check_password": "Vui lòng kiểm tra lại mật khẩu!",
+        "password_mismatch": "Mật khẩu không khớp!",
+        "min_length": "Tối thiểu 8 ký tự",
+        "uppercase": "Chữ hoa",
+        "lowercase": "Chữ thường",
+        "number": "Số",
+        "special_char": "Ký tự đặc biệt"
     }
 }
