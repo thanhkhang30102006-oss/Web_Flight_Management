@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import "./Homepage.css"; // Import the CSS file
 import { useTranslation } from "react-i18next";
 import { Shield, Clock, CreditCard, Headphones } from "lucide-react";
@@ -15,8 +15,47 @@ function SimpleInfo() {
   );
 }
 
-function FastChecking({ onSearch }) {
+function FastChecking({ setIsFlying }) {
   const { t } = useTranslation();
+  const [formData, setFormData] = useState({
+    departure: "",
+    arrive: "",
+    departureDay: "",
+    typeNumber: 1,
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    // Bật hiệu ứng máy bay
+    setIsFlying?.(true);
+
+    try {
+      const response = await fetch("/api/flights/search", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) throw new Error("Request failed");
+
+      const data = await response.json();
+      console.log("Kết quả tìm kiếm:", data);
+
+      // Ở đây bạn có thể redirect hoặc lưu kết quả vào context/store
+      // ví dụ: navigate(`/flights?data=${encodeURIComponent(JSON.stringify(data))}`)
+    } catch (error) {
+      console.error("Lỗi tìm kiếm:", error);
+      alert("Có lỗi xảy ra, vui lòng thử lại!");
+    } finally {
+      setTimeout(() => setIsFlying?.(false), 3000);
+    }
+  };
   return (
     <div className="fast-checking-container">
       <div className="type">
@@ -27,35 +66,53 @@ function FastChecking({ onSearch }) {
         </ul>
       </div>
 
-      <form className="flight-form" onSubmit={onSearch}>
+      <form className="flight-form" onSubmit={handleSubmit}>
         <div className="form-box">
           <label className="form-label">{t("fastChecking.from")}</label>
           <input
             type="text"
+            name="departure"
             placeholder={t("fastChecking.fromdesc")}
             className="form-input"
             required
+            value={formData.departure}
+            onChange={handleChange}
           />
         </div>
         <div className="form-box">
           <label className="form-label">{t("fastChecking.to")}</label>
           <input
             type="text"
+            name="arrive"
             placeholder={t("fastChecking.todesc")}
             className="form-input"
             required
+            value={formData.arrive}
+            onChange={handleChange}
           />
         </div>
         <div className="form-box">
           <label className="form-label">{t("fastChecking.depart")}</label>
-          <input type="date" className="form-input" required />
+          <input
+            type="date"
+            name="departureDay"
+            className="form-input"
+            required
+            value={formData.departureDay}
+            onChange={handleChange}
+          />
         </div>
         <div className="form-box">
           <label className="form-label">{t("fastChecking.passengers")}</label>
-          <select className="form-select">
+          <select
+            name="typeNumber"
+            className="form-select"
+            value={formData.typeNumber}
+            onChange={handleChange}
+          >
             {t("fastChecking.passengerOptions", { returnObjects: true }).map(
               (option, i) => (
-                <option key={i} value={option}>
+                <option key={i} value={i + 1}>
                   {option}
                 </option>
               )

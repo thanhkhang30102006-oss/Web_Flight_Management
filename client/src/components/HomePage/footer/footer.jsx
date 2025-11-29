@@ -123,7 +123,7 @@ function Footer() {
             <br />
             {t("footer.developedBy", "Phát triển bởi")}{" "}
             <strong>Trung Hiếu</strong> & <strong>Thanh Khang</strong> – VKU
-            24IT
+            24JIT
           </p>
         </div>
       </div>
