@@ -120,7 +120,7 @@ export default function HomePage() {
 
         {/* Các section còn lại */}
         <section className="snap-section">
-          <FastChecking onSearch={handleSearch} />
+          <FastChecking setIsFlying={setIsFlying} />{" "}
           {isFlying && (
             <img src={airplaneIcon} alt="flying" className="flying-plane" />
           )}
