@@ -13,6 +13,13 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
+// Fast checking the flights
 const flightRouter = require("./routes/flightRoutes");
 app.use("/api/flights/", flightRouter);
+
+// Register call
+const registerRouter = require("./routes/registerRoutes");
+app.use("/api/user/", registerRouter);
+
+// Login call
 module.exports = app;

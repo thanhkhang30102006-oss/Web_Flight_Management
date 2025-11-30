@@ -20,8 +20,7 @@ import {
   Circle,
   X,
 } from "lucide-react";
-
-// Hàm tiện ích validate (giữ nguyên logic của bạn)
+import { useNavigate, useLocation } from "react-router-dom";
 function validatePassword(password) {
   const minLength = /.{8,}/;
   const hasLower = /[a-z]/;
@@ -49,7 +48,7 @@ const LoginRegis = () => {
   const particlesInit = useCallback(async (engine) => {
     await loadSlim(engine);
   }, []);
-
+  const navigate = useNavigate();
   const particlesOptions = {
     background: { color: { value: "#10100aff" } },
     fpsLimit: 120,
@@ -109,7 +108,17 @@ const LoginRegis = () => {
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
     console.log("Login Data:", loginData);
-    // Gọi API đăng nhập ở đây
+
+    const response = await fetch(`api/user/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(loginData),
+    });
+
+    if (!response.ok) throw new Error("Requested failed");
+    else {
+      navigate("/user");
+    }
   };
 
   // --- LOGIC ĐĂNG KÝ ---
@@ -162,6 +171,7 @@ const LoginRegis = () => {
       setIsMatch(registerData.passengerRePassword === val);
     }
   };
+  const toggleView = () => setIsLoginView(!isLoginView);
 
   const handleRegisterSubmit = async (e) => {
     e.preventDefault();
@@ -169,12 +179,23 @@ const LoginRegis = () => {
       alert("Vui lòng kiểm tra lại mật khẩu!");
       return;
     }
-    console.log("Register Data:", registerData);
-    // Gọi API đăng ký ở đây
+
+    const response = await fetch(`api/user/register`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(registerData),
+    });
+
+    const data = await response.json();
+    if (!response.ok) throw new Error("Request failed");
+    else {
+      // Chuyển hướng qua login
+      alert("Đăng ký thành công");
+      toggleView();
+    }
   };
 
   // Hàm chuyển đổi form
-  const toggleView = () => setIsLoginView(!isLoginView);
 
   return (
     <div className="auth-body">
