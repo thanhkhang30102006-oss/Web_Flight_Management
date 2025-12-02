@@ -26,3 +26,4 @@ function LeftSide() {
     </aside>
   );
 }
+export default LeftSide;

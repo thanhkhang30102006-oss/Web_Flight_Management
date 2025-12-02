@@ -100,3 +100,4 @@ const FlightSchedule = () => {
     </div>
   );
 };
+export default FlightSchedule;
