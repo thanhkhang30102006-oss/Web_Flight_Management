@@ -97,7 +97,7 @@ function Header() {
   const notiRef = useRef(null);
 
   useEffect(() => {
-    const data = localStorage.getItem("userdata");
+    const data = localStorage.getItem("userData");
     if (data) {
       setUser(JSON.parse(data));
     }

@@ -1,0 +1,196 @@
+/* --- BIẾN DÙNG CHUNG --- */
+:root {
+  --glass-bg: rgba(255, 255, 255, 0.1);
+  --glass-border: rgba(255, 255, 255, 0.2);
+  --glass-shine: rgba(255, 255, 255, 0.05);
+  --text-primary: #ffffff;
+  --text-secondary: rgba(255, 255, 255, 0.7);
+  --accent-color: #3b82f6; /* Xanh dương */
+}
+
+/* --- LAYOUT CONTAINER (Dùng trong Main) --- */
+.content-container {
+  padding: 20px;
+}
+
+.widgets-row {
+  margin-bottom: 10px;
+  width: 100%;
+}
+
+/* --- TRẠNG THÁI 1: KHÔNG CÓ VÉ (NO FLIGHT) --- */
+.no-flight-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 32px;
+  margin-right:20px;
+  margin-left:20px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+  backdrop-filter: blur(12px);
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.45);
+  color: var(--text-primary);
+}
+
+.promo-content {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+
+
+.text-content h3 { margin: 0 0 5px 0; font-size: 18px; }
+.text-content p { margin: 0; color: var(--text-secondary); font-size: 14px; max-width: 400px; }
+
+.btn-primary-glass {
+  background: var(--text-primary);
+  color: #2563eb;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 50px;
+  font-weight: 600;
+  display: flex; align-items: center; gap: 8px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.btn-primary-glass:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+
+/* --- TRẠNG THÁI 2: CÓ VÉ (HAS FLIGHT) --- */
+.flight-dashboard-row {
+  display: flex;
+  gap: 24px;
+  width: 100%;
+}
+
+.col-ticket { flex: 2; /* Vé chiếm 2 phần */ }
+.col-weather { flex: 1; /* Thời tiết chiếm 1 phần */ }
+
+.glass-panel-title {
+  color: var(--text-secondary);
+  font-size: 14px;
+  margin-bottom: 10px;
+  margin-left: 30px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* --- TICKET VISUAL (GIAO DIỆN VÉ) --- */
+.ticket-visual {
+  position: relative;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(14px);
+  border: 2px solid rgba(255, 255, 255, 0.6); 
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.45);
+  border-radius: 20px;
+  padding: 24px 32px;
+  margin-left:20px;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  overflow: hidden; 
+}
+
+/* Header Vé */
+.ticket-header {
+    
+  display: flex; justify-content: space-between; align-items: center;
+  border-bottom: 1px dashed rgba(255,255,255,0.2);
+  padding-bottom: 15px;
+}
+.airline-brand { display: flex; align-items: center; gap: 10px; }
+.airline-logo-placeholder { font-size: 20px; }
+.flight-no { font-weight: 700; font-size: 18px; letter-spacing: 2px; }
+
+.flight-status {
+  padding: 4px 12px; border-radius: 20px; font-size: 13px;letter-spacing: 1px; font-weight: 600;
+}
+.flight-status.ontime { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
+.flight-status.delayed { background: rgba(234, 179, 8, 0.2); color: #facc15; }
+
+/* Body Vé */
+.ticket-body {
+  display: flex; justify-content: space-between; align-items: center;
+}
+.route-point { display: flex; flex-direction: column; }
+.text-right { text-align: right; }
+.city-code { font-size: 32px; font-weight: 800; line-height: 1; margin-bottom: 5px; letter-spacing: 1px; text-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+.time-large { font-size: 18px; text-align: center; font-weight: 600; color: var(--text-primary); }
+.date-small { font-size: 13px; text-align: center; color: var(--text-secondary); }
+
+.flight-path {
+  flex: 1; padding: 0 30px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+.path-line {
+  width: 100%; height: 2px; background: rgba(255, 255, 255, 0.475);
+  position: relative; margin: 5px 0;
+  display: flex; align-items: center; justify-content: center;
+}
+.plane-icon-center { color: #60a5fa; transform: rotate(0deg); background: transparent; }
+.dot { width: 6px; height: 6px; background: white; border-radius: 50%; position: absolute; top: -2px; }
+.dot.start { left: 0; } .dot.end { right: 0; }
+.duration, .type { font-size: 12px; color: var(--text-secondary); }
+
+/* Footer Vé */
+.ticket-footer {
+  display: flex; justify-content: space-between;
+  background: rgba(0,0,0,0.1);
+  padding: 12px 16px; border-radius: 12px;
+}
+.info-item { display: flex; gap: 8px; align-items: center; }
+.info-item .label { font-size: 11px; color: var(--text-secondary); display: block; }
+.info-item .value { font-size: 14x; font-weight: 600; }
+
+/* Hiệu ứng cắt giấy (Notch) */
+.ticket-notch {
+  position: absolute; width: 40px; height: 40px;
+  background-color: transparent; 
+  border-radius: 50%;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.2); 
+  box-shadow: inset 0 0 5px rgba(0,0,0,0.5);
+}
+.ticket-notch.left { left: -18px; }
+.ticket-notch.right { right: -18px; }
+
+
+/* ---------------------- WEATHER WIDGET (GIAO DIỆN THỜI TIẾT) ---------------------- */
+.weather-container {
+  margin-right:20px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+  border: 2px solid rgba(255, 255, 255, 0.6); 
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.45);
+  border-radius: 20px;
+  padding: 20px;
+  height: 100%; 
+  box-sizing: border-box;
+}
+
+.weather-widget { color: white; display: flex; flex-direction: column; justify-content: center; height: 100%; gap: 30px; }
+.widget-title { color: white; margin: 0; font-size: 20px; text-align: center; margin-bottom: 5px;}
+
+.weather-row {
+  display: flex; justify-content: space-between; align-items: center;
+}
+.location-info { display: flex; align-items: center; gap: 6px; font-weight: 600; font-size: 14px; }
+.text-blue { color: #4394f7; }
+.text-red { color: #f87171; }
+
+.weather-stats { display: flex; align-items: center; gap: 8px; }
+.weather-icon-w { color: #fbbf24; }
+.temp { font-size: 20px; font-weight: 700; }
+
+.divider-dashed {
+  border-top: 1px dashed rgba(255,255,255,0.2);
+  width: 100%;
+}
+.weather-summary {
+  font-size: 12px; text-align: center; color: var(--text-secondary);
+  padding: 8px; border-radius: 8px;
+}

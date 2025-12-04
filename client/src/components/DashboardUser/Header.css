@@ -93,7 +93,8 @@
 }
 .glass-btn-icon:hover, .glass-btn-icon.active {
   transform: scale(1.1);
-  transition: ;
+  transform: translateY(-5px);
+  border: none;
 }
 .red-dot {
   position: absolute; top: 10px; right: 12px;

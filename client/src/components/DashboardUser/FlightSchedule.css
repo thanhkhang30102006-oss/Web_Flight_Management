@@ -1,7 +1,7 @@
 .schedule-layout {
   display: flex;
   gap: 24px;
-  height: 100vh;
+  height: 80vh;
   width: 100%;
   padding: 20px;
   box-sizing: border-box;
@@ -16,7 +16,8 @@
   border: 1px solid rgba(255, 255, 255, 1);
   border-radius: 24px;
   border-right: 2px solid rgba(255, 255, 255, 0.6); 
-  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.45);  padding: 24px;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.45); 
+   padding: 24px;
   display: flex;
   flex-direction: column;
 }
@@ -83,9 +84,6 @@ transition: all 0.2s ease-in-out;
   height: 35px;
   position: relative;
   border-bottom: 1px solid #e2e8f0;
-  background: rgba(210, 210, 210, 0.1); 
-  backdrop-filter: blur(10px);        
-  -webkit-backdrop-filter: blur(10px);  
   border-radius: 16px 16px 0 0;
 }
 .ruler-mark {
