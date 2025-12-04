@@ -108,15 +108,22 @@ const LoginRegis = () => {
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
     console.log("Login Data:", loginData);
-
     const response = await fetch(`api/user/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(loginData),
-    });
 
-    if (!response.ok) throw new Error("Requested failed");
-    else {
+      credentials: "include",
+    });
+    const data = await response.json();
+    if (!response.ok) {
+      alert(data.message || "Đăng nhập thất bại");
+      return;
+    } else {
+      const accessToken = data.accessToken;
+      localStorage.setItem("accessToken", accessToken);
+      console.log("Đăng nhập thành công!");
+      localStorage.setItem("userData", JSON.stringify(data.user));
       navigate("/user");
     }
   };

@@ -28,10 +28,19 @@ function Header() {
   const { t } = useTranslation();
 
   const [showNoti, setShowNoti] = useState(false);
+  const [user, setUser] = useState(null);
+  useEffect(() => {
+    const data = localStorage.getItem("userData");
+    if (data) {
+      setUser(JSON.parse(data));
+    }
+  }, []);
+
   return (
     <>
       {/*Greeting part */}
-      <h1 className="greeting">Xin chào, Khang </h1> {/*Gọi lấy dữ liệu tên*/}
+      <h1 className="greeting">Xin chào,{user?.name} </h1>
+      {/*Gọi lấy dữ liệu tên*/}
       <div className="right">
         <div className="search-bar">
           <input

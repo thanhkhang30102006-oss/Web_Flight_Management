@@ -2,6 +2,7 @@ const db = require("../models");
 const Passenger = db.Passenger;
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
+const jwt = require("jsonwebtoken");
 const registerInformation = async (req, res) => {
   try {
     const {
@@ -97,11 +98,34 @@ const loginUser = async (req, res) => {
         name: passenger.passengerName,
         email: passenger.passengerEmail,
         mobile: passenger.passengerMobile,
+        role: "passenger",
       };
+      const cookieOptions = {
+        httpOnly: true,
+        sameSite: "strict",
+        secure: false,
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      };
+      // Tạo access token và refresh token
+      const accessToken = jwt.sign(
+        userData,
+        process.env.ACCESS_TOKEN_SECRET || "access_token_default",
+        { expiresIn: "30m" }
+      );
+      const refreshToken = jwt.sign(
+        userData,
+        process.env.REFRESH_TOKEN_SECRET || "refresh_token_default",
+        { expiresIn: "7d" }
+      );
+      console.log("Access Token: ", accessToken);
+      console.log("RefreshToken : ".refreshToken);
+      console.log("Cookie: ", cookieOptions);
+      res.cookie("refreshToken", refreshToken, cookieOptions);
       return res.status(200).json({
         success: true,
         message: "Đăng nhập thành công",
         user: userData,
+        accessToken: accessToken,
       });
     } else {
       return res.status(401).json({
