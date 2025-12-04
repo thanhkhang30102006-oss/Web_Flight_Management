@@ -1,8 +1,5 @@
 import React from "react";
-import {
-  Header,
-  NotificationDropDown,
-} from "../components/DashboardUser/Header";
+import { Header } from "../components/DashboardUser/Header";
 import LeftSide from "../components/DashboardUser/FunctionBar";
 import {
   NextFlightCard,

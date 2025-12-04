@@ -10,7 +10,7 @@
   background: rgba(210, 210, 210, 0.1); /* Màu trắng độ trong suốt 75% */
   backdrop-filter: blur(10px);           /* Làm mờ nền phía sau */
   -webkit-backdrop-filter: blur(10px);   /* Hỗ trợ Safari */
-  border-top-right-radius : 24px;
+  border-top-right-radius : 0px;
   border-bottom-right-radius : 24px;
   border-right: 2px solid rgba(255, 255, 255, 0.6); /* Viền mờ */
   box-shadow: 2px 0 10px rgba(0, 0, 0, 0.45);

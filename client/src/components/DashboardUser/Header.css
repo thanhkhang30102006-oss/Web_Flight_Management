@@ -1,0 +1,179 @@
+/* --- Cấu hình chung cho Glassmorphism --- */
+:root {
+  --glass-bg: rgba(210, 210, 210, 0.1);
+  --glass-border: rgba(255, 255, 255, 0.2);
+  --glass-blur: blur(12px);
+  --text-primary: #fff;
+  --text-secondary: rgba(255, 255, 255, 0.7);
+}
+
+/* Header Container */
+.glass-header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  padding: 15px 30px;
+  
+  /* Hiệu ứng kính */
+  margin-left: 1px;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-radius: 24px;
+  border-top-right-radius: 0px;
+  border-top-left-radius: 0px;
+  border: 2px solid rgba(255, 255, 255, 0.6); 
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.45);
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Greeting */
+.greeting-section h1 {
+  margin: 0;
+  font-size: 24px;
+  color: var(--text-primary);
+  font-weight: 700;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.greeting-section p {
+  margin: 4px 0 0;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.right-section {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+/* Search Bar trong suốt */
+.glass-search {
+  display: flex;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.2); /* Nền tối hơn xíu để rõ chữ */
+  border: 1px solid var(--glass-border);
+  border-radius: 50px; /* Bo tròn viên thuốc */
+  padding: 8px 16px;
+  width: 280px;
+  transition: all 0.3s ease;
+}
+.glass-search:focus-within {
+  background: rgba(0, 0, 0, 0.3);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+.glass-search input {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: white;
+  width: 100%;
+}
+.glass-search input::placeholder { color: rgba(255,255,255,0.5); }
+
+/* --- Notification Button --- */
+.noti-wrapper { 
+    position: relative;    
+ }
+
+.glass-btn-icon {
+  width: 100%; height: 100%;
+  
+  background: transparent;
+  color: white;
+  display: flex; justify-content: center; align-items: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+}
+.glass-btn-icon:hover, .glass-btn-icon.active {
+  transform: scale(1.1);
+  transition: ;
+}
+.red-dot {
+  position: absolute; top: 10px; right: 12px;
+  width: 8px; height: 8px;
+  background: #ef4444; border-radius: 50%;
+  border: 1px solid #fff;
+}
+
+/* --- Dropdown Notification Panel --- */
+.glass-dropdown {
+  position: absolute;
+  top: 60px; right: -10px;
+  width: 360px;
+  
+  /* Hiệu ứng kính đậm đà hơn cho dropdown để dễ đọc */
+  background: rgba(30, 41, 59, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+  
+  border-radius: 16px;
+  overflow: hidden;
+  transform-origin: top right;
+  color: white;
+}
+
+/* Header của Dropdown */
+.dropdown-header {
+  padding: 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.header-left { display: flex; align-items: center; gap: 8px; }
+.header-left h4 { margin: 0; font-size: 16px; }
+.badge-new {
+  font-size: 10px; background: #ef4444; padding: 2px 6px; 
+  border-radius: 4px; font-weight: bold;
+}
+.btn-text {
+  background: none; border: none; color: #60a5fa; 
+  font-size: 12px; cursor: pointer; display: flex; gap: 4px; align-items: center;
+}
+.btn-text:hover { text-decoration: underline; }
+
+/* List thông báo */
+.notification-list {
+  max-height: 350px;
+  overflow-y: auto;
+}
+
+/* Custom Scrollbar */
+.notification-list::-webkit-scrollbar { width: 5px; }
+.notification-list::-webkit-scrollbar-thumb { 
+  background: rgba(255,255,255,0.2); border-radius: 10px; 
+}
+
+.noti-item {
+  display: flex; gap: 12px; padding: 12px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  transition: background 0.2s;
+  cursor: pointer;
+  position: relative;
+}
+.noti-item:hover { background: rgba(255,255,255,0.08); }
+.noti-item.unread { background: rgba(59, 130, 246, 0.1); } /* Màu xanh nhẹ cho tin chưa đọc */
+
+/* Icon Box */
+.icon-box {
+  width: 36px; height: 36px; flex-shrink: 0;
+  border-radius: 10px;
+  display: flex; justify-content: center; align-items: center;
+}
+.icon-box.flight { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+.icon-box.promo { background: rgba(234, 179, 8, 0.2); color: #facc15; }
+.icon-box.info { background: rgba(148, 163, 184, 0.2); color: #cbd5e1; }
+
+.content-box p { margin: 0 0 4px; font-size: 13px; line-height: 1.4; color: #e2e8f0; }
+.content-box .time { font-size: 11px; color: #94a3b8; }
+.dot-status {
+  width: 8px; height: 8px; background: #3b82f6; 
+  border-radius: 50%; position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+}
