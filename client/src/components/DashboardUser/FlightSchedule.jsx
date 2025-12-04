@@ -1,103 +1,160 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Calendar } from "react-calendar";
-import { format, isSameDay } from "date-fns";
+import { isSameDay } from "date-fns";
 import "react-calendar/dist/Calendar.css";
+import "./FlightSchedule.css";
 
-const myFlights = [
+const dbFlights = [
   {
     id: 1,
-    date: new Date(2025, 11, 12), // Lưu ý: Tháng 12 trong JS là 11 (0-index)
-    route: "Hà Nội (HAN) ➝ Tokyo (NRT)",
+    date: new Date(2025, 11, 12),
+    route: "HAN ➝ NRT",
     airline: "Vietnam Airlines",
-    time: "08:30 - 15:30",
-    status: "confirmed", // confirmed, delayed, cancelled
+    startTime: "08:30",
+    endTime: "12:30",
+    status: "confirmed",
     logo: "https://upload.wikimedia.org/wikipedia/en/thumb/9/9d/Vietnam_Airlines_Logo.svg/1200px-Vietnam_Airlines_Logo.svg.png",
   },
   {
     id: 2,
-    date: new Date(2025, 11, 15),
-    route: "Tokyo (NRT) ➝ Hà Nội (HAN)",
-    airline: "JAL Japan Airlines",
-    time: "10:00 - 14:00",
+    date: new Date(2025, 11, 12),
+    route: "SGN ➝ DAD",
+    airline: "Vietjet Air",
+    startTime: "14:15",
+    endTime: "15:45",
     status: "delayed",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/Japan_Airlines_Logo_%282011%29.svg/1200px-Japan_Airlines_Logo_%282011%29.svg.png",
+    logo: "https://upload.wikimedia.org/wikipedia/en/thumb/9/9d/Vietnam_Airlines_Logo.svg/1200px-Vietnam_Airlines_Logo.svg.png",
   },
 ];
-{
-  /**Dữ liệu giả để edit lịch bay*/
-}
 
 const FlightSchedule = () => {
   const [selectedDate, setSelectedDate] = useState(new Date(2025, 11, 12));
+  const [localFlights, setLocalFlights] = useState([]);
 
-  const flightsOnDate = myFlights.filter((flight) =>
-    isSameDay(flight.date, selectedDate)
-  );
+  // Hàm đổi giờ (HH:mm) thành phút (0 -> 1440)
+  const timeToMinutes = (timeStr) => {
+    const [h, m] = timeStr.split(":").map(Number);
+    return h * 60 + m;
+  };
+
+  useEffect(() => {
+    const flightsOnDate = dbFlights.filter((f) =>
+      isSameDay(f.date, selectedDate)
+    );
+
+    const formattedFlights = flightsOnDate.map((flight) => {
+      const startMinutes = timeToMinutes(flight.startTime);
+      const endMinutes = timeToMinutes(flight.endTime);
+      let duration = endMinutes - startMinutes;
+      if (duration < 0) duration += 1440; // Xử lý bay qua đêm nếu cần
+
+      return {
+        ...flight,
+        // Tính % bắt đầu (start / 1440 * 100)
+        leftPos: (startMinutes / 1440) * 100,
+        // Tính % độ rộng (duration / 1440 * 100)
+        widthPos: (duration / 1440) * 100,
+      };
+    });
+    setLocalFlights(formattedFlights);
+  }, [selectedDate]);
 
   const tileContent = ({ date, view }) => {
     if (view === "month") {
-      const hasFlight = myFlights.some((flight) =>
-        isSameDay(flight.date, date)
-      );
+      const hasFlight = dbFlights.some((f) => isSameDay(f.date, date));
       if (hasFlight) return <div className="dot-marker"></div>;
     }
     return null;
   };
 
   return (
-    <div className="schedule-container">
-      {/* CỘT TRÁI: LỊCH */}
-      <div className="calendar-wrapper">
-        <h3 className="schedule-title">Lịch trình bay</h3>
+    <div className="schedule-layout">
+      {/* CỘT TRÁI: CALENDAR */}
+      <div className="glass-panel calendar-section">
+        <h3 className="panel-title">Lịch trình bay</h3>
         <Calendar
           onChange={setSelectedDate}
           value={selectedDate}
-          locale="vi-VN" // Chuyển sang tiếng Việt
-          tileContent={tileContent} // Thêm chấm đỏ
+          locale="vi-VN"
+          tileContent={tileContent}
           className="custom-calendar"
         />
       </div>
 
-      {/* CỘT PHẢI: CHI TIẾT */}
-      <div className="event-list-wrapper">
-        <h3 className="date-header">
-          {format(selectedDate, "EEEE, 'ngày' d 'tháng' M", { locale: vi })}
-        </h3>
+      {/* CỘT PHẢI: TIMELINE */}
+      <div className="glass-panel timeline-section">
+        <div className="timeline-header">
+          <h3>Timeline (24h)</h3>
+          <p className="hint">Di chuột vào chuyến bay để xem chi tiết</p>
+        </div>
 
-        <div className="flight-list">
-          {flightsOnDate.length > 0 ? (
-            flightsOnDate.map((flight) => (
-              <div key={flight.id} className={`flight-item ${flight.status}`}>
-                <div className="airline-logo">
-                  <img src={flight.logo} alt="airline" />
-                </div>
-                <div className="flight-info">
-                  <h4>{flight.route}</h4>
-                  <p className="time">{flight.time}</p>
-                  <span className="airline-name">{flight.airline}</span>
-                </div>
-                <div className="flight-status">
-                  {flight.status === "confirmed" && (
-                    <span className="tag green">Đúng giờ</span>
-                  )}
-                  {flight.status === "delayed" && (
-                    <span className="tag yellow">Hoãn</span>
-                  )}
-                  {flight.status === "cancelled" && (
-                    <span className="tag red">Hủy</span>
-                  )}
-                </div>
+        <div className="timeline-container">
+          {/* Thước đo thời gian */}
+          <div className="time-ruler">
+            {[0, 4, 8, 12, 16, 20, 24].map((hour) => (
+              <div
+                key={hour}
+                className="ruler-mark"
+                style={{ left: `${(hour / 24) * 100}%` }}
+              >
+                <span>{hour}h</span>
               </div>
-            ))
-          ) : (
-            <div className="empty-state">
-              <p>😴 Không có chuyến bay nào hôm nay.</p>
-              <button className="btn-small">Đặt vé ngay</button>
-            </div>
-          )}
+            ))}
+          </div>
+
+          {/* Khu vực chứa Bar */}
+          <div className="timeline-track-area">
+            {localFlights.length > 0 ? (
+              localFlights.map((flight, index) => (
+                <div
+                  key={index}
+                  className={`flight-bar-item ${flight.status}`}
+                  style={{
+                    left: `${flight.leftPos}%`,
+                    width: `${flight.widthPos}%`,
+                    top: `${index * 60 + 100}px`, // Xếp chồng theo chiều dọc
+                  }}
+                >
+                  <span className="bar-label">
+                    {flight.startTime} - {flight.endTime}
+                  </span>
+                  {/* POPUP TOOLTIP (Ẩn mặc định, hiện khi Hover) */}
+                  <div className="flight-tooltip">
+                    <div className="tooltip-header">
+                      <img src={flight.logo} alt="logo" />
+                      <span className="airline-name">{flight.airline}</span>
+                    </div>
+                    <div className="tooltip-body">
+                      <div className="tooltip-route">{flight.route}</div>
+                      <div className="tooltip-time">
+                        {flight.startTime} - {flight.endTime}
+                      </div>
+                      <div className={`tooltip-status ${flight.status}`}>
+                        {flight.status === "confirmed"
+                          ? "Đã xác nhận"
+                          : "Bị hoãn"}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="empty-state">Không có lịch bay ngày này</div>
+            )}
+
+            {/* Kẻ mờ chia giờ */}
+            {[...Array(24)].map((_, i) => (
+              <div
+                key={i}
+                className="grid-line"
+                style={{ left: `${(i / 24) * 100}%` }}
+              ></div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
   );
 };
+
 export default FlightSchedule;

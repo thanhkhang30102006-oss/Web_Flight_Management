@@ -1,0 +1,195 @@
+.schedule-layout {
+  display: flex;
+  gap: 24px;
+  height: 100vh; /* Full viewport height */
+  width: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+  background-color: #f1f5f9; /* Màu nền nhẹ cho trang */
+  font-family: 'Segoe UI', sans-serif;
+}
+
+/* Glassmorphism Panel */
+.glass-panel {
+  background: rgba(158, 158, 158, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 1);
+  border-radius: 24px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+}
+
+.calendar-section { flex: 0 0 320px; }
+.timeline-section { flex: 1; overflow: hidden; }
+
+/* Custom Calendar Adjustments */
+.custom-calendar {
+  width: 100% !important;
+  background: transparent !important;
+  border: none !important;
+}
+.react-calendar__tile--active {
+  background: #3b82f6 !important;
+  border-radius: 8px;
+}
+.dot-marker {
+  width: 5px; height: 5px; background-color: #ef4444; 
+  border-radius: 50%; margin: 2px auto 0;
+}
+
+/* Timeline Layout */
+.timeline-header h3 { margin: 0 0 5px 0; color: #1e293b; }
+.hint { font-size: 13px; color: #64748b; margin: 0; }
+
+.timeline-container {
+  padding:0px 15px 0px 10px;
+  margin-top: 20px;
+  flex: 1;
+  position: relative;
+  background: #fff;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  width: 100%;
+  overflow-x: auto; /* Cho phép scroll nếu màn hình quá nhỏ */
+  overflow-y: hidden;
+}
+
+/* Thước đo (Ruler) */
+.time-ruler {
+  height: 35px;
+  position: relative;
+  border-bottom: 1px solid #e2e8f0;
+  background: #f8fafc;
+  border-radius: 16px 16px 0 0;
+}
+.ruler-mark {
+  position: absolute;
+  top: 10px;
+  transform: translateX(-50%); /* Căn giữa số so với vạch */
+  font-size: 11px;
+  color: #64748b;
+  font-weight: 600;
+}
+.ruler-mark::after {
+  content: '';
+  position: absolute;
+  left: 50%; bottom: -10px;
+  width: 1px; height: 5px;
+  background: #cbd5e1;
+}
+
+/* Khu vực chứa Bar */
+.timeline-track-area {
+  position: relative;
+  height: calc(100% - 35px);
+  width: 100%;
+}
+.grid-line {
+  position: absolute; top: 0; bottom: 0; width: 1px;
+  border-left: 1px dashed rgba(0, 0, 0, 0.05);
+  pointer-events: none;
+}
+
+/* --- FLIGHT BAR ITEM (STYLE MỚI) --- */
+.flight-bar-item {
+  position: absolute;
+  height: 40px; /* Độ cao thanh bar */
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 10;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  
+  /* Chỉ hiển thị màu nền, không nội dung */
+  background: #3b82f6; 
+  display: flex;
+  align-items: center;     /* Căn giữa dọc */
+  justify-content: center; /* Căn giữa ngang */
+}
+
+.bar-label {
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  padding: 0 5px;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.2); /* Tạo bóng chữ cho dễ đọc */
+  user-select: none;    
+}
+/* Hover Effect lên chính thanh bar */
+.flight-bar-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+  z-index: 20; /* Đưa lên trên cùng khi hover */
+}
+
+/* Màu sắc theo trạng thái */
+.flight-bar-item.confirmed { background: linear-gradient(90deg, #22c55e, #16a34a); }
+.flight-bar-item.delayed { background: linear-gradient(90deg, #eab308, #ca8a04); }
+.flight-bar-item.cancelled { background: linear-gradient(90deg, #ef4444, #dc2626); }
+
+/* --- TOOLTIP POPUP (QUAN TRỌNG) --- */
+.flight-tooltip {
+  visibility: hidden; /* Ẩn mặc định */
+  opacity: 0;
+  position: absolute;
+  bottom: 100%; /* Hiện phía trên thanh bar */
+  left: 50%;
+  transform: translateX(-50%) translateY(-50px); /* Căn giữa và đẩy lên chút */
+  
+  width: 200px;
+  background: white;
+  padding: 12px;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+  
+  transition: all 0.2s cubic-bezier(0.165, 0.84, 0.44, 1);
+  pointer-events: none; /* Tránh chuột bị dính vào tooltip */
+}
+
+/* Hiển thị Tooltip khi hover vào cha (.flight-bar-item) */
+.flight-bar-item:hover .flight-tooltip {
+  visibility: visible;
+  opacity: 1;
+  transform: translateX(-50%) translateY(-8px); /* Hiệu ứng trôi nhẹ */
+}
+
+/* Mũi tên nhỏ dưới tooltip */
+.flight-tooltip::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -6px;
+  border-width: 6px;
+  border-style: solid;
+  border-color: white transparent transparent transparent;
+}
+
+/* Nội dung bên trong Tooltip */
+.tooltip-header {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 8px; border-bottom: 1px solid #f1f5f9; padding-bottom: 6px;
+}
+.tooltip-header img { width: 20px; height: 20px; object-fit: contain; }
+.airline-name { font-weight: 600; font-size: 12px; color: #0f172a; }
+
+.tooltip-body { font-size: 12px; color: #475569; }
+.tooltip-route { font-weight: 700; color: #1e293b; font-size: 14px; margin-bottom: 4px; }
+.tooltip-time { margin-bottom: 6px; }
+
+.tooltip-status { 
+  display: inline-block; padding: 2px 8px; 
+  border-radius: 10px; font-size: 10px; font-weight: 600; text-transform: uppercase;
+}
+.tooltip-status.confirmed { background: #dcfce7; color: #166534; }
+.tooltip-status.delayed { background: #fef9c3; color: #854d0e; }
+
+.empty-state {
+  display: flex; align-items: center; justify-content: center; 
+  height: 100%; color: #94a3b8; font-style: italic;
+}

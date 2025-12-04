@@ -1,29 +1,73 @@
-import { useState } from "react";
+import React from "react";
+import { NavLink } from "react-router-dom";
+import airplaneIcon from "../../assets/Image/airplane-plane-flight-white.svg";
+
+import {
+  Home,
+  Plane,
+  Luggage,
+  Wallet,
+  Settings,
+  Headphones,
+  LogOut,
+} from "lucide-react";
+import "./LeftSide.css";
 
 function LeftSide() {
   const menuItems = [
-    { path: "/", name: "Tổng quan", icon: <HomeIcon /> },
-    { path: "/booking", name: "Đặt vé", icon: <PlaneIcon /> },
-    { path: "/my-trips", name: "Chuyến bay của tôi", icon: <SuitcaseIcon /> },
-    { path: "/wallet", name: "Ví & Ưu đãi", icon: <WalletIcon /> },
-    { path: "/setting", name: "Cài đặt", icon: <Setting /> },
-    { path: "/support", name: "Hỗ trợ và tư vấn", icon: <Support /> },
+    { path: "/", name: "Tổng quan", icon: <Home size={20} /> },
+    { path: "/booking", name: "Đặt vé", icon: <Plane size={20} /> },
+    {
+      path: "/my-trips",
+      name: "Chuyến bay của tôi",
+      icon: <Luggage size={20} />,
+    },
+    { path: "/wallet", name: "Ví & Ưu đãi", icon: <Wallet size={20} /> },
+    { path: "/setting", name: "Cài đặt", icon: <Settings size={20} /> },
+    { path: "/support", name: "Hỗ trợ", icon: <Headphones size={20} /> },
   ];
+
   return (
-    <aside className="side-bar">
-      <div className="logo-brand">
-        {/*Chỗ này thiết kế để logo và tên thương hiệu vào*/}
+    <aside className="sidebar">
+      {/* Phần Logo thương hiệu */}
+      <div className="logo-container">
+        <div className="logo-icon">
+          <img
+            src={airplaneIcon}
+            alt="FlightHK Logo"
+            className="sidebar-logo-img"
+          />{" "}
+        </div>
+        <span className="brand-name">FlightHK</span>
       </div>
 
-      <nav>
+      {/* Menu chính */}
+      <nav className="sidebar-nav">
         {menuItems.map((item) => (
-          <NavLink to={item.path} key={item.name} className="menu-item">
-            {item.icon}
-            <span>{item.name}</span>
+          <NavLink
+            to={item.path}
+            key={item.name}
+            className={({ isActive }) =>
+              `menu-item ${isActive ? "active" : ""}`
+            }
+          >
+            <span className="icon-wrapper">{item.icon}</span>
+            <span className="item-name">{item.name}</span>
           </NavLink>
         ))}
       </nav>
+
+      {/* Phần footer của sidebar (Ví dụ: Đăng xuất) */}
+      <div className="sidebar-footer">
+        <button className="menu-item logout-btn">
+          <span className="icon-wrapper">
+            <LogOut size={20} />
+          </span>
+          <span className="item-name">Đăng xuất</span>
+        </button>
+      </div>
     </aside>
   );
 }
+
 export default LeftSide;

@@ -1,0 +1,67 @@
+/* file: components/DashboardUser/DashboardLayout.css */
+
+/* --- Định nghĩa biến dùng chung (Theme) --- */
+:root {
+  --primary-color: #3b82f6; 
+  --bg-color: #f3f4f6;      
+}
+/* --- Layout chính --- */
+.dashboard-layout {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+  font-family: 'Inter', sans-serif;
+  position: relative;
+}
+
+/* --- CSS CHO VIDEO NỀN --- */
+.background-video {
+  position: fixed; 
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover; 
+  z-index: -2;    
+}
+
+/* --- LỚP PHỦ MỜ (OVERLAY) --- */
+
+.video-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(255, 255, 255, 0.3); /* Màu trắng mờ 30% */
+  /* Hoặc dùng màu tối nếu muốn giao diện dark mode: background: rgba(0,0,0,0.4); */
+  z-index: -1;
+  pointer-events: none; 
+}
+
+/* --- Khu vực nội dung bên phải --- */
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  position: relative;
+  /* Bỏ background màu ở đây để nhìn xuyên thấu xuống video */
+}
+
+.content-container {
+  padding: 2rem;
+  max-width: 1600px;
+  margin: 0 auto;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* --- Row chứa các widget nằm ngang (nếu cần) --- */
+.widgets-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+}

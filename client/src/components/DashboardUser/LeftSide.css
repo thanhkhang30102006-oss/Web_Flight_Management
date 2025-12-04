@@ -1,0 +1,115 @@
+/* file: components/DashboardUser/LeftSide.css */
+
+.sidebar {
+  width: 260px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem 1rem;
+  /* --- GLASSMORPHISM EFFECT (Hiệu ứng kính) --- */
+  background: rgba(210, 210, 210, 0.1); /* Màu trắng độ trong suốt 75% */
+  backdrop-filter: blur(10px);           /* Làm mờ nền phía sau */
+  -webkit-backdrop-filter: blur(10px);   /* Hỗ trợ Safari */
+  border-top-right-radius : 24px;
+  border-bottom-right-radius : 24px;
+  border-right: 2px solid rgba(255, 255, 255, 0.6); /* Viền mờ */
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.45);
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+
+/* --- Các phần khác giữ nguyên, chỉ chỉnh lại hover cho đẹp --- */
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 0.5rem 2rem 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.logo-icon {
+  background: var(--primary-color, #0ea5e9);
+  width: 50px;
+  height: 50px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  box-shadow: 0 4px 15px rgba(14, 165, 233, 0.4); /* Bóng xanh */
+}
+
+/* Trong LeftSide.css */
+.sidebar-logo-img {
+  width: 30px; 
+  height: 30px;
+  object-fit: contain;
+}
+.brand-name {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #19294f; /* Màu chữ đậm hơn chút để dễ đọc */
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  text-decoration: none;
+  color: #334155;
+  border-radius: 12px;
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: all 0.2s ease-in-out;
+}
+
+.icon-wrapper {
+  margin-right: 12px;
+  color: #64748b;
+  display: flex; 
+  align-items: center;
+}
+
+/* Hover: Màu trắng đục rõ hơn */
+.menu-item:hover {
+  background-color: rgba(255, 255, 255, 0.251); 
+  color: var(--primary-color, #0ea5e9);
+  transform: translateX(5px); /* Hiệu ứng trượt nhẹ sang phải */
+}
+
+.menu-item:hover .icon-wrapper {
+  color: var(--primary-color, #0ea5e9);
+}
+
+/* Active: Màu xanh chủ đạo */
+.menu-item.active {
+  background-color: var(--primary-color, #0ea5e9);
+  color: #ffffff;
+  box-shadow: 0 8px 20px rgba(14, 165, 233, 0.3); 
+}
+
+.menu-item.active .icon-wrapper {
+  color: #ffffff;
+}
+
+/* Footer */
+.sidebar-footer {
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.logout-btn {
+  width: 100%;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #bc2f2f;
+}

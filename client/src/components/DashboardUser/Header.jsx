@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
+
 function NotificationDropDown() {
   return (
     <div className="noti-dropdown">
@@ -23,6 +25,8 @@ function NotificationDropDown() {
   );
 }
 function Header() {
+  const { t } = useTranslation();
+
   const [showNoti, setShowNoti] = useState(false);
   return (
     <>
