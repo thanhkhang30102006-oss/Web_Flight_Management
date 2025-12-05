@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Header } from "../components/DashboardUser/Header";
+import { Header } from "../components/DashboardUser/header";
 import LeftSide from "../components/DashboardUser/FunctionBar";
 import { NextFlightCard } from "../components/DashboardUser/NextFlight";
 import FlightSchedule from "../components/DashboardUser/FlightSchedule";
