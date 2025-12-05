@@ -5,7 +5,7 @@ import { NextFlightCard } from "../components/DashboardUser/NextFlight";
 import FlightSchedule from "../components/DashboardUser/FlightSchedule";
 import "./DashboardLayout.css";
 import videoWallpaper from "../assets//videos/background-wallpaper-user1.mp4";
-
+import Booking from "./BookingFlow";
 const MOCK_USER_BOOKINGS = [
   {
     id: "BK-001",
@@ -37,6 +37,7 @@ const MOCK_USER_BOOKINGS = [
 
 function DashBoard() {
   const [nextFlight, setNextFlight] = useState(null);
+  const [activeTab, setActiveTab] = useState("home");
   useEffect(() => {
     // Tìm chuyến bay có status là "upcoming" đầu tiên
     const upcoming = MOCK_USER_BOOKINGS.find(
@@ -55,19 +56,31 @@ function DashBoard() {
       {/* Lớp phủ mờ (Overlay) để video không làm rối mắt */}
       <div className="video-overlay"></div>
       {/* Sidebar cố định bên trái */}
-      <LeftSide />
+      <LeftSide currentTab={activeTab} onTabChange={setActiveTab} />
 
       {/* Nội dung chính bên phải */}
       <main className="main-content">
-        <Header />
-
+        {activeTab === "home" && <Header />}
         {/* Container cho các widget bên trong để căn lề đẹp hơn */}
         <div className="content-container">
-          <div className="widgets-row">
-            <NextFlightCard flight={nextFlight} />
-            {/* <StatsComponents /> có thể để ở đây nếu muốn chia cột */}
-          </div>
-          <FlightSchedule />
+          {activeTab === "home" && (
+            <>
+              <div className="widgets-row">
+                <NextFlightCard flight={nextFlight} />
+                {/* <StatsComponents /> có thể để ở đây nếu muốn chia cột */}
+              </div>
+              <FlightSchedule />
+            </>
+          )}
+
+          {activeTab === "booking" && (
+            <>
+              {/* Nội dung Booking Flow mới */}
+              <div className="booking-container">
+                <Booking />
+              </div>
+            </>
+          )}
         </div>
         <div
           style={{
