@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Calendar } from "react-calendar";
+import { useTranslation } from "react-i18next";
 import { isSameDay } from "date-fns";
 import "react-calendar/dist/Calendar.css";
 import "./FlightSchedule.css";
@@ -20,8 +21,8 @@ const dbFlights = [
     date: new Date(2025, 11, 12),
     route: "SGN ➝ DAD",
     airline: "Vietjet Air",
-    startTime: "14:15",
-    endTime: "15:45",
+    startTime: "16:15",
+    endTime: "20:45",
     status: "delayed",
     logo: "https://upload.wikimedia.org/wikipedia/en/thumb/9/9d/Vietnam_Airlines_Logo.svg/1200px-Vietnam_Airlines_Logo.svg.png",
   },
@@ -30,7 +31,8 @@ const dbFlights = [
 const FlightSchedule = () => {
   const [selectedDate, setSelectedDate] = useState(new Date(2025, 11, 12));
   const [localFlights, setLocalFlights] = useState([]);
-
+  const { t, i18n } = useTranslation();
+  const calendarLocale = i18n.language === "vi" ? "vi-VN" : "en-US";
   // Hàm đổi giờ (HH:mm) thành phút (0 -> 1440)
   const timeToMinutes = (timeStr) => {
     const [h, m] = timeStr.split(":").map(Number);
@@ -71,11 +73,11 @@ const FlightSchedule = () => {
     <div className="schedule-layout">
       {/* CỘT TRÁI: CALENDAR */}
       <div className="glass-panel calendar-section">
-        <h3 className="panel-title">Lịch trình bay</h3>
+        <h3 className="panel-title">{t("flight_schedule.title")}</h3>{" "}
         <Calendar
           onChange={setSelectedDate}
           value={selectedDate}
-          locale="vi-VN"
+          locale={calendarLocale}
           tileContent={tileContent}
           className="custom-calendar"
         />
@@ -84,8 +86,8 @@ const FlightSchedule = () => {
       {/* CỘT PHẢI: TIMELINE */}
       <div className="glass-panel timeline-section">
         <div className="timeline-header">
-          <h3>Timeline (24h)</h3>
-          <p className="hint">Di chuột vào chuyến bay để xem chi tiết</p>
+          <h3>{t("flight_schedule.timeline_title")}</h3>
+          <p className="hint">{t("flight_schedule.hint")}</p>
         </div>
 
         <div className="timeline-container">
@@ -130,16 +132,14 @@ const FlightSchedule = () => {
                         {flight.startTime} - {flight.endTime}
                       </div>
                       <div className={`tooltip-status ${flight.status}`}>
-                        {flight.status === "confirmed"
-                          ? "Đã xác nhận"
-                          : "Bị hoãn"}
+                        {t(`flight_schedule.status.${flight.status}`)}
                       </div>
                     </div>
                   </div>
                 </div>
               ))
             ) : (
-              <div className="empty-state">Không có lịch bay ngày này</div>
+              <div className="empty-state">{t("flight_schedule.empty")}</div>
             )}
 
             {/* Kẻ mờ chia giờ */}

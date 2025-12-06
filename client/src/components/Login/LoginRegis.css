@@ -3,7 +3,7 @@
 :root {
   --body-bg: rgb(31, 32, 41);
   --text-color: #c4c3ca;
-  --accent-color: #ffeba7;
+  --accent-color1: #ffeba7;
   --dark-bg: #2a2b383d;
   --input-bg: #1f2029;
   --dark-bg-toggle: rgba(0, 0, 0, 0.6);
@@ -80,11 +80,11 @@
   left: 4px;
   width: calc(50% - 4px);
   height: 40px;
-  background: var(--accent-color);
+  background: var(--accent-color1);
   border-radius: 25px;
   transition: transform 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55);
   z-index: 1;
-  box-shadow: 0 0 15px var(--accent-color); 
+  box-shadow: 0 0 15px var(--accent-color1); 
 }
 
 .slide-right {
@@ -132,7 +132,7 @@
 h2 {
   text-align: center;
   margin-bottom: 30px;
-  color: var(--accent-color);
+  color: var(--accent-color1);
   font-weight: 600;
   font-size: 24px;
 }
@@ -155,7 +155,7 @@ h2 {
   position: absolute;
   left: 15px;
   top: 12px;
-  color: var(--accent-color);
+  color: var(--accent-color1);
 }
 
 input {
@@ -213,7 +213,7 @@ input:focus {
 /* Button */
 button.btn-submit {
   width: 100%;
-  background-color: var(--accent-color);
+  background-color: var(--accent-color1);
   color: #000;
   font-weight: 600;
   border: none;
@@ -237,6 +237,6 @@ button.btn-submit:hover {
   cursor: pointer;
 }
 .switch-text a {
-  color: var(--accent-color);
+  color: var(--accent-color1);
   font-weight: bold;
 }

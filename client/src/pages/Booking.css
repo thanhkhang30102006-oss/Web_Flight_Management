@@ -1,0 +1,177 @@
+/* Booking.css */
+.booking-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding-bottom: 50px;
+}
+
+/* Glassmorphism Styles */
+.glass-panel-box {
+  background: rgba(255, 255, 255, 0.1); /* Nền mờ */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+/* Form Styles */
+.form-grid {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap; /* Tự xuống dòng nếu màn hình nhỏ */
+  align-items: flex-end;
+}
+
+.input-group {
+  flex: 1;
+  min-width: 150px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.input-label {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.8);
+  margin-left: 4px;
+}
+
+.glass-input-wrapper {
+  display: flex;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 0 12px;
+  height: 44px;
+  transition: all 0.3s;
+}
+
+.glass-input-wrapper:focus-within {
+  background: rgba(0, 0, 0, 0.3);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.glass-input {
+  background: transparent;
+  border: none;
+  color: white;
+  width: 100%;
+  margin-left: 10px;
+  outline: none;
+  font-size: 14px;
+}
+.glass-input::placeholder { color: rgba(255,255,255,0.4); }
+
+.search-submit-btn {
+  height: 44px;
+  padding: 0 24px;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s;
+}
+.search-submit-btn:hover { background: #2563eb; transform: translateY(-2px); }
+
+/* Map Section */
+.map-visual-container {
+  width: 100%;
+  height: 300px;
+  border-radius: 16px;
+  overflow: hidden;
+  position: relative;
+  background: #1e293b;
+  margin-top: 20px;
+  border: 1px solid rgba(255,255,255,0.2);
+}
+.map-iframe { width: 100%; height: 100%; border: none; opacity: 0.8; }
+
+
+/* --- Flight Card Styles --- */
+.flight-card-item {
+  padding: 20px;
+  border-left: 4px solid transparent; /* Chuẩn bị cho hover effect */
+  transition: all 0.3s ease;
+}
+
+.flight-card-item:hover {
+  border-left-color: #3b82f6; /* Viền trái sáng lên khi hover */
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.flight-card-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+/* Cột 1: Airline */
+.fc-airline { display: flex; align-items: center; gap: 12px; min-width: 180px; }
+.fc-logo { width: 45px; height: 45px; object-fit: contain; background: white; border-radius: 8px; padding: 4px; }
+.fc-name { margin: 0; font-size: 16px; color: white; font-weight: 700; }
+.fc-number { font-size: 12px; color: rgba(255,255,255,0.6); }
+.fc-status { 
+    display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 10px; margin-top: 4px; font-weight: 600;
+}
+.fc-status.ontime { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
+.fc-status.delayed { background: rgba(234, 179, 8, 0.2); color: #facc15; }
+
+/* Cột 2: Route */
+.fc-route { flex: 1; display: flex; align-items: center; justify-content: center; gap: 20px; color: white; min-width: 250px; }
+.fc-point { text-align: center; }
+.fc-time { display: block; font-size: 20px; font-weight: 800; }
+.fc-city { font-size: 14px; font-weight: 600; color: #94a3b8; }
+
+.fc-arrow { display: flex; flex-direction: column; align-items: center; width: 120px; }
+.fc-duration { font-size: 11px; color: rgba(255,255,255,0.5); margin-bottom: 2px;}
+.dashed-line-plane { 
+    width: 100%; height: 1px; border-top: 1px dashed rgba(255,255,255,0.4); 
+    position: relative; display: flex; justify-content: center; align-items: center; margin: 5px 0;
+}
+.icon-plane-center { width: 30px; height: 30px; transform: rotate(0deg); color: #3b82f6; background: transparent; padding: 0 4px; }
+.dot { width: 4px; height: 4px; background: white; border-radius: 50%; position: absolute; }
+.dot:first-child { left: 0; top: -2px; }
+.dot:last-child { right: 0; top: -2px; }
+.fc-date { font-size: 11px; color: #60a5fa; margin-top: 2px; }
+
+/* Cột 3: Giá */
+.fc-price-action { text-align: right; min-width: 120px; }
+.fc-price { font-size: 20px; font-weight: 800; color: #4ade80; margin-bottom: 5px; }
+.fc-seat-info { font-size: 11px; color: #cbd5e1; display: flex; align-items: center; justify-content: flex-end; gap: 4px; margin-bottom: 8px; }
+.btn-select {
+    padding: 8px 20px; border-radius: 20px; border: none;
+    background: white; color: #0f172a; font-weight: 700; cursor: pointer; transition: 0.2s;
+}
+.btn-select:hover { background: #3b82f6; color: white; }
+
+/* Expanded Details */
+.flight-details-expand {
+    margin-top: 20px; padding-top: 20px; border-top: 1px dashed rgba(255,255,255,0.1);
+}
+.detail-row-info { display: flex; gap: 20px; margin-bottom: 15px; color: rgba(255,255,255,0.7); font-size: 13px; }
+.info-tag { display: flex; align-items: center; gap: 6px; }
+
+/* Map Overlay */
+.map-overlay-info {
+    position: absolute; bottom: 10px; left: 10px; right: 10px;
+    background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);
+    padding: 10px; border-radius: 12px;
+    display: flex; align-items: center; gap: 10px; color: white; font-size: 13px;
+}
+.plane-anim { animation: fly 3s infinite linear; }
+@keyframes fly {
+    0% { transform: translateX(0) rotate(45deg); }
+    50% { transform: translateX(5px) translateY(-5px) rotate(45deg); }
+    100% { transform: translateX(0) rotate(45deg); }
+}

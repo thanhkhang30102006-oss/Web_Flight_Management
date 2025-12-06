@@ -2,7 +2,7 @@ import React, { useState, useCallback } from "react";
 import Particles from "react-tsparticles";
 import { loadSlim } from "tsparticles-slim";
 import "./LoginRegis.css";
-import { useTranslation } from "react-i18next"; // 1. Import hook
+import { useTranslation } from "react-i18next";
 import {
   User,
   Mail,
@@ -88,7 +88,7 @@ const LoginRegis = () => {
     detectRetina: true,
   };
   const { t } = useTranslation();
-  // State để điều khiển việc lật thẻ (Login <-> Register)
+  // State để điều khiển lật thẻ
   const [isLoginView, setIsLoginView] = useState(true);
 
   // --- LOGIC ĐĂNG NHẬP ---

@@ -1,7 +1,7 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 
-export default function LanguageSwitcher() {
+export default function LanguageSwitcher({ className = "" }) {
   const { i18n } = useTranslation();
 
   const changeLanguage = (lng) => {
@@ -12,21 +12,20 @@ export default function LanguageSwitcher() {
   const currentLang = i18n.resolvedLanguage || "vi";
 
   return (
-    <div className="lang-toggle-container">
+    <div className={`lang-toggle-container ${className}`}>
+      {" "}
       <div
         className={`lang-item ${currentLang === "vi" ? "active" : ""}`}
         onClick={() => changeLanguage("vi")}
       >
         VI
       </div>
-
       <div
         className={`lang-item ${currentLang === "en" ? "active" : ""}`}
         onClick={() => changeLanguage("en")}
       >
         EN
       </div>
-
       <div
         className={`lang-slider ${currentLang === "en" ? "slide-right" : ""}`}
       ></div>

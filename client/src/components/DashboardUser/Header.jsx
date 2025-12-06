@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { motion, AnimatePresence } from "framer-motion"; // Thư viện Animation
+import { motion, AnimatePresence } from "framer-motion";
 import { Bell, CheckCheck, Plane, Info } from "lucide-react";
+import LanguageSwitcher from "../HomePage/header/LanguageSwitcher";
 import "./Header.css";
 
 // Dữ liệu giả lập (Sau này thay bằng API)
@@ -30,6 +31,8 @@ const MOCK_NOTIFICATIONS = [
 ];
 
 const NotificationPanel = ({ onClose }) => {
+  const { t } = useTranslation();
+
   const [notifications, setNotifications] = useState(MOCK_NOTIFICATIONS);
 
   // Hàm đánh dấu đã đọc hết
@@ -50,13 +53,15 @@ const NotificationPanel = ({ onClose }) => {
     >
       <div className="dropdown-header">
         <div className="header-left">
-          <h4>Thông báo</h4>
+          <h4>{t("header.notification.title")}</h4>{" "}
           {unreadCount > 0 && (
-            <span className="badge-new">{unreadCount} mới</span>
+            <span className="badge-new">
+              {t("header.notification.new_count", { count: unreadCount })}
+            </span>
           )}
         </div>
         <button className="btn-text" onClick={handleMarkAllRead}>
-          Đánh dấu đã đọc <CheckCheck size={14} />
+          {t("header.notification.mark_read")} <CheckCheck size={14} />{" "}
         </button>
       </div>
 
@@ -81,7 +86,7 @@ const NotificationPanel = ({ onClose }) => {
             </div>
           ))
         ) : (
-          <div className="empty-state">Không có thông báo nào</div>
+          <div className="empty-state">{t("header.notification.empty")}</div>
         )}
       </div>
     </motion.div>
@@ -90,6 +95,7 @@ const NotificationPanel = ({ onClose }) => {
 
 function Header() {
   const { t } = useTranslation();
+
   const [showNoti, setShowNoti] = useState(false);
   const [user, setUser] = useState(null);
 
@@ -116,8 +122,8 @@ function Header() {
       <div className="header-content">
         {/* Left: Greeting */}
         <div className="greeting-section">
-          <h1>Xin chào, {user?.name}</h1>
-          <p>Chào mừng quay trở lại!</p>
+          <h1>{t("header.user.hello", { name: user?.name || "User" })}</h1>
+          <p>{t("header.user.welcome_back")}</p>{" "}
         </div>
 
         {/* Right: Actions */}
@@ -133,6 +139,7 @@ function Header() {
               {t("header.searchBtn", "Tìm")}
             </button>
           </div>
+          <LanguageSwitcher className="theme-glass" />
           {/* Notification Wrapper */}
           <div className="noti-wrapper" ref={notiRef}>
             <button

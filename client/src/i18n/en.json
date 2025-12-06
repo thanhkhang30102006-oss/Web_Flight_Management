@@ -6,7 +6,17 @@
         "search": "Search...",
         "searchBtn": "Go",
         "login": "Login",
-        "register": "Register"
+        "register": "Register",
+        "user": {
+            "hello": "Hello, {{name}}",
+            "welcome_back": "Welcome back!"
+        },
+        "notification": {
+            "title": "Notifications",
+            "new_count": "{{count}} new",
+            "mark_read": "Mark all as read",
+            "empty": "No notifications"
+        }
     },
     "hero": {
         "title": "FlightHK – Where every flight becomes simpler.",
@@ -108,5 +118,32 @@
         "lowercase": "Lowercase letter",
         "number": "Number",
         "special_char": "Special character"
+    },
+    "sidebar": {
+        "dashboard": "Dashboard",
+        "booking": "Booking",
+        "my_trips": "My Trips",
+        "wallet": "Wallet & Offers",
+        "settings": "Settings",
+        "support": "Support",
+        "logout": "Log out"
+    },
+    "next_flight": {
+        "no_ticket": {
+            "title": "No upcoming trips yet?",
+            "desc": "Book today to get <1>20%</1> off domestic flights this summer.",
+            "btn": "Book now"
+        }
+    },
+    "flight_schedule": {
+        "title": "Flight Schedule",
+        "timeline_title": "Timeline (24h)",
+        "hint": "Hover over flight to view details",
+        "empty": "No flights scheduled for this day",
+        "status": {
+            "confirmed": "Confirmed",
+            "delayed": "Delayed",
+            "cancelled": "Cancelled"
+        }
     }
 }

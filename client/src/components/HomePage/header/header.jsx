@@ -99,7 +99,7 @@ function Header() {
             {t("header.logsign", "Log/Sign")}
           </button>
 
-          <LanguageSwitcher />
+          <LanguageSwitcher className="theme-light" />
         </div>
       </div>
     </header>

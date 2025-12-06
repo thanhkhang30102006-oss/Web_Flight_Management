@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { useTranslation, Trans } from "react-i18next";
 import {
   Plane,
   MapPin,
@@ -38,6 +39,7 @@ const getWeatherIcon = (code) => {
 
 // Component 1: Khi CHƯA có vé (No Flight)
 const NoFlightView = () => {
+  const { t } = useTranslation(); // 2. Khởi tạo hook
   return (
     <motion.div
       className="glass-card no-flight-card"
@@ -49,15 +51,19 @@ const NoFlightView = () => {
           <Ticket size={40} className="promo-icon" />
         </div>
         <div className="text-content">
-          <h3>Bạn chưa có chuyến đi nào sắp tới?</h3>
+          <h3>{t("next_flight.no_ticket.title")}</h3>{" "}
           <p>
-            Đặt vé ngay hôm nay để nhận ưu đãi <strong>20%</strong> cho các
-            chặng bay nội địa hè này.
+            {/* 4. Dịch đoạn văn có chứa thẻ strong bằng component Trans */}
+            <Trans i18nKey="next_flight.no_ticket.desc">
+              Đặt vé ngay hôm nay để nhận ưu đãi <strong>20%</strong> cho các
+              chặng bay nội địa hè này.
+            </Trans>
           </p>
         </div>
       </div>
       <button className="btn-primary-glass">
-        Đặt vé ngay <ArrowRight size={18} />
+        {t("next_flight.no_ticket.btn")}
+        <ArrowRight size={18} />
       </button>
     </motion.div>
   );

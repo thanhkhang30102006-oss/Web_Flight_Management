@@ -49,8 +49,6 @@ function DashBoard() {
     <div className="dashboard-layout">
       <video className="background-video" autoPlay muted loop playsInline>
         <source src={videoWallpaper} type="video/webm" />
-        {/* Có thể thêm source mp4 để backup nếu cần */}
-        {/* <source src={videoWallpaperMp4} type="video/mp4" /> */}
       </video>
 
       {/* Lớp phủ mờ (Overlay) để video không làm rối mắt */}
@@ -60,7 +58,7 @@ function DashBoard() {
 
       {/* Nội dung chính bên phải */}
       <main className="main-content">
-        {activeTab === "home" && <Header />}
+        <Header />
         {/* Container cho các widget bên trong để căn lề đẹp hơn */}
         <div className="content-container">
           {activeTab === "home" && (

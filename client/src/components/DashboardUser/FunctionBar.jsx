@@ -1,5 +1,5 @@
 import React from "react";
-import { NavLink } from "react-router-dom";
+import { useTranslation } from "react-i18next"; // 1. Import hook
 import airplaneIcon from "../../assets/Image/airplane-plane-flight-white.svg";
 
 import {
@@ -11,16 +11,41 @@ import {
   Headphones,
   LogOut,
 } from "lucide-react";
-import "./LeftSide.css";
+import "./FunctionBar.css";
 
 function LeftSide({ currentTab, onTabChange }) {
+  const { t } = useTranslation();
   const menuItems = [
-    { id: "home", name: "Tổng quan", icon: <Home size={20} /> },
-    { id: "booking", name: "Đặt vé", icon: <Plane size={20} /> },
-    { id: "my-trips", name: "Chuyến bay của tôi", icon: <Luggage size={20} /> },
-    { id: "wallet", name: "Ví & Ưu đãi", icon: <Wallet size={20} /> },
-    { id: "setting", name: "Cài đặt", icon: <Settings size={20} /> },
-    { id: "support", name: "Hỗ trợ", icon: <Headphones size={20} /> },
+    {
+      id: "home",
+      name: t("sidebar.dashboard"),
+      icon: <Home size={20} />,
+    },
+    {
+      id: "booking",
+      name: t("sidebar.booking"),
+      icon: <Plane size={20} />,
+    },
+    {
+      id: "my-trips",
+      name: t("sidebar.my_trips"),
+      icon: <Luggage size={20} />,
+    },
+    {
+      id: "wallet",
+      name: t("sidebar.wallet"),
+      icon: <Wallet size={20} />,
+    },
+    {
+      id: "setting",
+      name: t("sidebar.settings"),
+      icon: <Settings size={20} />,
+    },
+    {
+      id: "support",
+      name: t("sidebar.support"),
+      icon: <Headphones size={20} />,
+    },
   ];
 
   return (
@@ -32,7 +57,7 @@ function LeftSide({ currentTab, onTabChange }) {
             src={airplaneIcon}
             alt="FlightHK Logo"
             className="sidebar-logo-img"
-          />{" "}
+          />
         </div>
         <span className="brand-name">FlightHK</span>
       </div>
@@ -52,13 +77,14 @@ function LeftSide({ currentTab, onTabChange }) {
         ))}
       </nav>
 
-      {/* Phần footer của sidebar (Ví dụ: Đăng xuất) */}
+      {/* Phần footer của sidebar */}
       <div className="sidebar-footer">
         <button className="menu-item logout-btn">
           <span className="icon-wrapper">
             <LogOut size={20} />
           </span>
-          <span className="item-name">Đăng xuất</span>
+          {/* 4. Sử dụng t() cho nút Đăng xuất */}
+          <span className="item-name">{t("sidebar.logout")}</span>
         </button>
       </div>
     </aside>

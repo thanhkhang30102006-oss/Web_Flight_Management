@@ -139,6 +139,7 @@
  background-color: #f0f8ff;
  color: #3399FF;
  border: none;
+ min-width: 69px;
  padding: 10px 20px;
  border-radius: 25px;
  cursor: pointer;
@@ -295,7 +296,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   color: rgba(40, 127, 145, 0.5); 
   transition: color 0.5s ease;

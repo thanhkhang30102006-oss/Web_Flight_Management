@@ -24,10 +24,18 @@
 
 .calendar-section { flex: 0 0 320px; font-size: 18px; padding: 20px; }
 
+
 .timeline-section { flex: 1; overflow: hidden; }
+
 .react-calendar__navigation button {
       font-weight: bold;
       font-size:14px;
+      transition: all 0.2s ease-in-out;
+    }
+.react-calendar__navigation button:hover {
+   background: #f8f8f823 !important;
+   transform: translateY(-5px);
+
     }
 .react-calendar__month-view__weekdays abbr {
       font-size:12px;
