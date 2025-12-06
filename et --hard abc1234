@@ -1,0 +1,45 @@
+[33m6285d6f[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mKhang[m[33m, [m[1;31morigin/Hieu[m[33m)[m HEAD@{0}: pull origin Hieu: Fast-forward
+[33m4446861[m[33m ([m[1;31morigin/Khang[m[33m)[m HEAD@{1}: checkout: moving from Hieu to Khang
+[33m82f50c1[m[33m ([m[1;32mHieu[m[33m)[m HEAD@{2}: commit: Complete search flight and continue to booking phase
+[33m4446861[m[33m ([m[1;31morigin/Khang[m[33m)[m HEAD@{3}: checkout: moving from Khang to Hieu
+[33m4446861[m[33m ([m[1;31morigin/Khang[m[33m)[m HEAD@{4}: reset: moving to origin/Hieu
+[33ma319d55[m HEAD@{5}: checkout: moving from Hieu to Khang
+[33m4446861[m[33m ([m[1;31morigin/Khang[m[33m)[m HEAD@{6}: checkout: moving from Khang to Hieu
+[33ma319d55[m HEAD@{7}: pull origin Hieu: Merge made by the 'ort' strategy.
+[33m65f1011[m HEAD@{8}: commit: Has change with header
+[33m3883dc6[m HEAD@{9}: pull origin Hieu: Fast-forward
+[33m62ed4bd[m HEAD@{10}: commit: Hiện chuẩn giao diện
+[33m0835b06[m HEAD@{11}: commit: Edit form giúp Khang nha
+[33mf71fe75[m HEAD@{12}: pull origin Hieu: Fast-forward
+[33m5387e72[m HEAD@{13}: commit: Đã config lại login khi login đi kèm token JWT để check người dùng với middleware
+[33m1fd3a70[m HEAD@{14}: pull origin Hieu: Fast-forward
+[33m8677b99[m HEAD@{15}: commit: Fix chuyển hướng /user
+[33m9e56cce[m[33m ([m[1;32mrecovery-branch[m[33m)[m HEAD@{16}: merge recovery-branch: Fast-forward
+[33m6c22c36[m HEAD@{17}: checkout: moving from recovery-branch to Khang
+[33m9e56cce[m[33m ([m[1;32mrecovery-branch[m[33m)[m HEAD@{18}: checkout: moving from Khang to recovery-branch
+[33m6c22c36[m HEAD@{19}: reset: moving to Khang
+[33m6c22c36[m HEAD@{20}: reset: moving to HEAD~1
+[33m9e56cce[m[33m ([m[1;32mrecovery-branch[m[33m)[m HEAD@{21}: commit: Chưa hoàn thiện được khung sườn dashboard, có lưu ý cần tìm logo cho các list bên render-list, tìm icon cho nút như thông báo, cứ tạm thời để dữ liệu giả đó để xem thử giao diện ra sao đã , xem flightinformation bên database để hiển thị chuyến bay cho chính xác, chia các layout main như sau: header có chào hỏi, tìm kiếm và thông báo. Giwuax có chuyến bay gần nhất khách hàng sắp bay , hiển thị vé và thời tiết, các thông tin thống kê. Dưới cùng là lịch trình bay tổng của khách hàng
+[33m6c22c36[m HEAD@{22}: commit: Complete register and login (2/2)
+[33m34084d0[m HEAD@{23}: pull origin Hieu: Fast-forward
+[33m046317a[m HEAD@{24}: commit: End form of register and login (1/2). Didn't have logic code for back-end login and register
+[33maee8071[m HEAD@{25}: pull origin Hieu: Merge made by the 'ort' strategy.
+[33mea2b32a[m HEAD@{26}: commit: Register and login
+[33m98a6284[m HEAD@{27}: commit: Register
+[33m0466bfa[m HEAD@{28}: pull origin Hieu: Merge made by the 'ort' strategy.
+[33m0b58291[m HEAD@{29}: commit: register
+[33m2c4a5fc[m HEAD@{30}: commit: Complete show fast checking information
+[33m234015e[m HEAD@{31}: pull origin Hieu: Merge made by the 'ort' strategy.
+[33m30fa7a0[m HEAD@{32}: commit: Homepage script
+[33m66cde03[m HEAD@{33}: commit (merge): Merge branch 'Hieu' of https://github.com/thanhkhang30102006-oss/Web_Flight_Management into Khang
+[33m3d371da[m HEAD@{34}: commit: Test check merge
+[33m2cd8c99[m HEAD@{35}: commit: Tiếp tục update
+[33m4dcf15b[m HEAD@{36}: commit: Cập nhật mới giao diện + nhờ Hiếu edit CSS giúp
+[33m63a3435[m HEAD@{37}: commit: Update and config all model
+[33m74a2f84[m HEAD@{38}: commit: use sequelize for making model
+[33m088a89f[m HEAD@{39}: pull origin main: Fast-forward
+[33ma794ea1[m[33m ([m[1;31morigin/main[m[33m)[m HEAD@{40}: checkout: moving from main to Khang
+[33m9ab27db[m[33m ([m[1;32mmain[m[33m)[m HEAD@{41}: commit: Use sequelize to create migration for model
+[33m088a89f[m HEAD@{42}: commit: Cau truc lai file client va server
+[33ma794ea1[m[33m ([m[1;31morigin/main[m[33m)[m HEAD@{43}: commit: First Commit
+[33ma4d06a3[m HEAD@{44}: initial pull

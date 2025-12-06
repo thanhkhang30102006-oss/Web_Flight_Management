@@ -1,6 +1,8 @@
+require("dotenv").config();
 const jwt = require("jsonwebtoken");
 
 const authMiddleware = (req, res, next) => {
+  console.log("Secret trong Middleware:", process.env.ACCESS_TOKEN_SECRET);
   // Lấy token
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1]; // Lọc bỏ chữ "Bearer"

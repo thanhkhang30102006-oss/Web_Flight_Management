@@ -1,3 +1,4 @@
+require("dotenv").config();
 const db = require("../models");
 const Passenger = db.Passenger;
 const bcrypt = require("bcrypt");
@@ -110,7 +111,7 @@ const loginUser = async (req, res) => {
       const accessToken = jwt.sign(
         userData,
         process.env.ACCESS_TOKEN_SECRET || "access_token_default",
-        { expiresIn: "30m" }
+        { expiresIn: "2d" }
       );
       const refreshToken = jwt.sign(
         userData,
@@ -118,9 +119,10 @@ const loginUser = async (req, res) => {
         { expiresIn: "7d" }
       );
       console.log("Access Token: ", accessToken);
-      console.log("RefreshToken : ".refreshToken);
+      console.log("RefreshToken : ", refreshToken);
       console.log("Cookie: ", cookieOptions);
       res.cookie("refreshToken", refreshToken, cookieOptions);
+      console.log("Secret trong Login:", process.env.ACCESS_TOKEN_SECRET);
       return res.status(200).json({
         success: true,
         message: "Đăng nhập thành công",

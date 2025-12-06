@@ -8,12 +8,10 @@ import "./Booking.css"; // Import CSS chung
 function Booking() {
   const { t } = useTranslation();
   const [isSearched, setIsSearched] = useState(false);
-  const [searchParams, setSearchParams] = useState(null);
-
-  const handleSearch = (params) => {
-    console.log("Searching with:", params);
-    setSearchParams(params);
-    setIsSearched(true); // Kích hoạt hiển thị kết quả
+  const [flights, setFlights] = useState([]);
+  const handleSearch = (data) => {
+    setFlights(data);
+    setIsSearched(true);
   };
 
   return (
@@ -30,7 +28,7 @@ function Booking() {
       <FlightSearchForm onSearch={handleSearch} />
 
       {/* Kết quả tìm kiếm (Truyền params xuống nếu muốn lọc thật) */}
-      <FlightResults searchTriggered={isSearched} params={searchParams} />
+      <FlightResults searchTriggered={isSearched} flights={flights} />
     </div>
   );
 }

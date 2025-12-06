@@ -22,9 +22,12 @@ app.use(express.static(path.join(__dirname, "public")));
 const flightRouter = require("./routes/flightRoutes");
 app.use("/api/flights/", flightRouter);
 
-// Register call
+// Register call, Login call
 const registerRouter = require("./routes/registerRoutes");
 app.use("/api/user/", registerRouter);
 
-// Login call
+// Booking
+const bookingRouter = require("./routes/bookingRoutes");
+app.use("/api/user/booking", bookingRouter);
+
 module.exports = app;
