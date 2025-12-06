@@ -145,5 +145,89 @@
             "delayed": "Bị hoãn",
             "cancelled": "Đã hủy"
         }
+    },
+    "booking": {
+        "pageTitle": "Đặt vé máy bay",
+        "pageSubtitle": "Tìm kiếm chuyến bay giá tốt nhất cho hành trình của bạn",
+        "from": "Điểm đi",
+        "to": "Điểm đến",
+        "date": "Ngày đi",
+        "departureTime": "Giờ khởi hành",
+        "passengers": "Hành khách",
+        "search": "Tìm chuyến bay",
+        "placeholders": {
+            "from": "Hà Nội (HAN)",
+            "to": "Đà Nẵng (DAD)"
+        }
+    },
+    "bookingPage": {
+        "title": "Form Đặt Vé",
+        "alertMaxSeats": "Chỉ được chọn tối đa 5 ghế",
+        "sections": {
+            "contact": "1. Thông tin liên hệ",
+            "seatSelection": "2. Chọn chỗ ngồi"
+        },
+        "form": {
+            "fullName": "Họ và tên",
+            "namePlaceholder": "Nguyễn Văn A",
+            "email": "Email",
+            "emailPlaceholder": "example@email.com",
+            "phone": "Số điện thoại",
+            "phonePlaceholder": "0912 xxx xxx",
+            "baggage": "Hành lý ký gửi (Tùy chọn)",
+            "baggageOptions": {
+                "none": "Không mang theo",
+                "20kg": "20kg (+200.000đ)",
+                "30kg": "30kg (+350.000đ)"
+            }
+        },
+        "summary": {
+            "basePrice": "Giá vé cơ bản:",
+            "selectedCount": "Số ghế đã chọn:",
+            "seats": "Ghế:",
+            "noneSelected": "Chưa chọn",
+            "total": "Tổng cộng:",
+            "payNow": "Thanh toán ngay"
+        },
+        "seatMap": {
+            "cockpit": "Đầu máy bay",
+            "businessClass": "Hạng Thương Gia",
+            "economyClass": "Hạng Phổ Thông",
+            "screenDirection": "Màn hình phía này",
+            "legend": {
+                "economy": "Phổ thông",
+                "business": "Thương gia",
+                "occupied": "Đã bán",
+                "selected": "Đang chọn"
+            }
+        }
+    },
+    "paymentPage": {
+        "title": "Xác nhận thanh toán",
+        "subtitle": "Vui lòng quét mã QR bên dưới để hoàn tất đặt vé",
+        "actions": {
+            "download": "Lưu ảnh",
+            "share": "Chia sẻ",
+            "home": "Quay về Trang chủ"
+        },
+        "details": {
+            "bank": "Ngân hàng:",
+            "accountName": "Chủ tài khoản:",
+            "accountNo": "Số tài khoản:",
+            "content": "Nội dung:",
+            "amount": "Số tiền:"
+        },
+        "alerts": {
+            "downloadError": "Không thể tải ảnh, vui lòng thử lại hoặc chụp màn hình.",
+            "shareTitle": "Thanh toán vé máy bay FlightHK",
+            "shareText": "Thanh toán vé chuyến bay {{flightNo}}. Tổng tiền: {{price}} VND.",
+            "shareCancel": "Đã hủy chia sẻ",
+            "copySuccess": "Đã sao chép link QR vào bộ nhớ tạm!",
+            "shareUnsupported": "Trình duyệt không hỗ trợ chia sẻ."
+        },
+        "note": {
+            "start": "*Vé điện tử sẽ được gửi về email",
+            "end": "sau khi thanh toán thành công."
+        }
     }
 }

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom"; // Hook điều hướng
+import { useTranslation } from "react-i18next";
+import { useLocation, useNavigate } from "react-router-dom"; // Hook Fiều hướng
 import SeatMap from "./SeatMap"; // IMPORT MỚI
 import { motion } from "framer-motion";
 import {
@@ -14,6 +15,7 @@ import {
 import "./BookingPage.css";
 import videoWallpaper from "../../assets/videos/background-wallpaper-bookingpage.mp4";
 const BookingPage = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -36,14 +38,18 @@ const BookingPage = () => {
     passport: "",
   });
   const occupiedSeats = ["1A", "2C", "5D", "8F"]; //gia lap ghe da ban
+  const handlePassengerChange = (e) => {
+    const { name, value } = e.target;
+    setPassenger((prev) => ({ ...prev, [name]: value }));
+  };
   const handlePayment = () => {
     // Chuyển sang trang thanh toán và mang theo "hành lý" dữ liệu
-    navigate("/payment", {
+    navigate("/user/payment", {
       state: {
-        flight: flight,
-        selectedSeats: selectedSeats,
-        passenger: passenger,
-        totalPrice: totalPrice,
+        flight,
+        selectedSeats,
+        passenger,
+        totalPrice,
       },
     });
   };
@@ -52,7 +58,6 @@ const BookingPage = () => {
     if (exists) {
       setSelectedSeats(selectedSeats.filter((s) => s.id !== seatId));
     } else {
-      // CHỌN MỚI
       if (selectedSeats.length < 5) {
         const seatPrice =
           type === "business" ? flight.price * 1.5 : flight.price;
@@ -64,7 +69,7 @@ const BookingPage = () => {
         };
         setSelectedSeats([...selectedSeats, newSeat]);
       } else {
-        alert("Chỉ được chọn tối đa 5 ghế");
+        alert(t("bookingPage.alertMaxSeats"));
       }
     }
   };
@@ -90,7 +95,7 @@ const BookingPage = () => {
             <ArrowLeft size={22} />
           </button>
           <div className="header-info">
-            <h1>Form Đặt Vé</h1>
+            <h1>{t("bookingPage.title")}</h1>{" "}
             <div className="flight-route-badge">
               <span>{flight.departurePoint}</span>
               <Plane size={14} className="icon-plane" />
@@ -104,69 +109,92 @@ const BookingPage = () => {
         <div className="booking-grid">
           {/* --- CỘT 1: THÔNG TIN KHÁCH HÀNG --- */}
           <div className="glass-panel info-column">
-            <h3 className="section-title">1. Thông tin liên hệ</h3>
-
+            <h3 className="section-title">
+              {t("bookingPage.sections.contact")}
+            </h3>
             <div className="form-group">
               <label>
-                <User size={16} /> Họ và tên
+                <User size={16} /> {t("bookingPage.form.fullName")}{" "}
               </label>
               <input
                 type="text"
-                placeholder="Nguyễn Văn A"
+                name="name"
+                placeholder={t("bookingPage.form.namePlaceholder")}
                 value={passenger.name}
-                onChange={(e) =>
-                  setPassenger({ ...passenger, name: e.target.value })
-                }
+                onChange={handlePassengerChange}
               />
             </div>
 
             <div className="row-2-input">
               <div className="form-group">
                 <label>
-                  <Mail size={16} /> Email
+                  <Mail size={16} /> {t("bookingPage.form.email")}{" "}
                 </label>
-                <input type="email" placeholder="example@email.com" />
+                <input
+                  type="email"
+                  name="email"
+                  placeholder={t("bookingPage.form.emailPlaceholder")}
+                  value={passenger.email}
+                  onChange={handlePassengerChange}
+                />
               </div>
               <div className="form-group">
                 <label>
-                  <Phone size={16} /> Số điện thoại
+                  <Phone size={16} /> {t("bookingPage.form.phone")}{" "}
                 </label>
-                <input type="tel" placeholder="0912 xxx xxx" />
+                <input
+                  type="tel"
+                  name="phone"
+                  placeholder={t("bookingPage.form.phonePlaceholder")}
+                  value={passenger.phone}
+                  onChange={handlePassengerChange}
+                />
               </div>
             </div>
 
             <div className="form-group">
               <label>
-                <Luggage size={16} /> Hành lý ký gửi (Tùy chọn)
+                <Luggage size={16} /> {t("bookingPage.form.baggage")}
               </label>
-              <select className="custom-select">
-                <option>Không mang theo</option>
-                <option>20kg (+200.000đ)</option>
-                <option>30kg (+350.000đ)</option>
+              <select
+                className="custom-select"
+                name="luggage"
+                onChange={handlePassengerChange}
+                value={passenger.luggage}
+              >
+                <option value="none">
+                  {t("bookingPage.form.baggageOptions.none")}
+                </option>
+                <option value="20kg">
+                  {t("bookingPage.form.baggageOptions.20kg")}
+                </option>
+                <option value="30kg">
+                  {t("bookingPage.form.baggageOptions.30kg")}
+                </option>
               </select>
             </div>
 
             {/* Tóm tắt thanh toán */}
             <div className="summary-box">
               <div className="summary-row">
-                <span>Giá vé cơ bản:</span>
+                <span>{t("bookingPage.summary.basePrice")}</span>
                 <span>{flight.price.toLocaleString()} VND</span>
               </div>
               <div className="summary-row">
-                <span>Số ghế đã chọn:</span>
+                <span>{t("bookingPage.summary.selectedCount")}</span>
                 <span className="highlight-text">{selectedSeats.length}</span>
               </div>
               <div className="summary-row">
-                <span>Ghế:</span>
+                <span>{t("bookingPage.summary.seats")}</span>
                 <span className="seat-list">
                   {selectedSeats.length > 0
                     ? selectedSeats.map((s) => s.id).join(", ")
-                    : "Chưa chọn"}
+                    : t("bookingPage.summary.noneSelected")}
                 </span>
               </div>
               <div className="divider"></div>
               <div className="total-row">
-                <span>Tổng cộng:</span>
+                <span>{t("bookingPage.summary.total")}</span>
                 <span className="total-price">
                   {totalPrice.toLocaleString()} VND
                 </span>
@@ -178,14 +206,15 @@ const BookingPage = () => {
               disabled={selectedSeats.length === 0}
               onClick={handlePayment}
             >
-              <CreditCard size={20} /> Thanh toán ngay
+              <CreditCard size={20} /> {t("bookingPage.summary.payNow")}
             </button>
           </div>
 
           {/* --- CỘT 2: CHỌN GHẾ (DÙNG COMPONENT TỰ VIẾT) --- */}
           <div className="glass-panel seat-column">
-            <h3 className="section-title">2. Chọn chỗ ngồi</h3>
-
+            <h3 className="section-title">
+              {t("bookingPage.sections.seatSelection")}
+            </h3>
             {/* Component SeatMap mới (thay thế SeatPicker) */}
             <div className="seat-picker-wrapper custom-scrollbar">
               <SeatMap
@@ -194,8 +223,9 @@ const BookingPage = () => {
                 onSeatClick={handleSeatClick}
               />
             </div>
-
-            <div className="screen-indicator">Màn hình phía này</div>
+            <div className="screen-indicator">
+              {t("bookingPage.seatMap.screenDirection")}
+            </div>{" "}
           </div>
         </div>
       </motion.div>

@@ -448,7 +448,9 @@ const FlightResults = ({ searchTriggered }) => {
                   onClick={() => {
                     // Chuyển hướng sang trang BookingPage mới tạo
                     // Truyền theo dữ liệu chuyến bay (state)
-                    navigate("/booking-details", { state: { flight: flight } });
+                    navigate("/user/booking-details", {
+                      state: { flight: flight },
+                    });
                   }}
                 >
                   Chọn vé

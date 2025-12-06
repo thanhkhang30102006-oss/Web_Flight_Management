@@ -1,20 +1,27 @@
-import React from "react";
+import React, { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import "./SeatMap.css";
 
-const SeatMap = ({ selectedSeats, onSeatClick, occupiedSeats = [] }) => {
+const SeatMap = ({ seats = [], selectedSeats = [], onSeatClick }) => {
+  const { t } = useTranslation();
   const colLabels = ["A", "B", "C", "", "D", "E", "F"];
 
   // Cấu hình số hàng
   const businessRows = 2; // 2 hàng đầu là thương gia
   const economyRows = 8; // 8 hàng sau là phổ thông
-  const totalRows = businessRows + economyRows;
 
+  const seatDatabaseMap = useMemo(() => {
+    return seats.reduce((acc, seat) => {
+      acc[seat.seatNumber] = seat;
+      return acc;
+    }, {});
+  }, [seats]);
   // Hàm render một hàng ghế
-  const renderRow = (rowIndex, type) => {
+  const renderRow = (rowIndex, defaultType) => {
     return (
       <React.Fragment key={rowIndex}>
         {colLabels.map((col) => {
-          // Xử lý lối đi
+          // 1. Xử lý lối đi
           if (col === "") {
             return (
               <div key={`aisle-${rowIndex}`} className="aisle-number">
@@ -23,23 +30,39 @@ const SeatMap = ({ selectedSeats, onSeatClick, occupiedSeats = [] }) => {
             );
           }
 
+          // 2. Xác định ID ghế (seatNumber)
           const seatId = `${rowIndex + 1}${col}`;
-          const isOccupied = occupiedSeats.includes(seatId);
 
-          // Kiểm tra xem ghế này có trong danh sách đang chọn không
-          // Lưu ý: selectedSeats bây giờ là mảng object [{id: '1A', ...}] nên phải dùng .some
+          // 3. Lấy thông tin ghế từ DB map
+          const seatInfo = seatDatabaseMap[seatId];
+
+          // 4. Xác định Loại ghế (Ưu tiên lấy từ DB, nếu không có thì lấy theo layout mặc định)
+          const type = seatInfo?.seatType || defaultType;
+
+          // 5. Xác định Trạng thái
+          // - Kiểm tra xem ghế có bị occupied trong DB không
+          const isOccupied =
+            seatInfo?.seatState === "occupied" ||
+            seatInfo?.seatState === "booked";
+
+          // - Kiểm tra xem người dùng có đang chọn ghế này không (Client state)
           const isSelected = selectedSeats.some((s) => s.id === seatId);
 
           return (
             <button
               key={seatId}
+              // Class kết hợp: seat-item + loại ghế + trạng thái
               className={`seat-item ${type} ${isOccupied ? "occupied" : ""} ${
                 isSelected ? "selected" : ""
               }`}
-              onClick={() => !isOccupied && onSeatClick(seatId, type)} // Truyền thêm type (business/economy)
+              // Khi click, truyền cả ID và Type để cha xử lý tính tiền
+              onClick={() => !isOccupied && onSeatClick(seatId, type)}
               disabled={isOccupied}
+              title={`${seatId} - ${type} - ${
+                seatInfo?.seatState || "available"
+              }`}
             >
-              {/* Có thể thêm icon vương miện cho ghế thương gia nếu muốn */}
+              {/* Nếu là ghế thương gia, có thể thêm icon đặc biệt */}
             </button>
           );
         })}
@@ -49,8 +72,7 @@ const SeatMap = ({ selectedSeats, onSeatClick, occupiedSeats = [] }) => {
 
   return (
     <div className="seat-map-container">
-      <div className="cockpit-indicator">Đầu máy bay</div>
-
+      {t("bookingPage.seatMap.cockpit", "Đầu máy bay")}
       <div className="seat-grid">
         {/* Header Cột A B C... */}
         {colLabels.map((col, i) => (
@@ -60,14 +82,16 @@ const SeatMap = ({ selectedSeats, onSeatClick, occupiedSeats = [] }) => {
         ))}
 
         {/* --- KHU VỰC THƯƠNG GIA --- */}
-        <div className="class-divider">Hạng Thương Gia</div>
+        <div className="class-divider">
+          {t("bookingPage.seatMap.businessClass", "Hạng Thương Gia")}
+        </div>
         {Array.from({ length: businessRows }).map((_, i) =>
           renderRow(i, "business")
         )}
 
         {/* --- KHU VỰC PHỔ THÔNG --- */}
         <div className="class-divider" style={{ marginTop: 20 }}>
-          Hạng Phổ Thông
+          {t("bookingPage.seatMap.economyClass", "Hạng Phổ Thông")}{" "}
         </div>
         {Array.from({ length: economyRows }).map((_, i) =>
           renderRow(i + businessRows, "economy")
@@ -77,17 +101,21 @@ const SeatMap = ({ selectedSeats, onSeatClick, occupiedSeats = [] }) => {
       {/* Chú thích */}
       <div className="seat-legend">
         <div className="legend-item">
-          <span className="box available"></span> Phổ thông
+          <span className="box available"></span>
+          {t("bookingPage.seatMap.legend.economy", "Phổ thông")}
         </div>
         <div className="legend-item">
-          <span className="box business"></span> Thương gia
+          <span className="box business"></span>
+          {t("bookingPage.seatMap.legend.business", "Thương gia")}
         </div>
         <div className="legend-item">
-          <span className="box occupied"></span> Đã bán
+          <span className="box occupied"></span>
+          {t("bookingPage.seatMap.legend.occupied", "Đã bán")}
         </div>
         <div className="legend-item">
           <span className="box selected"></span>
-          <span className="box selected business"></span> Đang chọn
+          <span className="box selected business"></span>
+          {t("bookingPage.seatMap.legend.selected", "Đang chọn")}
         </div>
       </div>
     </div>

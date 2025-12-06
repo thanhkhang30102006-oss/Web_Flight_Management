@@ -145,5 +145,89 @@
             "delayed": "Delayed",
             "cancelled": "Cancelled"
         }
+    },
+    "booking": {
+        "pageTitle": "Book a Flight",
+        "pageSubtitle": "Find the best flight prices for your journey",
+        "from": "From",
+        "to": "To",
+        "date": "Departure Date",
+        "departureTime": "Departure Time",
+        "passengers": "Passengers",
+        "search": "Search Flights",
+        "placeholders": {
+            "from": "Hanoi (HAN)",
+            "to": "Da Nang (DAD)"
+        }
+    },
+    "bookingPage": {
+        "title": "Booking Form",
+        "alertMaxSeats": "You can only select up to 5 seats",
+        "sections": {
+            "contact": "1. Contact Information",
+            "seatSelection": "2. Select Seats"
+        },
+        "form": {
+            "fullName": "Full Name",
+            "namePlaceholder": "John Doe",
+            "email": "Email",
+            "emailPlaceholder": "example@email.com",
+            "phone": "Phone Number",
+            "phonePlaceholder": "+84 912 xxx xxx",
+            "baggage": "Checked Baggage (Optional)",
+            "baggageOptions": {
+                "none": "No baggage",
+                "20kg": "20kg (+200,000đ)",
+                "30kg": "30kg (+350,000đ)"
+            }
+        },
+        "summary": {
+            "basePrice": "Base Price:",
+            "selectedCount": "Selected Seats:",
+            "seats": "Seats:",
+            "noneSelected": "None",
+            "total": "Total:",
+            "payNow": "Pay Now"
+        },
+        "seatMap": {
+            "cockpit": "Cockpit",
+            "businessClass": "Business Class",
+            "economyClass": "Economy Class",
+            "screenDirection": "Screen this way",
+            "legend": {
+                "economy": "Economy",
+                "business": "Business",
+                "occupied": "Sold",
+                "selected": "Selected"
+            }
+        }
+    },
+    "paymentPage": {
+        "title": "Payment Confirmation",
+        "subtitle": "Please scan the QR code below to complete booking",
+        "actions": {
+            "download": "Save Image",
+            "share": "Share",
+            "home": "Return to Home"
+        },
+        "details": {
+            "bank": "Bank:",
+            "accountName": "Account Name:",
+            "accountNo": "Account No.:",
+            "content": "Content:",
+            "amount": "Amount:"
+        },
+        "alerts": {
+            "downloadError": "Cannot download image, please try again or take a screenshot.",
+            "shareTitle": "FlightHK Booking Payment",
+            "shareText": "Payment for flight {{flightNo}}. Total: {{price}} VND.",
+            "shareCancel": "Share cancelled",
+            "copySuccess": "QR link copied to clipboard!",
+            "shareUnsupported": "Browser does not support sharing."
+        },
+        "note": {
+            "start": "*E-ticket will be sent to email",
+            "end": "after successful payment."
+        }
     }
 }

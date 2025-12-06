@@ -75,6 +75,7 @@ input{
   background: #3b82f6;
   color: white;
   border: none;
+  min-width: 200px;
   border-radius: 12px;
   font-weight: 600;
   cursor: pointer;

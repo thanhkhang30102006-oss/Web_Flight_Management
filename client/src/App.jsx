@@ -16,8 +16,8 @@ export default function App() {
       <Route path="*" element={<HomePage />} />
       <Route path="/loginsignup" element={<LoginSignupPage />} />
       <Route path="/user" element={<DashBoard />} />
-      <Route path="/booking-details" element={<BookingPage />} />
-      <Route path="/payment" element={<PaymentPage />} />
+      <Route path="/user/booking-details" element={<BookingPage />} />
+      <Route path="/user/payment" element={<PaymentPage />} />
       <Route path="*" element={<HomePage />} />
     </Routes>
   );

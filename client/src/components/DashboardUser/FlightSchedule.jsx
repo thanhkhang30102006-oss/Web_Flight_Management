@@ -48,13 +48,11 @@ const FlightSchedule = () => {
       const startMinutes = timeToMinutes(flight.startTime);
       const endMinutes = timeToMinutes(flight.endTime);
       let duration = endMinutes - startMinutes;
-      if (duration < 0) duration += 1440; // Xử lý bay qua đêm nếu cần
+      if (duration < 0) duration += 1440;
 
       return {
         ...flight,
-        // Tính % bắt đầu (start / 1440 * 100)
         leftPos: (startMinutes / 1440) * 100,
-        // Tính % độ rộng (duration / 1440 * 100)
         widthPos: (duration / 1440) * 100,
       };
     });

@@ -36,7 +36,7 @@ const FlightSearchForm = ({ onSearch }) => {
             <input
               className="glass-input"
               name="from"
-              placeholder="Hà Nội (HAN)"
+              placeholder={t("booking.placeholders.from", "Hà Nội (HAN)")}
               onChange={handleChange}
             />
           </div>
@@ -50,7 +50,7 @@ const FlightSearchForm = ({ onSearch }) => {
             <input
               className="glass-input"
               name="to"
-              placeholder="Đà Nẵng (DAD)"
+              placeholder={t("booking.placeholders.to", "Đà Nẵng (DAD)")}
               onChange={handleChange}
             />
           </div>

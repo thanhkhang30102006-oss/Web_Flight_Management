@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { CheckCircle, Home, Copy, Download, Share2 } from "lucide-react";
 import "./PaymentPage.css"; // File CSS ở bước 2
 import videoWallpaper from "../../assets/videos/background-wallpaper-bookingpage.mp4";
 
 const PaymentPage = () => {
+  const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -53,17 +55,19 @@ const PaymentPage = () => {
       window.URL.revokeObjectURL(url);
     } catch (error) {
       console.error("Lỗi tải ảnh:", error);
-      alert("Không thể tải ảnh, vui lòng thử lại hoặc chụp màn hình.");
+      alert(t("paymentPage.alerts.downloadError"));
     }
   };
 
   // --- 2. CHỨC NĂNG CHIA SẺ ---
   const handleShare = async () => {
     const shareData = {
-      title: "Thanh toán vé máy bay FlightHK",
-      text: `Thanh toán vé chuyến bay ${
-        flight.flightNumber
-      }. Tổng tiền: ${totalPrice.toLocaleString()} VND.`,
+      title: t("paymentPage.alerts.shareTitle"),
+      // Dịch nội dung chia sẻ (có truyền biến)
+      text: t("paymentPage.alerts.shareText", {
+        flightNo: flight.flightNumber,
+        price: totalPrice.toLocaleString(),
+      }),
       url: qrUrl,
     };
 
@@ -72,15 +76,15 @@ const PaymentPage = () => {
       try {
         await navigator.share(shareData);
       } catch (err) {
-        console.log("Đã hủy chia sẻ");
+        console.log(t("paymentPage.alerts.shareCancel"));
       }
     } else {
       // Fallback cho PC: Copy link vào clipboard
       try {
         await navigator.clipboard.writeText(qrUrl);
-        alert("Đã sao chép link QR vào bộ nhớ tạm!");
+        alert(t("paymentPage.alerts.copySuccess"));
       } catch (err) {
-        alert("Trình duyệt không hỗ trợ chia sẻ.");
+        alert(t("paymentPage.alerts.shareUnsupported"));
       }
     }
   };
@@ -106,8 +110,8 @@ const PaymentPage = () => {
             <div className="icon-check">
               <CheckCircle size={50} color="#4ade80" />
             </div>
-            <h2>Xác nhận thanh toán</h2>
-            <p>Vui lòng quét mã QR bên dưới để hoàn tất đặt vé</p>
+            <h2>{t("paymentPage.title")}</h2>
+            <p>{t("paymentPage.subtitle")}</p>
           </div>
 
           <div className="qr-section">
@@ -116,37 +120,38 @@ const PaymentPage = () => {
             </div>
             <div className="qr-actions">
               <button className="action-btn" onClick={handleDownloadQR}>
-                <Download size={16} /> Lưu ảnh
+                <Download size={16} />
+                {t("paymentPage.actions.download")}
               </button>
               <button className="action-btn" onClick={handleShare}>
-                <Share2 size={16} /> Chia sẻ
+                <Share2 size={16} /> {t("paymentPage.actions.share")}
               </button>
             </div>
           </div>
 
           <div className="payment-details">
             <div className="detail-row">
-              <span>Ngân hàng:</span>
+              <span>{t("paymentPage.details.bank")}</span>
               <strong>BIDV</strong>
             </div>
             <div className="detail-row">
-              <span>Chủ tài khoản:</span>
+              <span>{t("paymentPage.details.accountName")}</span>
               <strong>{ACCOUNT_NAME}</strong>
             </div>
             <div className="detail-row">
-              <span>Số tài khoản:</span>
+              <span>{t("paymentPage.details.accountNo")}</span>
               <div className="copy-row">
                 <strong>{ACCOUNT_NO}</strong>
                 <Copy size={14} className="cursor-pointer text-blue-400" />
               </div>
             </div>
             <div className="detail-row">
-              <span>Nội dung:</span>
+              <span>{t("paymentPage.details.content")}</span>
               <strong>{content}</strong>
             </div>
             <div className="divider"></div>
             <div className="detail-row total">
-              <span>Số tiền:</span>
+              <span>{t("paymentPage.details.amount")}</span>{" "}
               <span className="total-text">
                 {totalPrice?.toLocaleString()} VND
               </span>
@@ -154,12 +159,12 @@ const PaymentPage = () => {
           </div>
 
           <button className="home-btn" onClick={() => navigate("/user")}>
-            <Home size={20} /> Quay về Trang chủ
+            <Home size={20} /> {t("paymentPage.actions.home")}
           </button>
 
           <p className="note-text">
-            *Vé điện tử sẽ được gửi về email <b>{passenger?.email}</b> sau khi
-            thanh toán thành công.
+            {t("paymentPage.note.start")} <b>{passenger?.email}</b>{" "}
+            {t("paymentPage.note.end")}
           </p>
         </div>
       </motion.div>
