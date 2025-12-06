@@ -32,6 +32,59 @@ const PaymentPage = () => {
     if (!flight) navigate("/");
   }, [flight, navigate]);
 
+  const handleDownloadQR = async () => {
+    try {
+      // Fetch ảnh về dưới dạng Blob để tránh lỗi CORS hoặc mở tab mới
+      const response = await fetch(qrUrl);
+      const blob = await response.blob();
+
+      // Tạo đường dẫn ảo
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+
+      // Đặt tên file khi tải về
+      link.download = `FlightHK_QR_${flight.flightNumber}.png`;
+
+      // Kích hoạt click và dọn dẹp
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Lỗi tải ảnh:", error);
+      alert("Không thể tải ảnh, vui lòng thử lại hoặc chụp màn hình.");
+    }
+  };
+
+  // --- 2. CHỨC NĂNG CHIA SẺ ---
+  const handleShare = async () => {
+    const shareData = {
+      title: "Thanh toán vé máy bay FlightHK",
+      text: `Thanh toán vé chuyến bay ${
+        flight.flightNumber
+      }. Tổng tiền: ${totalPrice.toLocaleString()} VND.`,
+      url: qrUrl,
+    };
+
+    // Kiểm tra xem trình duyệt có hỗ trợ Share API không (Thường là Mobile)
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+      } catch (err) {
+        console.log("Đã hủy chia sẻ");
+      }
+    } else {
+      // Fallback cho PC: Copy link vào clipboard
+      try {
+        await navigator.clipboard.writeText(qrUrl);
+        alert("Đã sao chép link QR vào bộ nhớ tạm!");
+      } catch (err) {
+        alert("Trình duyệt không hỗ trợ chia sẻ.");
+      }
+    }
+  };
+
   if (!flight) return null;
 
   return (
@@ -62,10 +115,10 @@ const PaymentPage = () => {
               <img src={qrUrl} alt="VietQR Code" className="qr-image" />
             </div>
             <div className="qr-actions">
-              <button className="action-btn">
+              <button className="action-btn" onClick={handleDownloadQR}>
                 <Download size={16} /> Lưu ảnh
               </button>
-              <button className="action-btn">
+              <button className="action-btn" onClick={handleShare}>
                 <Share2 size={16} /> Chia sẻ
               </button>
             </div>

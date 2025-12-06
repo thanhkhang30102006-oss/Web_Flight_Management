@@ -86,7 +86,8 @@ const SeatMap = ({ selectedSeats, onSeatClick, occupiedSeats = [] }) => {
           <span className="box occupied"></span> Đã bán
         </div>
         <div className="legend-item">
-          <span className="box selected"></span> Đang chọn
+          <span className="box selected"></span>
+          <span className="box selected business"></span> Đang chọn
         </div>
       </div>
     </div>
