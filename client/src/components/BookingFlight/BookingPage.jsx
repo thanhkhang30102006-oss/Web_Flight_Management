@@ -11,8 +11,8 @@ import {
   Luggage,
   Plane,
 } from "lucide-react";
-import "./BookingPage.css"; // File CSS tùy chỉnh cho thư viện
-import videoWallpaper from "../../assets/videos/background-wallpaper-bookingpage.mp4"; // Check lại đường dẫn assets của bạn
+import "./BookingPage.css";
+import videoWallpaper from "../../assets/videos/background-wallpaper-bookingpage.mp4";
 const BookingPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -36,15 +36,35 @@ const BookingPage = () => {
     passport: "",
   });
   const occupiedSeats = ["1A", "2C", "5D", "8F"]; //gia lap ghe da ban
-
-  const handleSeatClick = (seatId) => {
-    if (selectedSeats.includes(seatId)) {
-      // Bỏ chọn
-      setSelectedSeats(selectedSeats.filter((id) => id !== seatId));
+  const handlePayment = () => {
+    // Chuyển sang trang thanh toán và mang theo "hành lý" dữ liệu
+    navigate("/payment", {
+      state: {
+        flight: flight,
+        selectedSeats: selectedSeats,
+        passenger: passenger,
+        totalPrice: totalPrice,
+      },
+    });
+  };
+  const handleSeatClick = (seatId, type) => {
+    const exists = selectedSeats.find((s) => s.id === seatId);
+    if (exists) {
+      setSelectedSeats(selectedSeats.filter((s) => s.id !== seatId));
     } else {
-      // Chọn mới (Giới hạn tối đa 5 ghế nếu muốn)
+      // CHỌN MỚI
       if (selectedSeats.length < 5) {
-        setSelectedSeats([...selectedSeats, seatId]);
+        const seatPrice =
+          type === "business" ? flight.price * 1.5 : flight.price;
+
+        const newSeat = {
+          id: seatId,
+          type: type,
+          price: seatPrice,
+        };
+        setSelectedSeats([...selectedSeats, newSeat]);
+      } else {
+        alert("Chỉ được chọn tối đa 5 ghế");
       }
     }
   };
@@ -140,7 +160,7 @@ const BookingPage = () => {
                 <span>Ghế:</span>
                 <span className="seat-list">
                   {selectedSeats.length > 0
-                    ? selectedSeats.map((s) => s.number).join(", ")
+                    ? selectedSeats.map((s) => s.id).join(", ")
                     : "Chưa chọn"}
                 </span>
               </div>
@@ -156,6 +176,7 @@ const BookingPage = () => {
             <button
               className="checkout-btn"
               disabled={selectedSeats.length === 0}
+              onClick={handlePayment}
             >
               <CreditCard size={20} /> Thanh toán ngay
             </button>
