@@ -14,8 +14,8 @@
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 20px;
   padding: 24px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-}
+  border: 2px solid rgba(255, 255, 255, 0.6); 
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.45); }
 
 /* Form Styles */
 .form-grid {
@@ -42,12 +42,13 @@
 .glass-input-wrapper {
   display: flex;
   align-items: center;
+  border:none !important;
+  outline: none !important;
   background: rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
   padding: 0 12px;
   height: 44px;
-  transition: all 0.3s;
+  transition: all 0.3s ease-in-out;
 }
 
 .glass-input-wrapper:focus-within {
@@ -65,7 +66,9 @@
   font-size: 14px;
 }
 .glass-input::placeholder { color: rgba(255,255,255,0.4); }
-
+input{
+  padding: 12px 20px 13px 50px;
+}
 .search-submit-btn {
   height: 44px;
   padding: 0 24px;
@@ -99,7 +102,7 @@
 /* --- Flight Card Styles --- */
 .flight-card-item {
   padding: 20px;
-  border-left: 4px solid transparent; /* Chuẩn bị cho hover effect */
+  border-left: 4px solid transparent;
   transition: all 0.3s ease;
 }
 

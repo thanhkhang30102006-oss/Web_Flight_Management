@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import FlightSearchForm from "../components/BookingFlight/FlightSearchForm"; // Đổi đường dẫn cho đúng file của bạn
+import FlightSearchForm from "../components/BookingFlight/FlightSearchForm";
 import FlightResults from "../components/BookingFlight/FlightResults";
+import BookingPage from "../components/BookingFlight/BookingPage";
 import "./Booking.css"; // Import CSS chung
 
 function Booking() {

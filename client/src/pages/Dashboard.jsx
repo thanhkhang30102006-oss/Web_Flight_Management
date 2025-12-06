@@ -62,22 +62,23 @@ function DashBoard() {
         {/* Container cho các widget bên trong để căn lề đẹp hơn */}
         <div className="content-container">
           {activeTab === "home" && (
-            <>
+            <div className="animate-fade-in">
               <div className="widgets-row">
                 <NextFlightCard flight={nextFlight} />
                 {/* <StatsComponents /> có thể để ở đây nếu muốn chia cột */}
               </div>
               <FlightSchedule />
-            </>
+            </div>
           )}
 
           {activeTab === "booking" && (
-            <>
+            <div className="animate-fade-in">
+              {" "}
               {/* Nội dung Booking Flow mới */}
               <div className="booking-container">
                 <Booking />
               </div>
-            </>
+            </div>
           )}
         </div>
         <div

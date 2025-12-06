@@ -4,7 +4,7 @@ import {
   PlaneTakeoff,
   PlaneLanding,
   Calendar,
-  Users,
+  Clock,
   Search,
 } from "lucide-react";
 
@@ -70,19 +70,16 @@ const FlightSearchForm = ({ onSearch }) => {
           </div>
         </div>
 
-        {/* Hành khách */}
-        <div className="input-group" style={{ maxWidth: "120px" }}>
+        <div className="input-group">
           <span className="input-label">
-            {t("booking.passengers", "Khách")}
+            {t("booking.departureTime", "Giờ đi")}
           </span>
           <div className="glass-input-wrapper">
-            <Users size={18} className="text-gray-400" />
+            <Clock size={18} className="text-gray-400" />
             <input
-              type="number"
-              min="1"
+              type="time"
               className="glass-input"
-              name="passengers"
-              defaultValue={1}
+              name="departureTime"
               onChange={handleChange}
             />
           </div>
