@@ -14,39 +14,7 @@ import {
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
-// --- 1. DỮ LIỆU GIẢ ---
-const MOCK_FLIGHTS = [
-  {
-    id: 1,
-    flightNumber: "VN-192",
-    departurePoint: "HAN",
-    arrivePoint: "SGN",
-    departureDay: "2025-12-12",
-    departureTime: "08:30",
-    arrivalTime: "10:40",
-    planeType: "Boeing 787-9",
-    flightTotalSeat: 300,
-    flightState: "ontime",
-    airline: "Vietnam Airlines",
-    price: 1250000, // Để dạng số để dễ tính toán
-    logo: "https://upload.wikimedia.org/wikipedia/en/thumb/9/9d/Vietnam_Airlines_Logo.svg/1200px-Vietnam_Airlines_Logo.svg.png",
-  },
-  {
-    id: 2,
-    flightNumber: "VN-192",
-    departurePoint: "HAN",
-    arrivePoint: "SGN",
-    departureDay: "2025-12-12",
-    departureTime: "08:30",
-    arrivalTime: "10:40",
-    planeType: "Boeing 787-9",
-    flightTotalSeat: 300,
-    flightState: "ontime",
-    airline: "Vietnam Airlines",
-    price: 1250000, // Để dạng số để dễ tính toán
-    logo: "https://upload.wikimedia.org/wikipedia/en/thumb/9/9d/Vietnam_Airlines_Logo.svg/1200px-Vietnam_Airlines_Logo.svg.png",
-  },
-];
+// Rót dữ liệu vào
 
 // --- 2. COMPONENT: MODAL CHỌN GHẾ & ĐIỀN THÔNG TIN ---
 const BookingModal = ({ flight, onClose }) => {
@@ -306,14 +274,21 @@ const BookingModal = ({ flight, onClose }) => {
   );
 };
 
-// --- 3. COMPONENT CHÍNH (FLIGHT RESULTS) ---
-const FlightResults = ({ searchTriggered }) => {
+const FlightResults = ({ searchTriggered, flights = [] }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
   // State quản lý việc mở Modal
   const [selectedFlight, setSelectedFlight] = useState(null);
+  if (!searchTriggered) return null;
 
+  if (flights.length === 0) {
+    return (
+      <div className="text-white text-center mt-8">
+        <h3>Không tìm thấy chuyến bay nào phù hợp.</h3>
+      </div>
+    );
+  }
   // CSS Nhúng (Để chạy demo nhanh, thực tế nên đưa vào file CSS)
   const styles = `
     .flight-card-item {
@@ -386,10 +361,10 @@ const FlightResults = ({ searchTriggered }) => {
             fontWeight: "bold",
           }}
         >
-          {t("booking.results", "Kết quả tìm kiếm")} ({MOCK_FLIGHTS.length})
+          {t("booking.results", "Kết quả tìm kiếm")} ({flights.length})
         </h3>
 
-        {MOCK_FLIGHTS.map((flight) => (
+        {flights.map((flight) => (
           <motion.div
             key={flight.id}
             initial={{ opacity: 0, y: 20 }}
@@ -402,10 +377,11 @@ const FlightResults = ({ searchTriggered }) => {
               <div className="fc-airline">
                 <img src={flight.logo} alt="logo" className="fc-logo" />
                 <div>
-                  <h4 className="fc-name">{flight.airline}</h4>
+                  <h4 className="fc-name">{flight.planeType}</h4>
                   <div className="fc-number">{flight.flightNumber}</div>
                   <div className={`fc-status ${flight.flightState}`}>
-                    {flight.flightState === "ontime" ? "Đúng giờ" : "Delay"}
+                    {flight.flightState.charAt(0).toUpperCase() +
+                      flight.flightState.slice(1)}
                   </div>
                 </div>
               </div>
@@ -413,7 +389,9 @@ const FlightResults = ({ searchTriggered }) => {
               {/* Cột 2 */}
               <div className="fc-route">
                 <div className="fc-point">
-                  <span className="fc-time">{flight.departureTime}</span>
+                  <span className="fc-time">
+                    {flight.departureTime.slice(0, 5)}
+                  </span>
                   <span className="fc-city">{flight.departurePoint}</span>
                 </div>
 
@@ -426,7 +404,9 @@ const FlightResults = ({ searchTriggered }) => {
                 </div>
 
                 <div className="fc-point">
-                  <span className="fc-time">{flight.arrivalTime}</span>
+                  <span className="fc-time">
+                    {flight.arriveTime.slice(0, 5)}
+                  </span>
                   <span className="fc-city">{flight.arrivePoint}</span>
                 </div>
               </div>
@@ -440,8 +420,7 @@ const FlightResults = ({ searchTriggered }) => {
                   }).format(flight.price)}
                 </div>
                 <div className="fc-seat-info">
-                  <Armchair size={14} /> Còn{" "}
-                  {Math.floor(flight.flightTotalSeat * 0.4)} chỗ
+                  <Armchair size={14} /> Còn {flight.flightTotalSeat} chỗ
                 </div>
                 <button
                   className="btn-select"

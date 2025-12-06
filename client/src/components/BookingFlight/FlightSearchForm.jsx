@@ -14,15 +14,42 @@ const FlightSearchForm = ({ onSearch }) => {
     from: "",
     to: "",
     date: "",
-    passengers: 1,
+    time: "",
   });
 
   const handleChange = (e) =>
     setParams({ ...params, [e.target.name]: e.target.value });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSearch(params);
+    const token = localStorage.getItem("accessToken");
+    if (!token) {
+      alert("Bạn cần đăng nhập để tìm kiếm!");
+      return;
+    }
+    const response = await fetch(`api/user/booking/search`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(params),
+
+      credentials: "include",
+    });
+    const data = await response.json();
+
+    if (!response.ok) {
+      alert(data.message);
+      const errorText = await response.text();
+      console.error("Lỗi từ Server:", errorText);
+      alert(
+        `Lỗi tìm kiếm (${response.status}): Vui lòng kiểm tra lại thông tin.`
+      );
+      return;
+    } else {
+      onSearch(data);
+    }
   };
 
   return (
@@ -79,7 +106,7 @@ const FlightSearchForm = ({ onSearch }) => {
             <input
               type="time"
               className="glass-input"
-              name="departureTime"
+              name="time"
               onChange={handleChange}
             />
           </div>
