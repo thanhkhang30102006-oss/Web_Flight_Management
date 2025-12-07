@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom"; // Hook Fiều hướng
-import SeatMap from "./SeatMap"; // IMPORT MỚI
+import SeatMap from "./SeatMap";
 import { motion } from "framer-motion";
+import { io } from "socket.io-client";
 import {
   ArrowLeft,
   User,
@@ -19,15 +20,34 @@ const BookingPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const [liveSelections, setLiveSelections] = useState([]);
+  const [mySocketID, setMySocketID] = useState(null);
   // Lấy dữ liệu chuyến bay từ trang trước (nếu có), nếu không dùng dữ liệu giả để test
-  const flight = location.state?.flight || {
-    flightNumber: "VN-192",
-    airline: "Vietnam Airlines",
-    departurePoint: "HAN",
-    arrivePoint: "SGN",
-    price: 1250000,
-  };
+  const flight = location.state?.flight || {};
+  const socketRef = useRef();
+  useEffect(() => {
+    socketRef.current = io("http://localhost:3001");
 
+    socketRef.current.on("connect", () => {
+      setMySocketID(socketRef.current.id);
+    });
+    if (flight && flight.flightNumber) {
+      socketRef.current.emit("joinIntoBooking", flight.flightNumber);
+      console.log(
+        `Đã gửi thành công yêu cầu đặt phòng, ${flight.flightNumber}`
+      );
+    }
+
+    socketRef.current.on("updateSeatMap", (selections) => {
+      setLiveSelections(selections);
+    });
+
+    return () => {
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+      }
+    };
+  }, [flight.flightNumber]);
   const [selectedSeats, setSelectedSeats] = useState([]);
 
   const [loading, setLoading] = useState(false);
@@ -37,7 +57,7 @@ const BookingPage = () => {
     phone: "",
     passport: "",
   });
-  const occupiedSeats = ["1A", "2C", "5D", "8F"]; //gia lap ghe da ban
+  const occupiedSeats = ["1A", "2C", "5D", "8F"];
   const handlePassengerChange = (e) => {
     const { name, value } = e.target;
     setPassenger((prev) => ({ ...prev, [name]: value }));
@@ -54,6 +74,29 @@ const BookingPage = () => {
     });
   };
   const handleSeatClick = (seatId, type) => {
+    const holderId = liveSelections[seatId];
+
+    const myCurrentId = socketRef.current ? socketRef.current.id : null;
+    console.log(
+      `Ghế: ${seatId} | Người giữ: ${holderId} | Tui là: ${myCurrentId}`
+    );
+    if (holderId && holderId !== myCurrentId) {
+      alert("Ghế này đang có người khác chọn!");
+      return;
+    }
+    const isUnselecting = holderId === myCurrentId;
+
+    if (!isUnselecting) {
+      if (selectedSeats.length >= 5) {
+        alert("Bạn chỉ được chọn tối đa 5 ghế!");
+        return;
+      }
+    }
+    socketRef.current.emit("selectSeat", {
+      flightId: flight.flightNumber,
+      seatId: seatId,
+    });
+    //
     const exists = selectedSeats.find((s) => s.id === seatId);
     if (exists) {
       setSelectedSeats(selectedSeats.filter((s) => s.id !== seatId));
@@ -178,7 +221,7 @@ const BookingPage = () => {
             <div className="summary-box">
               <div className="summary-row">
                 <span>{t("bookingPage.summary.basePrice")}</span>
-                <span>{flight.price.toLocaleString()} VND</span>
+                <span>{flight.finalPrice.economy} VND</span>
               </div>
               <div className="summary-row">
                 <span>{t("bookingPage.summary.selectedCount")}</span>
@@ -215,12 +258,15 @@ const BookingPage = () => {
             <h3 className="section-title">
               {t("bookingPage.sections.seatSelection")}
             </h3>
-            {/* Component SeatMap mới (thay thế SeatPicker) */}
+            {/* Component SeatMap mới */}
             <div className="seat-picker-wrapper custom-scrollbar">
               <SeatMap
+                liveSelections={liveSelections}
+                mySocketID={mySocketID}
                 selectedSeats={selectedSeats}
                 occupiedSeats={occupiedSeats}
                 onSeatClick={handleSeatClick}
+                flightSelected={flight}
               />
             </div>
             <div className="screen-indicator">

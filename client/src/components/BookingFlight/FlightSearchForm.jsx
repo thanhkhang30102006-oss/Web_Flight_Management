@@ -27,7 +27,7 @@ const FlightSearchForm = ({ onSearch }) => {
       alert("Bạn cần đăng nhập để tìm kiếm!");
       return;
     }
-    const response = await fetch(`api/user/booking/search`, {
+    const searchResponse = await fetch(`api/user/booking/search`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -37,17 +37,18 @@ const FlightSearchForm = ({ onSearch }) => {
 
       credentials: "include",
     });
-    const data = await response.json();
+    const data = await searchResponse.json();
 
-    if (!response.ok) {
+    if (!searchResponse.ok) {
       alert(data.message);
-      const errorText = await response.text();
+      const errorText = await searchResponse.text();
       console.error("Lỗi từ Server:", errorText);
       alert(
-        `Lỗi tìm kiếm (${response.status}): Vui lòng kiểm tra lại thông tin.`
+        `Lỗi tìm kiếm (${searchResponse.status}): Vui lòng kiểm tra lại thông tin.`
       );
       return;
-    } else {
+    }
+    if (Array.isArray(data)) {
       onSearch(data);
     }
   };

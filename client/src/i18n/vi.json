@@ -1,23 +1,17 @@
 {
-    "header": {
-        "home": "Trang chủ",
-        "flight": "Chuyến bay",
-        "about": "Giới thiệu",
-        "search": "Tìm kiếm...",
-        "searchBtn": "Tìm",
-        "login": "Đăng nhập",
-        "register": "Đăng ký",
-        "user": {
-            "hello": "Xin chào, {{name}}",
-            "welcome_back": "Chào mừng quay trở lại!"
-        },
-        "notification": {
-            "title": "Thông báo",
-            "new_count": "{{count}} mới",
-            "mark_read": "Đánh dấu đã đọc",
-            "empty": "Không có thông báo nào"
-        }
+  "header": {
+    "home": "Trang chủ",
+    "flight": "Chuyến bay",
+    "about": "Giới thiệu",
+    "search": "Tìm kiếm...",
+    "searchBtn": "Tìm",
+    "login": "Đăng nhập",
+    "register": "Đăng ký",
+    "user": {
+      "hello": "Xin chào, {{name}}",
+      "welcome_back": "Chào mừng quay trở lại!"
     },
+<<<<<<< HEAD
     "hero": {
         "title": "FlightHK – Nơi mọi chuyến bay trở nên đơn giản hơn.",
         "desc": "Từ tra cứu vé, lịch trình đến cập nhật trạng thái chuyến bay, tất cả chỉ trong một nền tảng duy nhất."
@@ -236,5 +230,224 @@
             "start": "*Vé điện tử sẽ được gửi về email",
             "end": "sau khi thanh toán thành công."
         }
+=======
+    "notification": {
+      "title": "Thông báo",
+      "new_count": "{{count}} mới",
+      "mark_read": "Đánh dấu đã đọc",
+      "empty": "Không có thông báo nào"
+>>>>>>> 5538d9ec1e8a306f29d57d7d10cfec13382dde76
     }
+  },
+  "hero": {
+    "title": "FlightHK – Nơi mọi chuyến bay trở nên đơn giản hơn.",
+    "desc": "Từ tra cứu vé, lịch trình đến cập nhật trạng thái chuyến bay, tất cả chỉ trong một nền tảng duy nhất."
+  },
+  "fastChecking": {
+    "oneWay": "Một chiều",
+    "from": "Từ",
+    "fromdesc": "Sân bay khởi hành",
+    "to": "To",
+    "todesc": "Sân bay đến",
+    "depart": "Ngày đi",
+    "passengers": "Hành khách",
+    "passengerOptions": ["1 người", "2 người", "3 người", "4+ người"],
+    "search": "Tìm chuyến bay"
+  },
+  "topRating": "Điểm Đến Được Yêu Thích Nhất",
+  "about": {
+    "title": "Tại Sao Chọn Chúng Tôi",
+    "subtitle": "Trải nghiệm dịch vụ đặt vé máy bay chuyên nghiệp và tiện lợi nhất",
+    "security": "An Toàn & Bảo Mật",
+    "securityDesc": "Thông tin của bạn được mã hoá và bảo vệ tuyệt đối",
+    "fast": "Đặt Vé Nhanh Chóng",
+    "fastDesc": "Chỉ mất 3 phút để hoàn tất đặt vé của bạn",
+    "payment": "Thanh Toán Đa Dạng",
+    "paymentDesc": "Hỗ trợ nhiều hình thức thanh toán tiện lợi",
+    "support": "Hỗ Trợ 24/7",
+    "supportDesc": "Đội ngũ chăm sóc khách hàng luôn sẵn sàng"
+  },
+  "flight": {
+    "title": "Thông Tin Chuyến Bay",
+    "desc": "Theo dõi các chuyến bay đang hoạt động và sắp khởi hành",
+    "list": "Danh Sách Chuyến Bay",
+    "map": "Bản Đồ Đường Bay",
+    "showing": "Đang hiển thị",
+    "instruction": "Nhấp vào chuyến bay để xem đường bay trên bản đồ",
+    "legend": "Chú thích",
+    "loading": "Đang tải thông tin chuyến bay...",
+    "seats": "Ghế",
+    "noFlights": "Không có chuyến bay nào đang hoạt động.",
+    "departure": "Khởi hành",
+    "arrival": "Đến",
+    "flight": "Chuyến bay",
+    "time": "Thời gian",
+    "date": "Ngày",
+    "plane": "Máy bay",
+    "active": "Hoạt động",
+    "boarding": "Đang lên máy bay",
+    "unknown": "Không xác định"
+  },
+  "footer": {
+    "desc": "Hệ thống quản lý chuyến bay – Nhanh chóng • An toàn • Tiết kiệm",
+    "contact": "Liên Hệ Với Chúng Tôi",
+    "university": "Đại học Công nghệ Thông tin & Truyền thông Việt – Hàn, Đà Nẵng",
+    "team": "Nhóm Phát Triển",
+    "other": "Khác",
+    "terms": "Điều khoản dịch vụ",
+    "privacy": "Chính sách bảo mật",
+    "support": "Hỗ trợ khách hàng",
+    "aboutUs": "Về chúng tôi",
+    "project": "Đồ án môn học Lập trình Web",
+    "developedBy": "Phát triển bởi"
+  },
+  "auth": {
+    "login_title": "Đăng Nhập",
+    "register_title": "Đăng Ký",
+    "login_button": "Đăng nhập",
+    "register_button": "Đăng ký",
+    "personal_info": "Thông tin cá nhân",
+    "account_info": "Thông tin tài khoản",
+    "male": "Nam",
+    "female": "Nữ",
+    "no_account": "Chưa có tài khoản?",
+    "have_account": "Đã có tài khoản?",
+    "register_now": "Đăng ký ngay",
+    "login_now": "Đăng nhập"
+  },
+  "placeholder": {
+    "username": "Tên người dùng",
+    "email": "Email",
+    "phone": "Số điện thoại",
+    "password": "Mật khẩu",
+    "fullname": "Họ và tên đầy đủ",
+    "nationality": "Quốc tịch",
+    "passport": "Số hộ chiếu",
+    "account_name": "Tên tài khoản (username)",
+    "re_password": "Nhập lại mật khẩu"
+  },
+  "validation": {
+    "check_password": "Vui lòng kiểm tra lại mật khẩu!",
+    "password_mismatch": "Mật khẩu không khớp!",
+    "min_length": "Tối thiểu 8 ký tự",
+    "uppercase": "Chữ hoa",
+    "lowercase": "Chữ thường",
+    "number": "Số",
+    "special_char": "Ký tự đặc biệt"
+  },
+  "sidebar": {
+    "dashboard": "Tổng quan",
+    "booking": "Đặt vé",
+    "my_trips": "Chuyến bay của tôi",
+    "wallet": "Ví & Ưu đãi",
+    "settings": "Cài đặt",
+    "support": "Hỗ trợ",
+    "logout": "Đăng xuất"
+  },
+  "next_flight": {
+    "no_ticket": {
+      "title": "Bạn chưa có chuyến đi nào sắp tới?",
+      "desc": "Đặt vé ngay hôm nay để nhận ưu đãi <1>20%</1> cho các chặng bay nội địa hè này.",
+      "btn": "Đặt vé ngay"
+    }
+  },
+  "flight_schedule": {
+    "title": "Lịch trình bay",
+    "timeline_title": "Timeline (24h)",
+    "hint": "Di chuột vào chuyến bay để xem chi tiết",
+    "empty": "Không có lịch bay ngày này",
+    "status": {
+      "confirmed": "Đã xác nhận",
+      "delayed": "Bị hoãn",
+      "cancelled": "Đã hủy"
+    }
+  },
+  "booking": {
+    "pageTitle": "Đặt vé máy bay",
+    "pageSubtitle": "Tìm kiếm chuyến bay giá tốt nhất cho hành trình của bạn",
+    "from": "Điểm đi",
+    "to": "Điểm đến",
+    "date": "Ngày đi",
+    "departureTime": "Giờ khởi hành",
+    "passengers": "Hành khách",
+    "search": "Tìm chuyến bay",
+    "placeholders": {
+      "from": "Hà Nội (HAN)",
+      "to": "Đà Nẵng (DAD)"
+    }
+  },
+  "bookingPage": {
+    "title": "Form Đặt Vé",
+    "alertMaxSeats": "Chỉ được chọn tối đa 5 ghế",
+    "sections": {
+      "contact": "1. Thông tin liên hệ",
+      "seatSelection": "2. Chọn chỗ ngồi"
+    },
+    "form": {
+      "fullName": "Họ và tên",
+      "namePlaceholder": "Nguyễn Văn A",
+      "email": "Email",
+      "emailPlaceholder": "example@email.com",
+      "phone": "Số điện thoại",
+      "phonePlaceholder": "0912 xxx xxx",
+      "baggage": "Hành lý ký gửi (Tùy chọn)",
+      "baggageOptions": {
+        "none": "Không mang theo",
+        "20kg": "20kg (+200.000đ)",
+        "30kg": "30kg (+350.000đ)"
+      }
+    },
+    "summary": {
+      "basePrice": "Giá vé cơ bản:",
+      "selectedCount": "Số ghế đã chọn:",
+      "seats": "Ghế:",
+      "noneSelected": "Chưa chọn",
+      "total": "Tổng cộng:",
+      "payNow": "Thanh toán ngay"
+    },
+    "seatMap": {
+      "cockpit": "Đầu máy bay",
+      "businessClass": "Hạng Thương Gia",
+      "economyClass": "Hạng Phổ Thông",
+      "screenDirection": "Màn hình phía này",
+      "legend": {
+        "economy": "Phổ thông",
+        "business": "Thương gia",
+        "occupied": "Đã bán",
+        "selected": {
+          "another": "Đang chọn của khách hàng khác",
+          "personal": "Đang chọn bởi mình"
+        },
+        "pending": "Đang giữ"
+      }
+    }
+  },
+  "paymentPage": {
+    "title": "Xác nhận thanh toán",
+    "subtitle": "Vui lòng quét mã QR bên dưới để hoàn tất đặt vé",
+    "actions": {
+      "download": "Lưu ảnh",
+      "share": "Chia sẻ",
+      "home": "Quay về Trang chủ"
+    },
+    "details": {
+      "bank": "Ngân hàng:",
+      "accountName": "Chủ tài khoản:",
+      "accountNo": "Số tài khoản:",
+      "content": "Nội dung:",
+      "amount": "Số tiền:"
+    },
+    "alerts": {
+      "downloadError": "Không thể tải ảnh, vui lòng thử lại hoặc chụp màn hình.",
+      "shareTitle": "Thanh toán vé máy bay FlightHK",
+      "shareText": "Thanh toán vé chuyến bay {{flightNo}}. Tổng tiền: {{price}} VND.",
+      "shareCancel": "Đã hủy chia sẻ",
+      "copySuccess": "Đã sao chép link QR vào bộ nhớ tạm!",
+      "shareUnsupported": "Trình duyệt không hỗ trợ chia sẻ."
+    },
+    "note": {
+      "start": "*Vé điện tử sẽ được gửi về email",
+      "end": "sau khi thanh toán thành công."
+    }
+  }
 }

@@ -277,7 +277,6 @@ const BookingModal = ({ flight, onClose }) => {
 const FlightResults = ({ searchTriggered, flights = [] }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-
   // State quản lý việc mở Modal
   const [selectedFlight, setSelectedFlight] = useState(null);
   if (!searchTriggered) return null;
@@ -366,7 +365,7 @@ const FlightResults = ({ searchTriggered, flights = [] }) => {
 
         {flights.map((flight) => (
           <motion.div
-            key={flight.id}
+            key={flight.flightNumber}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="flight-card-item"
@@ -417,8 +416,9 @@ const FlightResults = ({ searchTriggered, flights = [] }) => {
                   {new Intl.NumberFormat("vi-VN", {
                     style: "currency",
                     currency: "VND",
-                  }).format(flight.price)}
+                  }).format(flight.finalPrice.economy)}
                 </div>
+                {/**Phải edit lại số chỗ floghtTotalSeat- seatAlreadyBooked */}
                 <div className="fc-seat-info">
                   <Armchair size={14} /> Còn {flight.flightTotalSeat} chỗ
                 </div>

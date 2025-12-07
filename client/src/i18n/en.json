@@ -205,7 +205,11 @@
                 "economy": "Economy",
                 "business": "Business",
                 "occupied": "Sold",
-                "selected": "Selected"
+                "selected": {
+                    "another": "Selected by another person",
+                    "personal": "Selected by yourself"
+                },
+                "pending": "Pending"
             }
         }
     },
