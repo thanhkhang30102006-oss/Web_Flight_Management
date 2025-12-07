@@ -1,5 +1,5 @@
 import React from "react";
-import { useTranslation } from "react-i18next"; // 1. Import hook
+import { useTranslation } from "react-i18next";
 import airplaneIcon from "../../assets/Image/airplane-plane-flight-white.svg";
 
 import {

@@ -162,7 +162,7 @@ const LoginRegis = () => {
       payload = {
         passengerName: passengerLogin.passengerName,
         passengerEmail: passengerLogin.passengerEmail,
-        passengerMobile: passengerLogin.passengerMoblie,
+        passengerMobile: passengerLogin.passengerMobile,
         passengerPassword: passengerLogin.passengerPassword,
       };
     } else {
