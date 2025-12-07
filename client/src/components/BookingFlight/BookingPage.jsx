@@ -221,7 +221,10 @@ const BookingPage = () => {
             <div className="summary-box">
               <div className="summary-row">
                 <span>{t("bookingPage.summary.basePrice")}</span>
-                <span>{flight.finalPrice.economy} VND</span>
+                <span>
+                  {Number(flight.finalPrice.economy).toLocaleString("vi-VN")}{" "}
+                  VND
+                </span>
               </div>
               <div className="summary-row">
                 <span>{t("bookingPage.summary.selectedCount")}</span>
@@ -268,6 +271,49 @@ const BookingPage = () => {
                 onSeatClick={handleSeatClick}
                 flightSelected={flight}
               />
+            </div>
+            {/* Chú thích */}
+            <div className="seat-legend">
+              <div className="legend-row">
+                <div className="legend-item">
+                  <span className="box available"></span>
+                  {t("bookingPage.seatMap.legend.economy", "Phổ thông")}
+                </div>
+                <div className="legend-item">
+                  <span className="box business"></span>
+                  {t("bookingPage.seatMap.legend.business", "Thương gia")}
+                </div>
+                <div className="legend-item">
+                  <span className="box occupied"></span>
+                  {t("bookingPage.seatMap.legend.occupied", "Đã bán")}
+                </div>
+              </div>
+
+              <div className="legend-row">
+                <div className="legend-item">
+                  <span className="box selected economy"></span>
+                  <span className="box selected business"></span>
+                  {t(
+                    "bookingPage.seatMap.legend.selected.another",
+                    "Đang chọn của khách hàng khác"
+                  )}
+                </div>
+                <div className="legend-item">
+                  <span className="box selected"></span>
+                  <span className="box selected business personal"></span>
+                  {t(
+                    "bookingPage.seatMap.legend.selected.personal",
+                    "Đang chọn của mình"
+                  )}
+                </div>
+              </div>
+
+              <div className="legend-row">
+                <div className="legend-item">
+                  <span className="box pending"></span>
+                  {t("bookingPage.seatMap.legend.pending", "Đang giữ")}
+                </div>
+              </div>
             </div>
             <div className="screen-indicator">
               {t("bookingPage.seatMap.screenDirection")}

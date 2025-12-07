@@ -21,6 +21,9 @@ const SeatMap = ({
   const businessRows = businessSeats / 6;
   const economyRows = economySeats / 6;
 
+  const priceEconomy = flightSelected.finalPrice?.economy || 0;
+  const priceBusiness = flightSelected.finalPrice?.business || 0;
+
   const seatDatabaseMap = useMemo(() => {
     return seats.reduce((acc, seat) => {
       acc[seat.seatNumber] = seat;
@@ -61,7 +64,22 @@ const SeatMap = ({
 
           // 2. Logic xác định class màu sắc
           let additionalClass = "";
-
+          // Logic xác định trạng thái hiển thị (text)
+          let statusText = "Trống"; // Mặc định
+          let statusColorClass = "text-green";
+          if (isOccupied) {
+            statusText = "Đã bán";
+            statusColorClass = "text-red";
+          } else if (holderSocketId && holderSocketId === mySocketID) {
+            statusText = "Đang chọn (Tôi)";
+            statusColorClass = "text-green";
+          } else if (holderSocketId) {
+            statusText = "Đang được chọn (Khách khác)";
+            statusColorClass = "text-orange";
+          }
+          const typeText = type === "business" ? "Thương gia" : "Phổ thông";
+          const currentPrice =
+            type === "business" ? priceBusiness : priceEconomy;
           // if (isOccupied) {
           //   additionalClass = "occupied";
           // }
@@ -81,10 +99,34 @@ const SeatMap = ({
               // Khi click, truyền cả ID và Type để cha xử lý tính tiền
               onClick={() => !isOccupied && onSeatClick(seatId, type)}
               disabled={isOccupied}
-              title={`${seatId} - ${type} - ${
-                seatInfo?.seatState || "available"
-              }`}
             >
+              {/* --- PHẦN MỚI THÊM: TOOLTIP --- */}
+              <div className="seat-tooltip">
+                <div className="tooltip-header">
+                  <span className="tooltip-seat-id">{seatId}</span>
+                </div>
+
+                <div className="tooltip-body">
+                  <div className="tooltip-row">
+                    <span className="label">Hạng:</span>
+                    <span className="value">{typeText}</span>
+                  </div>
+
+                  <div className="tooltip-row">
+                    <span className="label">Trạng thái:</span>
+                    <span className={`value status ${statusColorClass}`}>
+                      {statusText}
+                    </span>
+                  </div>
+
+                  <div className="tooltip-row price-row">
+                    <span className="label">Giá:</span>
+                    <span className="value price">
+                      {currentPrice.toLocaleString()} VND
+                    </span>
+                  </div>
+                </div>
+              </div>
               {/* Nếu là ghế thương gia, có thể thêm icon đặc biệt */}
             </button>
           );
@@ -119,42 +161,6 @@ const SeatMap = ({
         {Array.from({ length: economyRows }).map((_, i) =>
           renderRow(i + businessRows, "economy")
         )}
-      </div>
-
-      {/* Chú thích */}
-      <div className="seat-legend">
-        <div className="legend-item">
-          <span className="box available"></span>
-          {t("bookingPage.seatMap.legend.economy", "Phổ thông")}
-        </div>
-        <div className="legend-item">
-          <span className="box business"></span>
-          {t("bookingPage.seatMap.legend.business", "Thương gia")}
-        </div>
-        <div className="legend-item">
-          <span className="box occupied"></span>
-          {t("bookingPage.seatMap.legend.occupied", "Đã bán")}
-        </div>
-        <div className="legend-item">
-          <span className="box selected"></span>
-          <span className="box selected business"></span>
-          {t(
-            "bookingPage.seatMap.legend.selected.another",
-            "Đang chọn của khách hàng khác"
-          )}
-        </div>
-        <div className="legend-item">
-          <span className="box pending"></span>
-          {t("bookingPage.seatMap.legend.pending", "Đang giữ")}
-        </div>
-        <div className="legend-item">
-          <span className="box selected personal"></span>
-          <span className="box selected business personal"></span>
-          {t(
-            "bookingPage.seatMap.legend.selected.personal",
-            "Đang chọn của mình"
-          )}
-        </div>
       </div>
     </div>
   );

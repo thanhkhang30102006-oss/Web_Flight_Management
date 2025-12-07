@@ -288,7 +288,7 @@ const FlightResults = ({ searchTriggered, flights = [] }) => {
       </div>
     );
   }
-  // CSS Nhúng (Để chạy demo nhanh, thực tế nên đưa vào file CSS)
+
   const styles = `
     .flight-card-item {
         background: rgba(204, 204, 204, 0.2);
@@ -317,7 +317,7 @@ const FlightResults = ({ searchTriggered, flights = [] }) => {
     .fc-name { font-weight: bold; color: white; margin: 0; font-size: 15px; }
     .fc-number { font-size: 12px; color: rgba(255,255,255,0.9); }
     .fc-status { font-size: 11px; padding: 2px 8px; border-radius: 10px; display: inline-block; margin-top: 4px; font-weight: 600; }
-    .fc-status.ontime { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
+    .fc-status.active { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
     .fc-status.delayed { background: rgba(239, 68, 68, 0.2); color: #fca5a5; }
 
     .fc-route { display: flex; align-items: center; gap: 20px; flex: 1; justify-content: center; min-width: 250px; }
