@@ -19,6 +19,9 @@ import {
   Check,
   Circle,
   X,
+  Briefcase,
+  ShieldCheck,
+  Badge,
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 function validatePassword(password) {
@@ -89,44 +92,147 @@ const LoginRegis = () => {
   };
   const { t } = useTranslation();
   // State để điều khiển lật thẻ
-  const [isLoginView, setIsLoginView] = useState(true);
 
+  // --- STATE QUẢN LÝ ---
+  const [isLoginView, setIsLoginView] = useState(true);
+  const [userRole, setUserRole] = useState("passenger"); // passenger | staff | admin
+  const [showPass, setShowPass] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
+
+  const getTitle = () => {
+    if (userRole === "passenger") return t("auth.login_title");
+    if (userRole === "staff") return "Staff Portal";
+    return "Admin Portal";
+  };
   // --- LOGIC ĐĂNG NHẬP ---
-  const [loginData, setLoginData] = useState({
+  const [passengerLogin, setPassengerLogin] = useState({
     passengerName: "",
     passengerEmail: "",
     passengerMobile: "",
     passengerPassword: "",
   });
-  const [showLoginPass, setShowLoginPass] = useState(false);
 
-  const handleLoginChange = (e) => {
-    const { name, value } = e.target;
-    setLoginData((prev) => ({ ...prev, [name]: value }));
+  // --- 2. STATE RIÊNG CHO STAFF/ADMIN ---
+  const [staffLogin, setStaffLogin] = useState({
+    staffID: "",
+    staffPassword: "",
+  });
+
+  const handleRoleChange = (newRole) => {
+    if (newRole === userRole) return;
+
+    setIsAnimating(true);
+
+    setTimeout(() => {
+      setUserRole(newRole);
+      setShowPass(false);
+
+      if (newRole !== "passenger") {
+        setIsLoginView(true);
+      }
+
+      setIsAnimating(false);
+    }, 400);
   };
+  const handlePassengerChange = (e) => {
+    const { name, value } = e.target;
+    setPassengerLogin((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleStaffChange = (e) => {
+    const { name, value } = e.target;
+    setStaffLogin((prev) => ({ ...prev, [name]: value }));
+  };
+
+  //const [showLoginPass, setShowLoginPass] = useState(false);
 
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
-    console.log("Login Data:", loginData);
-    const response = await fetch(`api/user/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(loginData),
 
-      credentials: "include",
-    });
-    const data = await response.json();
-    if (!response.ok) {
-      alert(data.message || "Đăng nhập thất bại");
-      return;
+    let apiEndpoint = "";
+    let redirectPath = "";
+    let payload = {};
+
+    // --- TÁCH BIỆT LOGIC PAYLOAD ---
+    if (userRole === "passenger") {
+      apiEndpoint = "api/user/login";
+      redirectPath = "/user";
+
+      // Dữ liệu chuẩn của Passenger
+      payload = {
+        passengerName: passengerLogin.passengerName,
+        passengerEmail: passengerLogin.passengerEmail,
+        passengerMobile: passengerLogin.passengerMoblie,
+        passengerPassword: passengerLogin.passengerPassword,
+      };
     } else {
-      const accessToken = data.accessToken;
-      localStorage.setItem("accessToken", accessToken);
-      console.log("Đăng nhập thành công!");
-      localStorage.setItem("userData", JSON.stringify(data.user));
-      navigate("/user");
+      // Logic cho Staff và Admin (Dùng chung cấu trúc staffID)
+      apiEndpoint =
+        userRole === "staff" ? "api/staff/login" : "api/admin/login";
+      redirectPath =
+        userRole === "staff" ? "/staff-dashboard" : "/admin-dashboard";
+
+      // Dữ liệu chuẩn của Staff/Admin
+      payload = {
+        staffID: staffLogin.staffID,
+        staffPassword: staffLogin.staffPassword,
+      };
+    }
+
+    console.log(`Đang đăng nhập role: ${userRole}`);
+    console.log("Payload gửi đi:", payload);
+
+    try {
+      const response = await fetch(apiEndpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        alert(data.message || "Đăng nhập thất bại");
+      } else {
+        localStorage.setItem("accessToken", data.accessToken);
+        localStorage.setItem("userRole", userRole);
+        localStorage.setItem("userData", JSON.stringify(data.user));
+
+        alert(`Đăng nhập thành công!`);
+        navigate(redirectPath);
+      }
+    } catch (error) {
+      console.error("Login error", error);
+      alert("Lỗi kết nối Server");
     }
   };
+
+  // const handleLoginSubmit = async (e) => {
+  //   e.preventDefault();
+  //   let apiEndpoint = "";
+  //   let redirectPath = "";
+  //   let payload = {};
+
+  //   console.log("Login Data:", loginData);
+  //   const response = await fetch(`api/user/login`, {
+  //     method: "POST",
+  //     headers: { "Content-Type": "application/json" },
+  //     body: JSON.stringify(loginData),
+
+  //     credentials: "include",
+  //   });
+  //   const data = await response.json();
+  //   if (!response.ok) {
+  //     alert(data.message || "Đăng nhập thất bại");
+  //     return;
+  //   } else {
+  //     const accessToken = data.accessToken;
+  //     localStorage.setItem("accessToken", accessToken);
+  //     console.log("Đăng nhập thành công!");
+  //     localStorage.setItem("userData", JSON.stringify(data.user));
+  //     navigate("/user");
+  //   }
+  // };
 
   // --- LOGIC ĐĂNG KÝ ---
   const [registerData, setRegisterData] = useState({
@@ -212,309 +318,393 @@ const LoginRegis = () => {
         options={particlesOptions}
       />
       <div className="section-wrapper">
-        {/* Nút chuyển đổi phía trên */}
-        <div className="toggle-switch-container">
+        <div className="form-column">
+          {/* Nút chuyển đổi phía trên */}
           <div
-            className={`toggle-item ${isLoginView ? "active" : ""}`}
-            onClick={() => setIsLoginView(true)}
-            title={t("auth.login_title")}
+            className={`toggle-switch-container ${
+              userRole !== "passenger" ? "hidden-toggle" : ""
+            }`}
           >
-            <LogIn size={24} strokeWidth={2.5} />
+            <div
+              className={`toggle-item ${isLoginView ? "active" : ""}`}
+              onClick={() => setIsLoginView(true)}
+              title={t("auth.login_title")}
+            >
+              <LogIn size={24} strokeWidth={2.5} />
+            </div>
+
+            <div
+              className={`toggle-item ${!isLoginView ? "active" : ""}`}
+              onClick={() => setIsLoginView(false)}
+              title={t("auth.register_title")}
+            >
+              <UserPlus size={24} strokeWidth={2.5} />
+            </div>
+
+            {/* Thanh trượt nền (Indicator) */}
+            <div
+              className={`slider-indicator ${
+                !isLoginView ? "slide-right" : ""
+              }`}
+            ></div>
           </div>
 
+          {/* Khung 3D xoay */}
           <div
-            className={`toggle-item ${!isLoginView ? "active" : ""}`}
-            onClick={() => setIsLoginView(false)}
-            title={t("auth.register_title")}
+            className={`card-3d-wrapper ${
+              isAnimating
+                ? "role-switching"
+                : !isLoginView
+                ? "show-register"
+                : ""
+            }`}
           >
-            <UserPlus size={24} strokeWidth={2.5} />
-          </div>
+            {/* --- MẶT TRƯỚC: LOGIN --- */}
+            <div className="card-front">
+              <h2>{getTitle()}</h2>
 
-          {/* Thanh trượt nền (Indicator) */}
-          <div
-            className={`slider-indicator ${!isLoginView ? "slide-right" : ""}`}
-          ></div>
-        </div>
+              <form onSubmit={handleLoginSubmit}>
+                {/* --- INPUT CHO PASSENGER (Dung passengerLogin) --- */}
+                {userRole === "passenger" ? (
+                  <>
+                    <div className="input-wrapper">
+                      <User size={18} className="input-icon" />
+                      <input
+                        type="text"
+                        name="passengerName"
+                        placeholder={t("placeholder.username")}
+                        value={passengerLogin.passengerName}
+                        onChange={handlePassengerChange}
+                        required
+                      />
+                    </div>
+                    <div className="input-wrapper">
+                      <Mail size={18} className="input-icon" />
+                      <input
+                        type="email"
+                        name="passengerEmail"
+                        placeholder={t("placeholder.email")}
+                        value={passengerLogin.passengerEmail}
+                        onChange={handlePassengerChange}
+                        required
+                      />
+                    </div>
+                    <div className="input-wrapper">
+                      <Phone size={18} className="input-icon" />
+                      <input
+                        type="tel"
+                        name="passengerMobile"
+                        placeholder={t("placeholder.phone")}
+                        value={passengerLogin.passengerMobile}
+                        onChange={handlePassengerChange}
+                        required
+                      />
+                    </div>
+                    <div className="input-wrapper">
+                      <KeyRound size={18} className="input-icon" />
+                      <input
+                        type={showPass ? "text" : "password"}
+                        name="passengerPassword"
+                        placeholder={t("placeholder.password")}
+                        value={passengerLogin.passengerPassword}
+                        onChange={handlePassengerChange}
+                        required
+                      />
+                      <span
+                        className="toggle-password"
+                        onClick={() => setShowPass(!showPass)}
+                      >
+                        {showPass ? <EyeOff size={18} /> : <Eye size={18} />}
+                      </span>
+                    </div>
+                    <div className="switch-text">
+                      {t("auth.no_account")}{" "}
+                      <a onClick={toggleView}>{t("auth.register_now")}</a>
+                    </div>
+                  </>
+                ) : (
+                  /* --- INPUT CHO STAFF/ADMIN (Dùng staffLogin) --- */
+                  <>
+                    <div className="input-wrapper">
+                      <Badge size={18} className="input-icon" />
+                      <input
+                        type="text"
+                        name="staffID"
+                        placeholder={t("placeholder.usernamestaff")}
+                        value={staffLogin.staffID}
+                        onChange={handleStaffChange}
+                        required
+                      />
+                    </div>
+                    <div className="input-wrapper">
+                      <KeyRound size={18} className="input-icon" />
+                      <input
+                        type={showPass ? "text" : "password"}
+                        name="staffPassword" // Tên trường riêng
+                        placeholder={t("placeholder.passwordprivate")}
+                        value={staffLogin.staffPassword}
+                        onChange={handleStaffChange}
+                        required
+                      />
+                      <span
+                        className="toggle-password"
+                        onClick={() => setShowPass(!showPass)}
+                      >
+                        {showPass ? <EyeOff size={18} /> : <Eye size={18} />}
+                      </span>
+                    </div>
+                  </>
+                )}
+                <button type="submit" className="btn-submit">
+                  {t("auth.login_button")}
+                </button>
+              </form>
+            </div>
 
-        {/* Khung 3D xoay */}
-        <div
-          className={`card-3d-wrapper ${!isLoginView ? "show-register" : ""}`}
-        >
-          {/* --- MẶT TRƯỚC: LOGIN --- */}
-          <div className="card-front">
-            <h2>{t("auth.login_title")}</h2>
-            <form onSubmit={handleLoginSubmit}>
-              <div className="input-wrapper">
-                <User size={18} className="input-icon" />
-                <input
-                  type="text"
-                  name="passengerName"
-                  placeholder={t("placeholder.username")}
-                  value={loginData.passengerName}
-                  onChange={handleLoginChange}
-                  required
-                />
-              </div>
-              <div className="input-wrapper">
-                <Mail size={18} className="input-icon" />
-                <input
-                  type="email"
-                  name="passengerEmail"
-                  placeholder={t("placeholder.email")}
-                  value={loginData.passengerEmail}
-                  onChange={handleLoginChange}
-                  required
-                />
-              </div>
-              <div className="input-wrapper">
-                <Phone size={18} className="input-icon" />
-                <input
-                  type="tel"
-                  name="passengerMobile"
-                  placeholder={t("placeholder.phone")}
-                  value={loginData.passengerMobile}
-                  onChange={handleLoginChange}
-                  required
-                />
-              </div>
-              <div className="input-wrapper">
-                <KeyRound size={18} className="input-icon" />
-                <input
-                  type={showLoginPass ? "text" : "password"}
-                  name="passengerPassword"
-                  placeholder={t("placeholder.password")}
-                  value={loginData.passengerPassword}
-                  onChange={handleLoginChange}
-                  required
-                />
-                <span
-                  className="toggle-password"
-                  onClick={() => setShowLoginPass(!showLoginPass)}
-                >
-                  {showLoginPass ? <EyeOff size={18} /> : <Eye size={18} />}
-                </span>
-              </div>
-              <button type="submit" className="btn-submit">
-                {t("auth.login_button")}
-              </button>
-              <div className="switch-text">
-                {t("auth.no_account")}{" "}
-                <a onClick={toggleView}>{t("auth.register_now")}</a>
-              </div>
-            </form>
-          </div>
+            {/* --- MẶT SAU: REGISTER --- */}
+            <div className="card-back">
+              <h2>{t("auth.register_title")}</h2>
+              <form onSubmit={handleRegisterSubmit}>
+                <h3 className="section-title">{t("auth.personal_info")}</h3>
 
-          {/* --- MẶT SAU: REGISTER --- */}
-          <div className="card-back">
-            <h2>{t("auth.register_title")}</h2>
-            <form onSubmit={handleRegisterSubmit}>
-              <h3 className="section-title">{t("auth.personal_info")}</h3>
-
-              <div className="input-wrapper">
-                <User size={18} className="input-icon" />
-                <input
-                  type="text"
-                  name="passengerName"
-                  placeholder={t("placeholder.fullname")}
-                  value={registerData.passengerName}
-                  onChange={handleRegisterChange}
-                  required
-                />
-              </div>
-
-              <div className="gender-group">
-                <label className="gender-label">
+                <div className="input-wrapper">
+                  <User size={18} className="input-icon" />
                   <input
-                    type="radio"
-                    name="passengerGender"
-                    value={1}
-                    checked={registerData.passengerGender === 1}
+                    type="text"
+                    name="passengerName"
+                    placeholder={t("placeholder.fullname")}
+                    value={registerData.passengerName}
                     onChange={handleRegisterChange}
+                    required
                   />
-                  {t("auth.male")}
-                </label>
-                <label className="gender-label">
-                  <input
-                    type="radio"
-                    name="passengerGender"
-                    value={0}
-                    checked={registerData.passengerGender === 0}
-                    onChange={handleRegisterChange}
-                  />
-                  {t("auth.female")}
-                </label>
-              </div>
-
-              <div className="input-wrapper">
-                <Globe size={18} className="input-icon" />
-                <input
-                  type="text"
-                  name="passengerNationality"
-                  placeholder={t("placeholder.nationality")}
-                  value={registerData.passengerNationality}
-                  onChange={handleRegisterChange}
-                  required
-                />
-              </div>
-
-              <div className="input-wrapper">
-                <CreditCard size={18} className="input-icon" />
-                <input
-                  type="text"
-                  name="passengerPassport"
-                  placeholder={t("placeholder.passport")}
-                  value={registerData.passengerPassport}
-                  onChange={handleRegisterChange}
-                  required
-                />
-              </div>
-
-              <div className="input-wrapper">
-                <Mail size={18} className="input-icon" />
-                <input
-                  type="email"
-                  name="passengerEmail"
-                  placeholder={t("placeholder.email")}
-                  value={registerData.passengerEmail}
-                  onChange={handleRegisterChange}
-                  required
-                />
-              </div>
-
-              <div className="input-wrapper">
-                <Smartphone size={18} className="input-icon" />
-                <input
-                  type="tel"
-                  name="passengerMobile"
-                  placeholder={t("placeholder.phone")}
-                  value={registerData.passengerMobile}
-                  onChange={handleRegisterChange}
-                  required
-                />
-              </div>
-
-              <h3 className="section-title">{t("auth.account_info")}</h3>
-
-              <div className="input-wrapper">
-                <User size={18} className="input-icon" />
-                <input
-                  type="text"
-                  name="passengerAccountName"
-                  placeholder={t("placeholder.account_name")}
-                  value={registerData.passengerAccountName}
-                  onChange={handleRegisterChange}
-                />
-              </div>
-
-              <div className="input-wrapper">
-                <Lock size={18} className="input-icon" />
-                <input
-                  type={showRegPass ? "text" : "password"}
-                  name="passengerPassword"
-                  placeholder={t("placeholder.password")}
-                  value={registerData.passengerPassword}
-                  onChange={handleRegisterPasswordChange}
-                  required
-                />
-                <span
-                  className="toggle-password"
-                  onClick={() => setShowRegPass(!showRegPass)}
-                >
-                  {showRegPass ? <EyeOff size={18} /> : <Eye size={18} />}
-                </span>
-              </div>
-
-              {/* Validate UI */}
-              {registerData.passengerPassword && (
-                <div className="password-criteria">
-                  <ul>
-                    <li className={passCriteria.length ? "valid" : "invalid"}>
-                      {passCriteria.length ? (
-                        <Check size={14} />
-                      ) : (
-                        <Circle size={14} />
-                      )}
-                      <span>{t("validation.min_length")}</span>
-                    </li>
-
-                    <li className={passCriteria.upper ? "valid" : "invalid"}>
-                      {passCriteria.upper ? (
-                        <Check size={14} />
-                      ) : (
-                        <Circle size={14} />
-                      )}
-                      <span>{t("validation.uppercase")}</span>
-                    </li>
-
-                    <li className={passCriteria.lower ? "valid" : "invalid"}>
-                      {passCriteria.lower ? (
-                        <Check size={14} />
-                      ) : (
-                        <Circle size={14} />
-                      )}
-                      <span>{t("validation.lowercase")}</span>
-                    </li>
-
-                    <li className={passCriteria.number ? "valid" : "invalid"}>
-                      {passCriteria.number ? (
-                        <Check size={14} />
-                      ) : (
-                        <Circle size={14} />
-                      )}
-                      <span>{t("validation.number")}</span>
-                    </li>
-
-                    <li className={passCriteria.special ? "valid" : "invalid"}>
-                      {passCriteria.special ? (
-                        <Check size={14} />
-                      ) : (
-                        <Circle size={14} />
-                      )}
-                      <span>{t("validation.special_char")}</span>
-                    </li>
-                  </ul>
                 </div>
-              )}
 
-              <div className="input-wrapper">
-                <KeyRound size={18} className="input-icon" />
-                <input
-                  type={showRegRePass ? "text" : "password"}
-                  name="passengerRePassword"
-                  placeholder={t("placeholder.re_password")}
-                  value={registerData.passengerRePassword}
-                  onChange={handleRegisterChange}
-                  required
-                />
-                <span
-                  className="toggle-password"
-                  onClick={() => setShowRegRePass(!showRegRePass)}
-                >
-                  {showRegRePass ? <EyeOff size={18} /> : <Eye size={18} />}
-                </span>
-              </div>
-              {!isMatch && registerData.passengerRePassword && (
-                <small
-                  style={{
-                    color: "#ff4444",
-                    display: "block",
-                    marginBottom: "10px",
-                  }}
-                >
-                  {t("validation.password_mismatch")}{" "}
-                </small>
-              )}
+                <div className="gender-group">
+                  <label className="gender-label">
+                    <input
+                      type="radio"
+                      name="passengerGender"
+                      value={1}
+                      checked={registerData.passengerGender === 1}
+                      onChange={handleRegisterChange}
+                    />
+                    {t("auth.male")}
+                  </label>
+                  <label className="gender-label">
+                    <input
+                      type="radio"
+                      name="passengerGender"
+                      value={0}
+                      checked={registerData.passengerGender === 0}
+                      onChange={handleRegisterChange}
+                    />
+                    {t("auth.female")}
+                  </label>
+                </div>
 
-              <button type="submit" className="btn-submit">
-                {t("auth.register_button")}{" "}
-              </button>
-              <div className="switch-text">
-                {t("auth.have_account")}{" "}
-                <a onClick={toggleView}>{t("auth.login_now")}</a>
-              </div>
-            </form>
+                <div className="input-wrapper">
+                  <Globe size={18} className="input-icon" />
+                  <input
+                    type="text"
+                    name="passengerNationality"
+                    placeholder={t("placeholder.nationality")}
+                    value={registerData.passengerNationality}
+                    onChange={handleRegisterChange}
+                    required
+                  />
+                </div>
+
+                <div className="input-wrapper">
+                  <CreditCard size={18} className="input-icon" />
+                  <input
+                    type="text"
+                    name="passengerPassport"
+                    placeholder={t("placeholder.passport")}
+                    value={registerData.passengerPassport}
+                    onChange={handleRegisterChange}
+                    required
+                  />
+                </div>
+
+                <div className="input-wrapper">
+                  <Mail size={18} className="input-icon" />
+                  <input
+                    type="email"
+                    name="passengerEmail"
+                    placeholder={t("placeholder.email")}
+                    value={registerData.passengerEmail}
+                    onChange={handleRegisterChange}
+                    required
+                  />
+                </div>
+
+                <div className="input-wrapper">
+                  <Smartphone size={18} className="input-icon" />
+                  <input
+                    type="tel"
+                    name="passengerMobile"
+                    placeholder={t("placeholder.phone")}
+                    value={registerData.passengerMobile}
+                    onChange={handleRegisterChange}
+                    required
+                  />
+                </div>
+
+                <h3 className="section-title">{t("auth.account_info")}</h3>
+
+                <div className="input-wrapper">
+                  <User size={18} className="input-icon" />
+                  <input
+                    type="text"
+                    name="passengerAccountName"
+                    placeholder={t("placeholder.account_name")}
+                    value={registerData.passengerAccountName}
+                    onChange={handleRegisterChange}
+                  />
+                </div>
+
+                <div className="input-wrapper">
+                  <Lock size={18} className="input-icon" />
+                  <input
+                    type={showRegPass ? "text" : "password"}
+                    name="passengerPassword"
+                    placeholder={t("placeholder.password")}
+                    value={registerData.passengerPassword}
+                    onChange={handleRegisterPasswordChange}
+                    required
+                  />
+                  <span
+                    className="toggle-password"
+                    onClick={() => setShowRegPass(!showRegPass)}
+                  >
+                    {showRegPass ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </span>
+                </div>
+
+                {/* Validate UI */}
+                {registerData.passengerPassword && (
+                  <div className="password-criteria">
+                    <ul>
+                      <li className={passCriteria.length ? "valid" : "invalid"}>
+                        {passCriteria.length ? (
+                          <Check size={14} />
+                        ) : (
+                          <Circle size={14} />
+                        )}
+                        <span>{t("validation.min_length")}</span>
+                      </li>
+
+                      <li className={passCriteria.upper ? "valid" : "invalid"}>
+                        {passCriteria.upper ? (
+                          <Check size={14} />
+                        ) : (
+                          <Circle size={14} />
+                        )}
+                        <span>{t("validation.uppercase")}</span>
+                      </li>
+
+                      <li className={passCriteria.lower ? "valid" : "invalid"}>
+                        {passCriteria.lower ? (
+                          <Check size={14} />
+                        ) : (
+                          <Circle size={14} />
+                        )}
+                        <span>{t("validation.lowercase")}</span>
+                      </li>
+
+                      <li className={passCriteria.number ? "valid" : "invalid"}>
+                        {passCriteria.number ? (
+                          <Check size={14} />
+                        ) : (
+                          <Circle size={14} />
+                        )}
+                        <span>{t("validation.number")}</span>
+                      </li>
+
+                      <li
+                        className={passCriteria.special ? "valid" : "invalid"}
+                      >
+                        {passCriteria.special ? (
+                          <Check size={14} />
+                        ) : (
+                          <Circle size={14} />
+                        )}
+                        <span>{t("validation.special_char")}</span>
+                      </li>
+                    </ul>
+                  </div>
+                )}
+
+                <div className="input-wrapper">
+                  <KeyRound size={18} className="input-icon" />
+                  <input
+                    type={showRegRePass ? "text" : "password"}
+                    name="passengerRePassword"
+                    placeholder={t("placeholder.re_password")}
+                    value={registerData.passengerRePassword}
+                    onChange={handleRegisterChange}
+                    required
+                  />
+                  <span
+                    className="toggle-password"
+                    onClick={() => setShowRegRePass(!showRegRePass)}
+                  >
+                    {showRegRePass ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </span>
+                </div>
+                {!isMatch && registerData.passengerRePassword && (
+                  <small
+                    style={{
+                      color: "#ff4444",
+                      display: "block",
+                      marginBottom: "10px",
+                    }}
+                  >
+                    {t("validation.password_mismatch")}{" "}
+                  </small>
+                )}
+
+                <button type="submit" className="btn-submit">
+                  {t("auth.register_button")}{" "}
+                </button>
+                <div className="switch-text">
+                  {t("auth.have_account")}{" "}
+                  <a onClick={toggleView}>{t("auth.login_now")}</a>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
+        {/* === CỘT PHẢI: SIDEBAR CHỌN ROLE (Code Mới) === */}
+        <div className="role-sidebar">
+          {/* Nút Passenger */}
+          <div
+            className={`role-item ${userRole === "passenger" ? "active" : ""}`}
+            onClick={() => handleRoleChange("passenger")}
+            data-title={t("auth.data-title.passenger")}
+          >
+            <User size={22} />
+          </div>
+
+          {/* Nút Staff */}
+          <div
+            className={`role-item ${userRole === "staff" ? "active" : ""}`}
+            onClick={() => handleRoleChange("staff")}
+            data-title={t("auth.data-title.staff")}
+          >
+            <Briefcase size={22} />
+          </div>
+
+          {/* Nút Admin */}
+          <div
+            className={`role-item ${userRole === "admin" ? "active" : ""}`}
+            onClick={() => handleRoleChange("admin")}
+            data-title={t("auth.data-title.admin")}
+          >
+            <ShieldCheck size={22} />
+          </div>
+        </div>
+        {/* === HẾT CỘT PHẢI === */}
       </div>
     </div>
   );

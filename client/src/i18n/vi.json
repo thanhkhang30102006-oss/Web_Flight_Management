@@ -97,7 +97,12 @@
         "no_account": "Chưa có tài khoản?",
         "have_account": "Đã có tài khoản?",
         "register_now": "Đăng ký ngay",
-        "login_now": "Đăng nhập"
+        "login_now": "Đăng nhập",
+        "data-title": {
+            "passenger": "Hành khách",
+            "staff": "Nhân viên",
+            "admin": "Quản trị viên"
+        }
     },
     "placeholder": {
         "username": "Tên người dùng",
@@ -108,7 +113,9 @@
         "nationality": "Quốc tịch",
         "passport": "Số hộ chiếu",
         "account_name": "Tên tài khoản (username)",
-        "re_password": "Nhập lại mật khẩu"
+        "re_password": "Nhập lại mật khẩu",
+        "usernamestaff": "Mã nhân viên (Staff ID)",
+        "passwordprivate": "Mật khẩu nội bộ"
     },
     "validation": {
         "check_password": "Vui lòng kiểm tra lại mật khẩu!",

@@ -97,7 +97,12 @@
         "no_account": "Don't have an account?",
         "have_account": "Already have an account?",
         "register_now": "Register now",
-        "login_now": "Login"
+        "login_now": "Login",
+        "data-title": {
+            "passenger": "Passenger",
+            "staff": "Staff",
+            "admin": "Admin"
+        }
     },
     "placeholder": {
         "username": "Username",
@@ -108,7 +113,9 @@
         "nationality": "Nationality",
         "passport": "Passport number",
         "account_name": "Account name (username)",
-        "re_password": "Confirm password"
+        "re_password": "Confirm password",
+        "usernamestaff": "Staff ID",
+        "passwordprivate": "Private password"
     },
     "validation": {
         "check_password": "Please check your password criteria!",
