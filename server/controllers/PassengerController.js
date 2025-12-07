@@ -118,11 +118,8 @@ const loginUser = async (req, res) => {
         process.env.REFRESH_TOKEN_SECRET || "refresh_token_default",
         { expiresIn: "7d" }
       );
-      console.log("Access Token: ", accessToken);
-      console.log("RefreshToken : ", refreshToken);
-      console.log("Cookie: ", cookieOptions);
+
       res.cookie("refreshToken", refreshToken, cookieOptions);
-      console.log("Secret trong Login:", process.env.ACCESS_TOKEN_SECRET);
       return res.status(200).json({
         success: true,
         message: "Đăng nhập thành công",
