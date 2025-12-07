@@ -92,4 +92,9 @@ app.use("/api/user/", registerRouter);
 const bookingRouter = require("./routes/bookingRoutes");
 app.use("/api/user/booking", bookingRouter);
 app.use("/api/user/", bookingRouter);
+
+// Xử lý đăng nhập staff và admin
+const loginStaffRouter = require("./routes/loginStaffAdminRoutes");
+app.use("/api/staff", loginStaffRouter);
+app.use("/api/admin", loginStaffRouter);
 module.exports = app;

@@ -168,7 +168,7 @@ const LoginRegis = () => {
     } else {
       // Logic cho Staff và Admin (Dùng chung cấu trúc staffID)
       apiEndpoint =
-        userRole === "staff" ? "api/staff/login" : "api/admin/login";
+        userRole === "staff" ? "api/staff/loginStaff" : "api/admin/loginAdmin";
       redirectPath =
         userRole === "staff" ? "/staff-dashboard" : "/admin-dashboard";
 
@@ -187,6 +187,7 @@ const LoginRegis = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
+        credentials: "include",
       });
 
       const data = await response.json();

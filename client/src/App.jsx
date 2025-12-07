@@ -7,6 +7,8 @@ import DashBoard from "./pages/Dashboard.jsx";
 import Booking from "./pages/BookingFlow.jsx";
 import BookingPage from "./components/BookingFlight/BookingPage.jsx";
 import PaymentPage from "./components/BookingFlight/PaymentPage.jsx";
+import StaffDashboard from "./pages/StaffDashboard.jsx";
+import AdminDashboard from "./pages/AdminDashboard.jsx";
 export default function App() {
   return (
     <Routes>
@@ -19,6 +21,8 @@ export default function App() {
       <Route path="/user/booking-details" element={<BookingPage />} />
       <Route path="/user/payment" element={<PaymentPage />} />
       <Route path="*" element={<HomePage />} />
+      <Route path="/staff-dashboard" element={<StaffDashboard />} />
+      <Route path="/admin-dashboard" element={<AdminDashboard />} />
     </Routes>
   );
 }
