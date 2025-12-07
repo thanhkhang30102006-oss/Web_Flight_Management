@@ -1,14 +1,25 @@
 import React, { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import "./SeatMap.css";
-
-const SeatMap = ({ seats = [], selectedSeats = [], onSeatClick }) => {
+import { useLocation, useNavigate } from "react-router-dom";
+const SeatMap = ({
+  liveSelections = {},
+  mySocketID = null,
+  seats = [],
+  selectedSeats = [],
+  onSeatClick,
+  flightSelected = [],
+}) => {
   const { t } = useTranslation();
   const colLabels = ["A", "B", "C", "", "D", "E", "F"];
 
   // Cấu hình số hàng
-  const businessRows = 2; // 2 hàng đầu là thương gia
-  const economyRows = 8; // 8 hàng sau là phổ thông
+  const flightTotalSeat = flightSelected.flightTotalSeat;
+  const businessSeats = (flightTotalSeat / 5) * 1;
+  const economySeats = (flightTotalSeat / 5) * 4;
+
+  const businessRows = businessSeats / 6;
+  const economyRows = economySeats / 6;
 
   const seatDatabaseMap = useMemo(() => {
     return seats.reduce((acc, seat) => {
@@ -32,11 +43,9 @@ const SeatMap = ({ seats = [], selectedSeats = [], onSeatClick }) => {
 
           // 2. Xác định ID ghế (seatNumber)
           const seatId = `${rowIndex + 1}${col}`;
-
           // 3. Lấy thông tin ghế từ DB map
           const seatInfo = seatDatabaseMap[seatId];
 
-          // 4. Xác định Loại ghế (Ưu tiên lấy từ DB, nếu không có thì lấy theo layout mặc định)
           const type = seatInfo?.seatType || defaultType;
 
           // 5. Xác định Trạng thái
@@ -48,13 +57,27 @@ const SeatMap = ({ seats = [], selectedSeats = [], onSeatClick }) => {
           // - Kiểm tra xem người dùng có đang chọn ghế này không (Client state)
           const isSelected = selectedSeats.some((s) => s.id === seatId);
 
+          const holderSocketId = liveSelections[seatId];
+
+          // 2. Logic xác định class màu sắc
+          let additionalClass = "";
+
+          // if (isOccupied) {
+          //   additionalClass = "occupied";
+          // }
+          // Nếu có người đang chọn (Realtime)
+          if (holderSocketId) {
+            if (holderSocketId === mySocketID) {
+              additionalClass = "selected personal";
+            } else {
+              additionalClass = "selected";
+            }
+          }
           return (
             <button
               key={seatId}
               // Class kết hợp: seat-item + loại ghế + trạng thái
-              className={`seat-item ${type} ${isOccupied ? "occupied" : ""} ${
-                isSelected ? "selected" : ""
-              }`}
+              className={`seat-item ${defaultType} ${additionalClass}`}
               // Khi click, truyền cả ID và Type để cha xử lý tính tiền
               onClick={() => !isOccupied && onSeatClick(seatId, type)}
               disabled={isOccupied}
@@ -115,7 +138,22 @@ const SeatMap = ({ seats = [], selectedSeats = [], onSeatClick }) => {
         <div className="legend-item">
           <span className="box selected"></span>
           <span className="box selected business"></span>
-          {t("bookingPage.seatMap.legend.selected", "Đang chọn")}
+          {t(
+            "bookingPage.seatMap.legend.selected.another",
+            "Đang chọn của khách hàng khác"
+          )}
+        </div>
+        <div className="legend-item">
+          <span className="box pending"></span>
+          {t("bookingPage.seatMap.legend.pending", "Đang giữ")}
+        </div>
+        <div className="legend-item">
+          <span className="box selected personal"></span>
+          <span className="box selected business personal"></span>
+          {t(
+            "bookingPage.seatMap.legend.selected.personal",
+            "Đang chọn của mình"
+          )}
         </div>
       </div>
     </div>

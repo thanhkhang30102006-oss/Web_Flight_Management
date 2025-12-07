@@ -17,12 +17,14 @@
   position: relative;
 }
 .cockpit-indicator::after {
-    content: '';
-    position: absolute;
-    top: 10px; left: 50%; transform: translateX(-50%);
-    border-left: 50px solid transparent;
-    border-right: 50px solid transparent;
-    border-top: 20px solid rgba(255,255,255,0.05);
+  content: "";
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-left: 50px solid transparent;
+  border-right: 50px solid transparent;
+  border-top: 20px solid rgba(255, 255, 255, 0.05);
 }
 
 .seat-grid {
@@ -50,7 +52,7 @@
 
 /* Style cho cái ghế */
 .class-divider {
-  grid-column: 1 / -1; 
+  grid-column: 1 / -1;
   text-align: left;
   font-size: 13px;
   font-weight: bold;
@@ -76,8 +78,15 @@
   box-shadow: 0 0 10px rgba(217, 119, 6, 0.5);
 }
 
+.seat-item.business.selected.personal {
+  background-color: #3707af; /* Vàng đậm khi chọn */
+  box-shadow: 0 0 10px rgba(217, 119, 6, 0.5);
+}
 /* Cập nhật chú thích */
-.box.business { background: #fcd34d; border: 1px solid #f59e0b; }
+.box.business {
+  background: #fcd34d;
+  border: 1px solid #f59e0b;
+}
 .seat-item {
   width: 32px;
   height: 32px;
@@ -95,7 +104,7 @@
   transform: translateY(-2px);
 }
 
-.seat-item.selected {
+.seat-item.economy.selected {
   background-color: #3b82f6; /* Màu xanh khi chọn */
   box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
   color: white;
@@ -107,7 +116,12 @@
   opacity: 0.6;
   box-shadow: none;
 }
-
+.seat-item.economy.selected.personal {
+  background-color: #0d678b !important; /* Màu Vàng (bắt buộc hiện) */
+  color: #713f12;
+  font-weight: bold;
+  z-index: 10; /* Nổi lên trên */
+}
 /* Chú thích */
 .seat-legend {
   display: flex;
@@ -116,9 +130,37 @@
   font-size: 12px;
   color: #fcfdff;
 }
-.legend-item { display: flex; align-items: center; gap: 6px; }
-.box { width: 12px; height: 12px; border-radius: 3px; }
-.box.available { background: #e2e8f0; }
-.box.occupied { background: #475569; }
-.box.selected { background: #3b82f6; }
-.box.selected.business { background: #fb8f24; }
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.box {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+}
+.box.available {
+  background: #e2e8f0;
+}
+.box.occupied {
+  background: #475569;
+}
+.box.selected {
+  background: #3b82f6;
+}
+.box.selected.business {
+  background: #fb8f24;
+}
+.box.pending {
+  background: #fb2424;
+}
+.box.selected.personal {
+  background: #97fd93;
+}
+.box.selected.business.personal {
+  background: #fdc893;
+}
+.box.selected.personal {
+  background-color: #facc15;
+}
