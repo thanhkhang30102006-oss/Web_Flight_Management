@@ -13,6 +13,7 @@ const PaymentPage = () => {
   const navigate = useNavigate();
   // Lấy dữ liệu vé từ trang trước
   const { disconnectSocket } = useSocket();
+  const [isProcessing, setIsProcessing] = useState(false);
   const {
     flight,
     selectedSeats,
@@ -21,7 +22,120 @@ const PaymentPage = () => {
     paymentInfo,
     expiredTime,
   } = location.state || {};
+  const getSeatType = (seatCode, totalSeats) => {
+    console.log(seatCode, "   ", totalSeats);
+    const codeStr = String(seatCode);
+    const businessSeatsCount = (totalSeats / 5) * 1;
+    const businessRowsLimit = Math.ceil(businessSeatsCount / 6);
 
+    const rowNumber = parseInt(codeStr.match(/\d+/)[0], 10);
+    if (rowNumber <= businessRowsLimit) {
+      return "business";
+    }
+    return "economy";
+  };
+  const MOCK_PAYMENT_DELAY = 10000;
+  const [isMockPaymentSuccessful, setIsMockPaymentSuccessful] = useState(false);
+
+  const handleProcessBooking = async () => {
+    setIsProcessing(true);
+
+    try {
+      // 1. Lấy dữ liệu cần thiết
+      const storedUserStr = localStorage.getItem("userData");
+      const loggedInUser = storedUserStr ? JSON.parse(storedUserStr) : null;
+
+      const currentPassengerID = loggedInUser?.id;
+      console.log(currentPassengerID);
+      const currentPaymentID = paymentInfo?.paymentID;
+      const currentFlightNumber = flight?.flightNumber;
+      if (!currentPaymentID || !currentFlightNumber) {
+        alert("Thiếu thông tin thanh toán hoặc chuyến bay!");
+        setIsProcessing(false);
+        return;
+      }
+
+      const seatsData = selectedSeats.map((seatItem) => {
+        const seatIdStr = seatItem.id ? seatItem.id : seatItem;
+        return {
+          seatNumber: `${seatIdStr}${currentFlightNumber}`,
+
+          seatType: getSeatType(seatIdStr, flight.flightTotalSeat),
+
+          seatState: "occupied",
+
+          flightNumber: currentFlightNumber,
+
+          originalSeatNumber: seatIdStr,
+        };
+      });
+
+      const ticketData = {
+        passengerID: currentPassengerID,
+        flightNumber: currentFlightNumber,
+        paymentID: currentPaymentID,
+        ticketState: "valid",
+      };
+
+      const payload = {
+        flightNumber: currentFlightNumber,
+        passengerID: currentPassengerID,
+        paymentID: currentPaymentID,
+        seats: seatsData,
+        ticketInfo: ticketData,
+      };
+
+      console.log("Dữ liệu gửi đi Backend:", payload);
+
+      const response = await fetch(
+        "http://localhost:3001/api/user/booking/payment/finalize-booking",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+
+      const result = await response.json();
+
+      if (result.success) {
+        disconnectSocket();
+        alert(t("paymentPage.alerts.success", "Thanh toán thành công!"));
+        navigate("/user/booking-success", {
+          state: { flight, passenger, totalPrice, ticketInfo: result.data },
+        });
+      } else {
+        alert("Lỗi server: " + result.message);
+      }
+    } catch (error) {
+      console.error("Lỗi:", error);
+      alert("Có lỗi xảy ra khi xử lý đặt vé.");
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!flight) {
+      navigate("/");
+      return;
+    }
+
+    console.log(
+      `Bắt đầu giả lập chờ thanh toán trong ${
+        MOCK_PAYMENT_DELAY / 1000
+      } giây...`
+    );
+
+    const timer = setTimeout(() => {
+      console.log("Đã hết 10 giây. Bắt đầu gọi API xử lý đơn hàng...");
+      handleProcessBooking();
+    }, MOCK_PAYMENT_DELAY);
+
+    return () => clearTimeout(timer);
+  }, [flight, navigate]);
   const handleGoHome = () => {
     disconnectSocket();
     navigate("/user");

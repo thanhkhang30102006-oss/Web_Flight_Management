@@ -49,19 +49,20 @@ const SeatMap = ({
 
           // 2. Xác định ID ghế (seatNumber)
           const seatId = `${rowIndex + 1}${col}`;
+          const fullSeatCodeInDB = `${seatId}${flightSelected?.flightNumber}`;
 
+          const isSold = occupiedSeats.some(
+            (dbSeat) => dbSeat.seatNumber === fullSeatCodeInDB
+          );
           // 3. Lấy thông tin ghế từ DB map
           const seatInfo = seatDatabaseMap[seatId];
-          const isSold = occupiedSeats.includes(seatId);
+
           const isPending = pendingSeats.includes(seatId);
           const holderSocketId = liveSelections[seatId];
           const type = seatInfo?.seatType || defaultType;
 
           // 5. Xác định Trạng thái
           // - Kiểm tra xem ghế có bị occupied trong DB không
-          const isOccupied =
-            seatInfo?.seatState === "occupied" ||
-            seatInfo?.seatState === "booked";
 
           // - Kiểm tra xem người dùng có đang chọn ghế này không (Client state)
           const isSelected = selectedSeats.some((s) => s.id === seatId);
@@ -76,10 +77,8 @@ const SeatMap = ({
           // Logic xác định trạng thái hiển thị (text)
           let statusText = "Trống"; // Mặc định
           let statusColorClass = "text-green";
-          if (isOccupied) {
-            statusText = "Đã bán";
-            statusColorClass = "text-red";
-          } else if (holderSocketId && holderSocketId === mySocketID) {
+
+          if (holderSocketId && holderSocketId === mySocketID) {
             statusText = "Đang chọn (Tôi)";
             statusColorClass = "text-green";
           } else if (holderSocketId) {

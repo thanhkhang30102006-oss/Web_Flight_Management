@@ -4,6 +4,10 @@ const { DATEONLY } = require("sequelize");
 const Flight = db.FlightInformation;
 const Passenger = db.Passenger;
 const Payment = db.Payment;
+
+const Seat = db.Seat;
+const Ticket = db.Ticket;
+const { Op } = require("sequelize");
 // Quy chuẩn giá tiền theo thời gian bay
 const priceStandard = async (req, res) => {
   const { flightNumber } = req.body;
@@ -221,4 +225,103 @@ const createPayment = async (req, res) => {
     return res.status(500).json({ message: "Lỗi Server khi tạo thanh toán" });
   }
 };
-module.exports = { SearchFlights, priceStandard, createPayment };
+
+// Xử lý thêm ghế , thêm vé , sửa chỗ ngồi thành đã bán ,
+const generateUniqueId = (prefix) => {
+  return `${prefix}-${Date.now().toString().slice(-6)}${Math.floor(
+    Math.random() * 1000
+  )}`;
+};
+
+const finalizeBooking = async (req, res) => {
+  const sequelize = db.sequelize;
+  const t = await sequelize.transaction();
+
+  try {
+    const { flightNumber, passengerID, paymentID, seats, ticketInfo } =
+      req.body;
+
+    const [updatedCount] = await Payment.update(
+      { paymentState: "completed" },
+      {
+        where: { paymentID: paymentID },
+        transaction: t,
+      }
+    );
+    // Seats
+    const seatsPayload = seats.map((seat) => ({
+      seatNumber: seat.seatNumber,
+      seatType: seat.seatType,
+      seatState: "occupied",
+      flightNumber: flightNumber,
+    }));
+
+    await Seat.bulkCreate(seatsPayload, {
+      updateOnDuplicate: ["seatState", "seatType"],
+    });
+
+    const ticketsToCreate = seats.map((seat) => ({
+      ticketID: generateUniqueId("TKT"),
+      passengerID: passengerID,
+      seatNumber: seat.seatNumber,
+      flightNumber: flightNumber,
+      ticketBookTime: new Date(),
+      ticketState: "valid",
+      paymentID: paymentID,
+    }));
+
+    const createdTickets = await Ticket.bulkCreate(ticketsToCreate, {
+      transaction: t,
+    });
+
+    await t.commit();
+
+    return res.status(200).json({
+      success: true,
+      message: "Đặt vé thành công!",
+      data: {
+        paymentID: paymentID,
+        tickets: createdTickets,
+        totalSeats: createdTickets.length,
+      },
+    });
+  } catch (error) {
+    await t.rollback();
+    console.error("Lỗi booking:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Lỗi server khi xử lý đặt vé.",
+      error: error.message,
+    });
+  }
+};
+
+const getOccupiedSeats = async (req, res) => {
+  try {
+    const { flightNumber } = req.params;
+
+    const occupiedSeats = await db.Seat.findAll({
+      where: {
+        flightNumber: flightNumber,
+        seatState: "occupied",
+      },
+      attributes: ["seatNumber"],
+    });
+
+    return res.status(200).json({
+      success: true,
+      data: occupiedSeats,
+    });
+  } catch (error) {
+    console.error("Lỗi lấy ghế:", error);
+    return res.status(500).json({ success: false, message: "Lỗi server" });
+  }
+};
+module.exports = {
+  SearchFlights,
+  priceStandard,
+  createPayment,
+  finalizeBooking,
+  getOccupiedSeats,
+};

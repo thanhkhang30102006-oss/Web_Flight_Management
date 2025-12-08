@@ -29,6 +29,29 @@ const BookingPage = () => {
   const [pendingSeats, setPendingSeats] = useState([]);
   const [pendingBooking, setPendingBooking] = useState(null);
   const isNavigatingToPayment = useRef(false);
+  const [dbOccupiedSeats, setDbOccupiedSeats] = useState([]);
+  useEffect(() => {
+    const fetchOccupiedSeats = async () => {
+      const currentFlight = location.state?.flight || pendingBooking?.flight;
+
+      if (currentFlight?.flightNumber) {
+        try {
+          const response = await fetch(
+            `http://localhost:3001/api/user/booking/seats/${currentFlight.flightNumber}`
+          );
+          const result = await response.json();
+
+          if (result.success) {
+            setDbOccupiedSeats(result.data);
+          }
+        } catch (error) {
+          console.error("Không thể tải danh sách ghế đã bán:", error);
+        }
+      }
+    };
+
+    fetchOccupiedSeats();
+  }, [location.state, pendingBooking]);
   useEffect(() => {
     const savedBooking = localStorage.getItem("pendingBooking");
     if (savedBooking) {
@@ -468,7 +491,7 @@ const BookingPage = () => {
                 pendingSeats={pendingSeats}
                 mySocketID={socket ? socket.id : null}
                 selectedSeats={selectedSeats}
-                occupiedSeats={occupiedSeats}
+                occupiedSeats={dbOccupiedSeats}
                 onSeatClick={handleSeatClick}
                 flightSelected={flight}
               />

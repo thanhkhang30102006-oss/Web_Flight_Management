@@ -20,4 +20,5 @@ const searchFlights = async (req, res) => {
     res.status(500).json({ message: "Lỗi server: " + error.message });
   }
 };
+
 module.exports = { searchFlights };
