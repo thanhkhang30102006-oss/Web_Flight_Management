@@ -63,20 +63,60 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnect", () => {
+    console.log("User disconnected:", socket.id);
+
+    // 1. DUYỆT QUA CÁC CHUYẾN BAY ĐỂ TÌM GHẾ CỦA USER NÀY
+    // Giả sử bạn đang dùng biến seatSelections để lưu map ghế
     for (const flightId in seatSelections) {
       const seats = seatSelections[flightId];
-      let change = false;
+      let hasChange = false;
+      const seatsToRemove = [];
 
+      // Tìm ghế nào do socket.id này giữ
       for (const seatId in seats) {
         if (seats[seatId] === socket.id) {
-          delete seats[seatId];
-          change = true;
+          delete seats[seatId]; // Xóa khỏi danh sách chọn
+          seatsToRemove.push(seatId);
+          hasChange = true;
         }
       }
-      if (change) {
+
+      // 2. NẾU CÓ THAY ĐỔI -> BÁO CHO NGƯỜI KHÁC BIẾT
+      if (hasChange) {
+        console.log(
+          `Auto release seats for flight ${flightId}:`,
+          seatsToRemove
+        );
+
+        // Gửi map mới nhất cho tất cả mọi người trong phòng chuyến bay đó
         io.to(flightId).emit("updateSeatMap", seatSelections[flightId]);
       }
     }
+
+    if (global.lockedSeats) {
+      Object.keys(global.lockedSeats).forEach((key) => {
+        if (global.lockedSeats[key] === socket.id) {
+          delete global.lockedSeats[key];
+        }
+      });
+    }
+  });
+  socket.on("unlockSeats", ({ flightId, seats }) => {
+    console.log(
+      `Yêu cầu mở khóa ghế từ ${socket.id} cho chuyến ${flightId}:`,
+      seats
+    );
+
+    if (!global.lockedSeats) global.lockedSeats = {};
+
+    seats.forEach((seatId) => {
+      const key = `${flightId}_${seatId}`;
+      if (global.lockedSeats[key]) {
+        delete global.lockedSeats[key];
+
+        io.to(flightId).emit("seatUnlocked", { seatId });
+      }
+    });
   });
 });
 const PORT = 3001;

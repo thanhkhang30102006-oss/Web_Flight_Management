@@ -66,7 +66,11 @@ const SeatMap = ({
           // - Kiểm tra xem người dùng có đang chọn ghế này không (Client state)
           const isSelected = selectedSeats.some((s) => s.id === seatId);
           const isHeldByOther = holderSocketId && holderSocketId !== mySocketID;
-          const isDisabled = isSold || isPending || isHeldByOther;
+          const isSelectedByMe = selectedSeats.some((s) => s.id === seatId);
+          const isDisabled =
+            isSold ||
+            (isPending && !isSelectedByMe) ||
+            (isHeldByOther && !isSelectedByMe);
           // 2. Logic xác định class màu sắc
           let additionalClass = "";
           // Logic xác định trạng thái hiển thị (text)
@@ -99,13 +103,10 @@ const SeatMap = ({
           return (
             <button
               key={seatId}
-              // Class kết hợp: seat-item + loại ghế + trạng thái
               className={`seat-item ${defaultType} ${additionalClass}`}
-              // Khi click, truyền cả ID và Type để cha xử lý tính tiền
               onClick={() => onSeatClick(seatId, type)}
               disabled={isDisabled}
             >
-              {/* --- PHẦN MỚI THÊM: TOOLTIP --- */}
               <div className="seat-tooltip">
                 <div className="tooltip-header">
                   <span className="tooltip-seat-id">{seatId}</span>

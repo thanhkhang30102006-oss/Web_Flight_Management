@@ -1,76 +1,85 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Clock } from "lucide-react";
 
-const CountdownTimer = ({ targetDate, onExpire }) => {
+const CountdownTimer = ({ targetDate, totalDuration = 600, onExpire }) => {
+  // totalDuration: Tổng thời gian giữ ghế (giây), ví dụ 10 phút = 600s
+  // Để tính phần trăm thanh tiến trình
   const [timeLeft, setTimeLeft] = useState("--:--");
-  // Dùng ref để đảm bảo onExpire chỉ được gọi 1 lần
+  const [percentage, setPercentage] = useState(100);
   const hasExpiredRef = useRef(false);
 
   useEffect(() => {
-    // Nếu không có targetDate thì không chạy
     if (!targetDate) return;
 
-    const calculateTimeLeft = () => {
+    const timerId = setInterval(() => {
       const now = new Date().getTime();
       const distance = new Date(targetDate).getTime() - now;
 
-      // 1. Xử lý khi hết giờ
+      // 1. Xử lý hết giờ
       if (distance <= 0) {
         setTimeLeft("00:00");
-
-        // Chỉ gọi onExpire nếu chưa từng gọi trước đó
+        setPercentage(0);
         if (!hasExpiredRef.current) {
           hasExpiredRef.current = true;
           if (onExpire) onExpire();
         }
-        return false; // Dừng timer
+        clearInterval(timerId);
+        return;
       }
 
-      // 2. Tính toán hiển thị
-      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+      // 2. Tính toán hiển thị số
+      const minutes = Math.floor((distance / (1000 * 60)) % 60);
+      const seconds = Math.floor((distance / 1000) % 60);
+      setTimeLeft(
+        `${minutes < 10 ? "0" + minutes : minutes}:${
+          seconds < 10 ? "0" + seconds : seconds
+        }`
+      );
 
-      const m = minutes < 10 ? "0" + minutes : minutes;
-      const s = seconds < 10 ? "0" + seconds : seconds;
+      const secondsLeft = distance / 1000;
+      const percent = (secondsLeft / totalDuration) * 100;
+      setPercentage(Math.max(0, percent));
+    }, 1000);
 
-      setTimeLeft(`${m}:${s}`);
-      return true;
-    };
-
-    // Chạy ngay lần đầu để hiển thị luôn
-    const shouldRun = calculateTimeLeft();
-
-    let timerId;
-    if (shouldRun) {
-      timerId = setInterval(() => {
-        const keepRunning = calculateTimeLeft();
-        if (!keepRunning) clearInterval(timerId);
-      }, 1000);
-    }
-
-    return () => {
-      if (timerId) clearInterval(timerId);
-    };
-  }, [targetDate]); // Bỏ onExpire ra khỏi dependency để tránh re-render loop
+    return () => clearInterval(timerId);
+  }, [targetDate, totalDuration]);
 
   return (
-    <div
-      style={{
-        display: "inline-flex",
-        alignItems: "center",
-        gap: "8px",
-        background: "#fff7ed",
-        border: "1px solid #f97316",
-        borderRadius: "8px",
-        padding: "6px 12px",
-        color: "#ea580c",
-        fontWeight: "bold",
-        fontSize: "16px",
-        boxShadow: "0 2px 4px rgba(249, 115, 22, 0.1)",
-      }}
-    >
-      <Clock size={18} />
-      <span>{timeLeft}</span>
+    <div style={{ width: "100%", padding: "5px 0" }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          fontSize: "14px",
+          fontWeight: "bold",
+          marginBottom: "3px",
+          color: "#d9534f",
+        }}
+      >
+        <span style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+          <Clock size={16} /> Thời gian giữ ghế còn lại:
+        </span>
+        <span>{timeLeft}</span>
+      </div>
+
+      <div
+        style={{
+          width: "100%",
+          height: "6px",
+          background: "#e0e0e0",
+          borderRadius: "3px",
+          overflow: "hidden",
+        }}
+      >
+        <div
+          style={{
+            width: `${percentage}%`,
+            height: "100%",
+            background: percentage < 20 ? "#dc3545" : "#28a745",
+            transition: "width 1s linear, background 0.5s ease",
+          }}
+        />
+      </div>
     </div>
   );
 };

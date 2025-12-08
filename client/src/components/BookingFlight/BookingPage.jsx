@@ -16,24 +16,53 @@ import {
 } from "lucide-react";
 import "./BookingPage.css";
 import videoWallpaper from "../../assets/videos/background-wallpaper-bookingpage.mp4";
+import CountdownTimer from "../Timer/CountdownTimer";
 const BookingPage = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const [totalPrice, setTotalPrice] = useState(0);
   const [selectedSeats, setSelectedSeats] = useState([]);
+  const selectedSeatsRef = useRef(selectedSeats);
   const [liveSelections, setLiveSelections] = useState({});
   const [mySocketID, setMySocketID] = useState(null);
+  const [pendingSeats, setPendingSeats] = useState([]);
+  const [pendingBooking, setPendingBooking] = useState(null);
+  const isNavigatingToPayment = useRef(false);
+  useEffect(() => {
+    const savedBooking = localStorage.getItem("pendingBooking");
+    if (savedBooking) {
+      const parsedData = JSON.parse(savedBooking);
+      const currentTime = new Date().getTime();
+      const expiredTime = new Date(parsedData.expiredTime).getTime();
+
+      if (currentTime >= expiredTime) {
+        localStorage.removeItem("pendingBooking");
+        setPendingBooking(null);
+        setSelectedSeats([]);
+      } else {
+        setPendingBooking(parsedData);
+        setSelectedSeats(parsedData.selectedSeats || []);
+      }
+    }
+  }, []);
+
   // Lấy dữ liệu chuyến bay từ trang trước (nếu có), nếu không dùng dữ liệu giả để test
   const flight = location.state?.flight || {};
-  const { socket, connectSocket } = useSocket();
+  const { socket, connectSocket, disconnectSocket } = useSocket();
+  useEffect(() => {
+    selectedSeatsRef.current = selectedSeats;
+  }, [selectedSeats]);
   useEffect(() => {
     if (!socket) {
       console.log("Socket chưa có, đang tiến hành kết nối...");
       connectSocket();
     }
   }, [socket, connectSocket]);
-  const [pendingSeats, setPendingSeats] = useState([]);
+  const socketRef = useRef(socket);
+  useEffect(() => {
+    socketRef.current = socket;
+  }, [socket]);
   useEffect(() => {
     if (!socket) return;
     setMySocketID(socket.id);
@@ -43,7 +72,6 @@ const BookingPage = () => {
         `Đã gửi thành công yêu cầu đặt phòng, ${flight.flightNumber}`
       );
     }
-
     const handleUpdateMap = (selections) => setLiveSelections(selections);
     const handleSeatsLocked = ({ seats }) => {
       setPendingSeats((prev) => [...new Set([...prev, ...seats])]);
@@ -63,9 +91,79 @@ const BookingPage = () => {
     };
   }, [socket, flight.flightNumber]);
   useEffect(() => {
+    if (!socket) return;
+
+    socket.on("updateSeatMap", (updatedMap) => {
+      console.log("Nhận map mới từ server:", updatedMap);
+      setLiveSelections(updatedMap);
+    });
+  }, [socket]);
+  useEffect(() => {
+    isNavigatingToPayment.current = false;
+
+    return () => {
+      if (!isNavigatingToPayment.current) {
+        console.log("Người dùng rời khỏi luồng đặt vé -> Hủy Socket & Storage");
+        const seatsToRelease = selectedSeatsRef.current;
+
+        if (seatsToRelease.length > 0 && socketRef.current) {
+          const seatIds = seatsToRelease.map((s) => s.id);
+
+          socketRef.current.emit("unlockSeats", {
+            flightId: flight.flightNumber,
+            seats: seatIds,
+          });
+
+          console.log("Đã gửi yêu cầu unlock seats:", seatIds);
+        }
+        disconnectSocket();
+
+        localStorage.removeItem("pendingBooking");
+      } else {
+        console.log("Người dùng chuyển sang trang thanh toán -> Giữ kết nối");
+      }
+    };
+  }, []);
+  useEffect(() => {
     const total = selectedSeats.reduce((sum, item) => sum + item.price, 0);
     setTotalPrice(total);
   }, [selectedSeats]);
+  useEffect(() => {
+    if (!pendingBooking || !pendingBooking.expiredTime) return;
+
+    const checkExpiryInterval = setInterval(() => {
+      const currentTime = new Date().getTime();
+      const expiredTime = new Date(pendingBooking.expiredTime).getTime();
+
+      if (currentTime >= expiredTime) {
+        alert("Thời gian giữ ghế đã hết! Bạn có thể đặt lại.");
+
+        // --- ĐOẠN CODE CẦN THÊM ---
+        if (socket && pendingBooking.selectedSeats) {
+          // Lấy danh sách ID ghế
+          const seatsToUnlock = pendingBooking.selectedSeats.map((s) => s.id);
+          socket.emit("unlockSeats", {
+            flightId: flight.flightNumber,
+            seats: seatsToUnlock,
+          });
+        }
+        // ---------------------------
+
+        localStorage.removeItem("pendingBooking");
+        setPendingBooking(null);
+        setSelectedSeats([]);
+
+        setPendingSeats((prev) =>
+          prev.filter(
+            (id) => !pendingBooking.selectedSeats.map((s) => s.id).includes(id)
+          )
+        );
+
+        clearInterval(checkExpiryInterval);
+      }
+    }, 1000);
+    return () => clearInterval(checkExpiryInterval);
+  }, [pendingBooking, socket, flight.flightNumber]);
   const [loading, setLoading] = useState(false);
   const [passenger, setPassenger] = useState({
     name: "",
@@ -126,28 +224,47 @@ const BookingPage = () => {
       );
       return;
     } else {
+      isNavigatingToPayment.current = true;
+      const paymentData = {
+        flight,
+        selectedSeats,
+        passenger,
+        totalPrice,
+        paymentInfo: result.data,
+        expiredTime: result.data.expiredTime,
+      };
+
+      localStorage.setItem("pendingBooking", JSON.stringify(paymentData));
       navigate("/user/payment", {
-        state: {
-          flight,
-          selectedSeats,
-          passenger,
-          totalPrice,
-          paymentInfo: result.data,
-          expiredTime: result.data.expiredTime,
-        },
+        state: paymentData,
       });
+    }
+  };
+  const handleResumePayment = () => {
+    if (pendingBooking) {
+      const currentExpiredTime = pendingBooking?.expiredTime;
+
+      const bookingData = {
+        selectedSeats: selectedSeats,
+        totalPrice: totalPrice,
+        flight: flight,
+        expiredTime: currentExpiredTime,
+      };
+      isNavigatingToPayment.current = true;
+      navigate("/user/payment", { state: pendingBooking });
     }
   };
   const handleSeatClick = (seatId, type) => {
     if (!socket) return;
     const holderId = liveSelections[seatId];
-
     const myCurrentId = socket.id;
     console.log(
       `Ghế: ${seatId} | Người giữ: ${holderId} | Tui là: ${myCurrentId}`
     );
-    if (pendingSeats.includes(seatId)) {
-      alert("Ghế này đang được người khác thanh toán!");
+    console.log(pendingSeats);
+
+    if (pendingBooking) {
+      alert("Bạn đang có ghế chưa thanh toán không thể đặt thêm ghế");
       return;
     }
     if (holderId && holderId !== myCurrentId) {
@@ -216,7 +333,6 @@ const BookingPage = () => {
             </div>
           </div>
         </div>
-
         <div className="booking-grid">
           {/* --- CỘT 1: THÔNG TIN KHÁCH HÀNG --- */}
           <div className="glass-panel info-column">
@@ -406,6 +522,71 @@ const BookingPage = () => {
           </div>
         </div>
       </motion.div>
+
+      {pendingBooking && (
+        <div
+          style={{
+            position: "fixed", // Cố định vị trí
+            bottom: 0, // Dính sát đáy
+            left: 0, // Dính sát trái
+            width: "100%", // Rộng toàn màn hình
+            background: "white",
+            boxShadow: "0 -2px 10px rgba(0,0,0,0.2)", // Đổ bóng nhẹ cho đẹp
+            padding: "10px 20px",
+            zIndex: 9999, // Luôn nổi lên trên
+            borderTop: "3px solid #f0ad4e", // Viền vàng cảnh báo
+            display: "flex",
+            flexDirection: "column",
+            gap: "5px",
+          }}
+        >
+          {/* Component Timer Thanh Ngang */}
+          <CountdownTimer
+            targetDate={pendingBooking.expiredTime}
+            totalDuration={600} // Giả sử 10 phút, bạn có thể chỉnh số này
+            onExpire={() => {
+              alert("Hết giờ giữ ghế!");
+            }}
+          />
+
+          {/* Hàng nút bấm */}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginTop: "5px",
+            }}
+          >
+            <div>
+              <strong>
+                Đang giữ {pendingBooking.selectedSeats?.length || 0} ghế
+              </strong>
+              <span style={{ margin: "0 10px", color: "#666" }}>|</span>
+              <span style={{ color: "#28a745", fontWeight: "bold" }}>
+                {pendingBooking.totalPrice?.toLocaleString()} VND
+              </span>
+            </div>
+
+            <div style={{ display: "flex", gap: "10px" }}>
+              <button
+                onClick={handleResumePayment}
+                style={{
+                  padding: "8px 24px",
+                  background: "#007bff",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "4px",
+                  cursor: "pointer",
+                  fontWeight: "bold",
+                }}
+              >
+                Thanh toán ngay →
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

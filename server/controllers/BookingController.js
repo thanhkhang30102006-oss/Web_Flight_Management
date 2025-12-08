@@ -150,7 +150,7 @@ const SearchFlights = async (req, res) => {
 };
 
 // Xử lý đẩy thanh toán lên và lock-pending
-const timeLock = 15 * 60 * 1000;
+const timeLock = 2 * 60 * 1000;
 const createPayment = async (req, res) => {
   try {
     const { flightId, seats, totalPrice, passengerInfo } = req.body;

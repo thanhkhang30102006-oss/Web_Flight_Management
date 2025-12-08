@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
@@ -11,7 +11,6 @@ const PaymentPage = () => {
   const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
-
   // Lấy dữ liệu vé từ trang trước
   const { disconnectSocket } = useSocket();
   const {
@@ -36,13 +35,10 @@ const PaymentPage = () => {
       )
     );
 
-    // Ngắt socket để server biết user này đã rời đi (nhả ghế ra cho người khác)
     disconnectSocket();
 
-    // Quay về trang chủ
     navigate("/user");
   };
-  // Cấu hình tài khoản nhận tiền (Dùng tài khoản của bạn hoặc demo)
   const BANK_ID = "970418";
   const ACCOUNT_NO = "8852915518";
   const ACCOUNT_NAME = "FLIGHT HK AIRLINES";
@@ -98,7 +94,6 @@ const PaymentPage = () => {
       }),
       url: qrUrl,
     };
-
     // Kiểm tra xem trình duyệt có hỗ trợ Share API không (Thường là Mobile)
     if (navigator.share) {
       try {

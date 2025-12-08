@@ -168,7 +168,7 @@ const LoginRegis = () => {
     } else {
       // Logic cho Staff và Admin (Dùng chung cấu trúc staffID)
       apiEndpoint =
-        userRole === "staff" ? "api/staff/loginStaff" : "api/admin/loginAdmin";
+        userRole === "staff" ? "api/staff/loginStaff" : "api/admin/login";
       redirectPath =
         userRole === "staff" ? "/staff-dashboard" : "/admin-dashboard";
 
