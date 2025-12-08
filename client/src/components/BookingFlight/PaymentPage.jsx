@@ -3,17 +3,45 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { CheckCircle, Home, Copy, Download, Share2 } from "lucide-react";
+import CountdownTimer from "../Timer/CountdownTimer";
 import "./PaymentPage.css"; // File CSS ở bước 2
 import videoWallpaper from "../../assets/videos/background-wallpaper-bookingpage.mp4";
-
+import { useSocket } from "../../context/SocketContext";
 const PaymentPage = () => {
   const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
 
   // Lấy dữ liệu vé từ trang trước
-  const { flight, selectedSeats, passenger, totalPrice } = location.state || {};
+  const { disconnectSocket } = useSocket();
+  const {
+    flight,
+    selectedSeats,
+    passenger,
+    totalPrice,
+    paymentInfo,
+    expiredTime,
+  } = location.state || {};
 
+  const handleGoHome = () => {
+    disconnectSocket();
+    navigate("/user");
+  };
+  const handleExpired = () => {
+    // Hiện thông báo
+    alert(
+      t(
+        "paymentPage.expiredMessage",
+        "Thời gian giữ ghế đã hết! Vui lòng đặt lại."
+      )
+    );
+
+    // Ngắt socket để server biết user này đã rời đi (nhả ghế ra cho người khác)
+    disconnectSocket();
+
+    // Quay về trang chủ
+    navigate("/user");
+  };
   // Cấu hình tài khoản nhận tiền (Dùng tài khoản của bạn hoặc demo)
   const BANK_ID = "970418";
   const ACCOUNT_NO = "8852915518";
@@ -92,83 +120,94 @@ const PaymentPage = () => {
   if (!flight) return null;
 
   return (
-    <div className="payment-layout">
-      {/* Background Video */}
-      <video className="payment-video-bg" autoPlay muted loop playsInline>
-        <source src={videoWallpaper} type="video/webm" />
-        <source src={videoWallpaper.replace("webm", "mp4")} type="video/mp4" />
-      </video>
-      <div className="payment-overlay"></div>
+    <>
+      <div style={{ textAlign: "center", marginBottom: "20px" }}>
+        {/* Chỉ hiện Timer nếu có expiredTime */}
+        {expiredTime && (
+          <CountdownTimer targetDate={expiredTime} onExpire={handleExpired} />
+        )}
+      </div>
+      <div className="payment-layout">
+        {/* Background Video */}
+        <video className="payment-video-bg" autoPlay muted loop playsInline>
+          <source src={videoWallpaper} type="video/webm" />
+          <source
+            src={videoWallpaper.replace("webm", "mp4")}
+            type="video/mp4"
+          />
+        </video>
+        <div className="payment-overlay"></div>
 
-      <motion.div
-        className="payment-container"
-        initial={{ scale: 0.9, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-      >
-        <div className="glass-panel payment-box">
-          <div className="payment-header">
-            <div className="icon-check">
-              <CheckCircle size={50} color="#4ade80" />
+        <motion.div
+          className="payment-container"
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+        >
+          <div className="glass-panel payment-box">
+            <div className="payment-header">
+              <div className="icon-check">
+                <CheckCircle size={50} color="#4ade80" />
+              </div>
+              <h2>{t("paymentPage.title")}</h2>
+              <p>{t("paymentPage.subtitle")}</p>
             </div>
-            <h2>{t("paymentPage.title")}</h2>
-            <p>{t("paymentPage.subtitle")}</p>
-          </div>
 
-          <div className="qr-section">
-            <div className="qr-frame">
-              <img src={qrUrl} alt="VietQR Code" className="qr-image" />
-            </div>
-            <div className="qr-actions">
-              <button className="action-btn" onClick={handleDownloadQR}>
-                <Download size={16} />
-                {t("paymentPage.actions.download")}
-              </button>
-              <button className="action-btn" onClick={handleShare}>
-                <Share2 size={16} /> {t("paymentPage.actions.share")}
-              </button>
-            </div>
-          </div>
-
-          <div className="payment-details">
-            <div className="detail-row">
-              <span>{t("paymentPage.details.bank")}</span>
-              <strong>BIDV</strong>
-            </div>
-            <div className="detail-row">
-              <span>{t("paymentPage.details.accountName")}</span>
-              <strong>{ACCOUNT_NAME}</strong>
-            </div>
-            <div className="detail-row">
-              <span>{t("paymentPage.details.accountNo")}</span>
-              <div className="copy-row">
-                <strong>{ACCOUNT_NO}</strong>
-                <Copy size={14} className="cursor-pointer text-blue-400" />
+            <div className="qr-section">
+              <div className="qr-frame">
+                <img src={qrUrl} alt="VietQR Code" className="qr-image" />
+              </div>
+              <div className="qr-actions">
+                <button className="action-btn" onClick={handleDownloadQR}>
+                  <Download size={16} />
+                  {t("paymentPage.actions.download")}
+                </button>
+                <button className="action-btn" onClick={handleShare}>
+                  <Share2 size={16} /> {t("paymentPage.actions.share")}
+                </button>
               </div>
             </div>
-            <div className="detail-row">
-              <span>{t("paymentPage.details.content")}</span>
-              <strong>{content}</strong>
+
+            <div className="payment-details">
+              <div className="detail-row">
+                <span>{t("paymentPage.details.bank")}</span>
+                <strong>BIDV</strong>
+              </div>
+              <div className="detail-row">
+                <span>{t("paymentPage.details.accountName")}</span>
+                <strong>{ACCOUNT_NAME}</strong>
+              </div>
+              <div className="detail-row">
+                <span>{t("paymentPage.details.accountNo")}</span>
+                <div className="copy-row">
+                  <strong>{ACCOUNT_NO}</strong>
+                  <Copy size={14} className="cursor-pointer text-blue-400" />
+                </div>
+              </div>
+              <div className="detail-row">
+                <span>{t("paymentPage.details.content")}</span>
+                <strong>{content}</strong>
+              </div>
+              <div className="divider"></div>
+              <div className="detail-row total">
+                <span>{t("paymentPage.details.amount")}</span>{" "}
+                <span className="total-text">
+                  {totalPrice?.toLocaleString()} VND
+                </span>
+              </div>
             </div>
-            <div className="divider"></div>
-            <div className="detail-row total">
-              <span>{t("paymentPage.details.amount")}</span>{" "}
-              <span className="total-text">
-                {totalPrice?.toLocaleString()} VND
-              </span>
-            </div>
+
+            <button className="home-btn" onClick={() => navigate(-1)}>
+              <Home size={20} /> {t("paymentPage.actions.booking-page")}
+            </button>
+
+            <p className="note-text">
+              {t("paymentPage.note.start")} <b>{passenger?.email}</b>{" "}
+              {t("paymentPage.note.end")}
+            </p>
           </div>
-
-          <button className="home-btn" onClick={() => navigate("/user")}>
-            <Home size={20} /> {t("paymentPage.actions.home")}
-          </button>
-
-          <p className="note-text">
-            {t("paymentPage.note.start")} <b>{passenger?.email}</b>{" "}
-            {t("paymentPage.note.end")}
-          </p>
-        </div>
-      </motion.div>
-    </div>
+        </motion.div>
+      </div>
+    </>
   );
 };
 

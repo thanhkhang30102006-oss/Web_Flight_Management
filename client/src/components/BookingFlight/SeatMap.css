@@ -33,7 +33,7 @@
   padding-right: 55px;
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 12px 16px; 
+  gap: 12px 16px;
   margin-bottom: 20px;
 }
 
@@ -73,7 +73,7 @@
   height: 32px;
   border-radius: 6px;
   border: none;
-  background-color: #e2e8f0; 
+  background-color: #e2e8f0;
   cursor: pointer;
   transition: all 0.2s;
   position: relative;
@@ -83,22 +83,22 @@
   visibility: hidden;
   opacity: 0;
   position: absolute;
-  bottom: 120%; 
+  bottom: 120%;
   left: 50%;
   transform: translateX(-50%);
-  
+
   width: 150px;
-  background: rgba(30, 41, 59, 0.95); 
+  background: rgba(30, 41, 59, 0.95);
   color: white;
   padding: 8px;
   border-radius: 8px;
   font-size: 10px;
   text-align: left;
-  z-index: 1000; 
-  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-  border: 1px solid rgba(255,255,255,0.1);
-  pointer-events: none; 
-  
+  z-index: 1000;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  pointer-events: none;
+
   transition: all 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
   transform-origin: bottom center;
 }
@@ -128,7 +128,8 @@
   border-radius: 8px 8px 0 0;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   text-align: center;
-}.tooltip-seat-id {
+}
+.tooltip-seat-id {
   font-size: 14px;
   font-weight: 800;
   color: #60a5fa; /* Màu xanh dương sáng */
@@ -160,9 +161,15 @@
 }
 
 /* Màu trạng thái */
-.value.status.text-green { color: #4ade80; } /* Trống / Tôi chọn */
-.value.status.text-red { color: #f87171; }   /* Đã bán */
-.value.status.text-orange { color: #fbbf24; } /* Người khác giữ */
+.value.status.text-green {
+  color: #4ade80;
+} /* Trống / Tôi chọn */
+.value.status.text-red {
+  color: #f87171;
+} /* Đã bán */
+.value.status.text-orange {
+  color: #fbbf24;
+} /* Người khác giữ */
 
 /* Dòng giá tiền */
 .price-row {
@@ -192,12 +199,12 @@
 /* Hover của thuong gia */
 .seat-item.business:hover:not(:disabled) {
   background-color: #eef95b;
-  transform: translateY(-5px); 
+  transform: translateY(-5px);
 }
 
 /* Được chọn bởi người khác */
 .seat-item.business.selected {
-  background-color: #fb8f24; 
+  background-color: #fb8f24;
   box-shadow: 0 0 5px rgba(217, 119, 6, 0.5);
 }
 
@@ -215,7 +222,7 @@
 
 /* Được chọn bởi người khác */
 .seat-item.economy.selected {
-  background-color: #3b82f6; 
+  background-color: #3b82f6;
   box-shadow: 0 0 5px rgba(51, 128, 251, 0.5);
   color: white;
 }
@@ -224,4 +231,9 @@
 .seat-item.economy.selected.personal {
   background-color: #2ee944;
   box-shadow: 0 0 15px rgba(217, 255, 92, 0.821);
+}
+.seat-item.pending {
+  background-color: #fb2424;
+  box-shadow: 0 0 5px rgba(252, 253, 255, 0.5);
+  color: white;
 }

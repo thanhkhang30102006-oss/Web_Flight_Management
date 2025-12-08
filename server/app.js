@@ -10,7 +10,6 @@ var app = express();
 require("dotenv").config();
 app.use(logger("dev"));
 app.use(express.json());
-
 app.use(
   cors({
     origin: "http://localhost:5173",
@@ -37,6 +36,14 @@ io.on("connection", (socket) => {
 
     const currentSelections = seatSelections[flightId] || {};
     socket.emit("updateSeatMap", currentSelections);
+
+    const lockedSeatsInFlight = [];
+    for (const key in global.lockedSeats) {
+      if (key.startsWith(flightId)) {
+        lockedSeatsInFlight.push(key.split("_")[1]);
+      }
+    }
+    socket.emit("seatsLocked", { seats: lockedSeatsInFlight });
   });
 
   socket.on("selectSeat", ({ flightId, seatId }) => {
@@ -76,6 +83,7 @@ const PORT = 3001;
 server.listen(PORT, () => {
   console.log(`Server Socket & Express is running on port ${PORT}`);
 });
+app.set("socketio", io);
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
@@ -97,4 +105,9 @@ app.use("/api/user/", bookingRouter);
 const loginStaffRouter = require("./routes/loginStaffAdminRoutes");
 app.use("/api/staff", loginStaffRouter);
 app.use("/api/admin", loginStaffRouter);
+
+// Pending seats
+if (!global.lockedSeats) {
+  global.lockedSeats = {};
+}
 module.exports = app;

@@ -1,244 +1,247 @@
 {
-    "header": {
-        "home": "Home",
-        "flight": "Flights",
-        "about": "About",
-        "search": "Search...",
-        "searchBtn": "Go",
-        "login": "Login",
-        "register": "Register",
-        "user": {
-            "hello": "Hello, {{name}}",
-            "welcome_back": "Welcome back!"
-        },
-        "notification": {
-            "title": "Notifications",
-            "new_count": "{{count}} new",
-            "mark_read": "Mark all as read",
-            "empty": "No notifications"
-        }
+  "header": {
+    "home": "Home",
+    "flight": "Flights",
+    "about": "About",
+    "search": "Search...",
+    "searchBtn": "Go",
+    "login": "Login",
+    "register": "Register",
+    "user": {
+      "hello": "Hello, {{name}}",
+      "welcome_back": "Welcome back!"
     },
-    "hero": {
-        "title": "FlightHK – Where every flight becomes simpler.",
-        "desc": "From ticket search, schedules to flight status updates, all in one platform."
-    },
-    "fastChecking": {
-        "oneWay": "One way",
-        "from": "From",
-        "fromdesc": "Departure airport",
-        "to": "To",
-        "todesc": "Arrival airport",
-        "depart": "Departure date",
-        "passengers": "Passengers",
-        "passengerOptions": [
-            "1 Passenger",
-            "2 Passengers",
-            "3 Passengers",
-            "4+ Passengers"
-        ],
-        "search": "Search flights"
-    },
-    "topRating": "Most Loved Destinations",
-    "about": {
-        "title": "Why Choose Us",
-        "subtitle": "Professional and convenient flight booking experience",
-        "security": "Safe & Secure",
-        "securityDesc": "Your information is encrypted and absolutely protected",
-        "fast": "Fast Booking",
-        "fastDesc": "Complete booking in just 3 minutes",
-        "payment": "Multiple Payment Methods",
-        "paymentDesc": "Support various convenient payment methods",
-        "support": "24/7 Support",
-        "supportDesc": "Customer care team always ready to assist"
-    },
-    "flight": {
-        "title": "Flight Information",
-        "desc": "Track active and upcoming flights",
-        "list": "Flight List",
-        "map": "Route Map",
-        "showing": "Showing",
-        "instruction": "Click on a flight to view the route on the map",
-        "legend": "Legend",
-        "loading": "Loading flight information...",
-        "seats": "Seats",
-        "noFlights": "No active flights available.",
-        "departure": "Departure",
-        "arrival": "Arrival",
-        "flight": "Flight",
-        "time": "Time",
-        "date": "Date",
-        "plane": "Aircraft",
-        "active": "Active",
-        "boarding": "Boarding",
-        "unknown": "Unknown"
-    },
-    "footer": {
-        "desc": "Smart flight booking system – Fast • Safe • Affordable",
-        "contact": "Contact Us",
-        "university": "Vietnam-Korea University of Information and Communication Technology, Da Nang",
-        "team": "Development Team",
-        "other": "Others",
-        "terms": "Terms of Service",
-        "privacy": "Privacy Policy",
-        "support": "Customer Support",
-        "aboutUs": "About Us",
-        "project": "Web Programming Course Project",
-        "developedBy": "Developed by"
-    },
-    "auth": {
-        "login_title": "Login",
-        "register_title": "Register",
-        "login_button": "Login",
-        "register_button": "Register",
-        "personal_info": "Personal Info",
-        "account_info": "Account Info",
-        "male": "Male",
-        "female": "Female",
-        "no_account": "Don't have an account?",
-        "have_account": "Already have an account?",
-        "register_now": "Register now",
-        "login_now": "Login",
-        "data-title": {
-            "passenger": "Passenger",
-            "staff": "Staff",
-            "admin": "Admin"
-        }
-    },
-    "placeholder": {
-        "username": "Username",
-        "email": "Email",
-        "phone": "Phone number",
-        "password": "Password",
-        "fullname": "Full name",
-        "nationality": "Nationality",
-        "passport": "Passport number",
-        "account_name": "Account name (username)",
-        "re_password": "Confirm password",
-        "usernamestaff": "Staff ID",
-        "passwordprivate": "Private password"
-    },
-    "validation": {
-        "check_password": "Please check your password criteria!",
-        "password_mismatch": "Passwords do not match!",
-        "min_length": "Minimum 8 characters",
-        "uppercase": "Uppercase letter",
-        "lowercase": "Lowercase letter",
-        "number": "Number",
-        "special_char": "Special character"
-    },
-    "sidebar": {
-        "dashboard": "Dashboard",
-        "booking": "Booking",
-        "my_trips": "My Trips",
-        "wallet": "Wallet & Offers",
-        "settings": "Settings",
-        "support": "Support",
-        "logout": "Log out"
-    },
-    "next_flight": {
-        "no_ticket": {
-            "title": "No upcoming trips yet?",
-            "desc": "Book today to get <1>20%</1> off domestic flights this summer.",
-            "btn": "Book now"
-        }
-    },
-    "flight_schedule": {
-        "title": "Flight Schedule",
-        "timeline_title": "Timeline (24h)",
-        "hint": "Hover over flight to view details",
-        "empty": "No flights scheduled for this day",
-        "status": {
-            "confirmed": "Confirmed",
-            "delayed": "Delayed",
-            "cancelled": "Cancelled"
-        }
-    },
-    "booking": {
-        "pageTitle": "Book a Flight",
-        "pageSubtitle": "Find the best flight prices for your journey",
-        "from": "From",
-        "to": "To",
-        "date": "Departure Date",
-        "departureTime": "Departure Time",
-        "passengers": "Passengers",
-        "search": "Search Flights",
-        "placeholders": {
-            "from": "Hanoi (HAN)",
-            "to": "Da Nang (DAD)"
-        }
-    },
-    "bookingPage": {
-        "title": "Booking Form",
-        "alertMaxSeats": "You can only select up to 5 seats",
-        "sections": {
-            "contact": "1. Contact Information",
-            "seatSelection": "2. Select Seats"
-        },
-        "form": {
-            "fullName": "Full Name",
-            "namePlaceholder": "John Doe",
-            "email": "Email",
-            "emailPlaceholder": "example@email.com",
-            "phone": "Phone Number",
-            "phonePlaceholder": "+84 912 xxx xxx",
-            "baggage": "Checked Baggage (Optional)",
-            "baggageOptions": {
-                "none": "No baggage",
-                "20kg": "20kg (+200,000đ)",
-                "30kg": "30kg (+350,000đ)"
-            }
-        },
-        "summary": {
-            "basePrice": "Base Price:",
-            "selectedCount": "Selected Seats:",
-            "seats": "Seats:",
-            "noneSelected": "None",
-            "total": "Total:",
-            "payNow": "Pay Now"
-        },
-        "seatMap": {
-            "cockpit": "Cockpit",
-            "businessClass": "Business Class",
-            "economyClass": "Economy Class",
-            "screenDirection": "Screen this way",
-            "legend": {
-                "economy": "Economy",
-                "business": "Business",
-                "occupied": "Sold",
-                "selected": {
-                    "another": "Selected by another person",
-                    "personal": "Selected by yourself"
-                },
-                "pending": "Pending"
-            }
-        }
-    },
-    "paymentPage": {
-        "title": "Payment Confirmation",
-        "subtitle": "Please scan the QR code below to complete booking",
-        "actions": {
-            "download": "Save Image",
-            "share": "Share",
-            "home": "Return to Home"
-        },
-        "details": {
-            "bank": "Bank:",
-            "accountName": "Account Name:",
-            "accountNo": "Account No.:",
-            "content": "Content:",
-            "amount": "Amount:"
-        },
-        "alerts": {
-            "downloadError": "Cannot download image, please try again or take a screenshot.",
-            "shareTitle": "FlightHK Booking Payment",
-            "shareText": "Payment for flight {{flightNo}}. Total: {{price}} VND.",
-            "shareCancel": "Share cancelled",
-            "copySuccess": "QR link copied to clipboard!",
-            "shareUnsupported": "Browser does not support sharing."
-        },
-        "note": {
-            "start": "*E-ticket will be sent to email",
-            "end": "after successful payment."
-        }
+    "notification": {
+      "title": "Notifications",
+      "new_count": "{{count}} new",
+      "mark_read": "Mark all as read",
+      "empty": "No notifications"
     }
+  },
+  "hero": {
+    "title": "FlightHK – Where every flight becomes simpler.",
+    "desc": "From ticket search, schedules to flight status updates, all in one platform."
+  },
+  "fastChecking": {
+    "oneWay": "One way",
+    "from": "From",
+    "fromdesc": "Departure airport",
+    "to": "To",
+    "todesc": "Arrival airport",
+    "depart": "Departure date",
+    "passengers": "Passengers",
+    "passengerOptions": [
+      "1 Passenger",
+      "2 Passengers",
+      "3 Passengers",
+      "4+ Passengers"
+    ],
+    "search": "Search flights"
+  },
+  "topRating": "Most Loved Destinations",
+  "about": {
+    "title": "Why Choose Us",
+    "subtitle": "Professional and convenient flight booking experience",
+    "security": "Safe & Secure",
+    "securityDesc": "Your information is encrypted and absolutely protected",
+    "fast": "Fast Booking",
+    "fastDesc": "Complete booking in just 3 minutes",
+    "payment": "Multiple Payment Methods",
+    "paymentDesc": "Support various convenient payment methods",
+    "support": "24/7 Support",
+    "supportDesc": "Customer care team always ready to assist"
+  },
+  "flight": {
+    "title": "Flight Information",
+    "desc": "Track active and upcoming flights",
+    "list": "Flight List",
+    "map": "Route Map",
+    "showing": "Showing",
+    "instruction": "Click on a flight to view the route on the map",
+    "legend": "Legend",
+    "loading": "Loading flight information...",
+    "seats": "Seats",
+    "noFlights": "No active flights available.",
+    "departure": "Departure",
+    "arrival": "Arrival",
+    "flight": "Flight",
+    "time": "Time",
+    "date": "Date",
+    "plane": "Aircraft",
+    "active": "Active",
+    "boarding": "Boarding",
+    "unknown": "Unknown"
+  },
+  "footer": {
+    "desc": "Smart flight booking system – Fast • Safe • Affordable",
+    "contact": "Contact Us",
+    "university": "Vietnam-Korea University of Information and Communication Technology, Da Nang",
+    "team": "Development Team",
+    "other": "Others",
+    "terms": "Terms of Service",
+    "privacy": "Privacy Policy",
+    "support": "Customer Support",
+    "aboutUs": "About Us",
+    "project": "Web Programming Course Project",
+    "developedBy": "Developed by"
+  },
+  "auth": {
+    "login_title": "Login",
+    "register_title": "Register",
+    "login_button": "Login",
+    "register_button": "Register",
+    "personal_info": "Personal Info",
+    "account_info": "Account Info",
+    "male": "Male",
+    "female": "Female",
+    "no_account": "Don't have an account?",
+    "have_account": "Already have an account?",
+    "register_now": "Register now",
+    "login_now": "Login",
+    "data-title": {
+      "passenger": "Passenger",
+      "staff": "Staff",
+      "admin": "Admin"
+    }
+  },
+  "placeholder": {
+    "username": "Username",
+    "email": "Email",
+    "phone": "Phone number",
+    "password": "Password",
+    "fullname": "Full name",
+    "nationality": "Nationality",
+    "passport": "Passport number",
+    "account_name": "Account name (username)",
+    "re_password": "Confirm password",
+    "usernamestaff": "Staff ID",
+    "passwordprivate": "Private password"
+  },
+  "validation": {
+    "check_password": "Please check your password criteria!",
+    "password_mismatch": "Passwords do not match!",
+    "min_length": "Minimum 8 characters",
+    "uppercase": "Uppercase letter",
+    "lowercase": "Lowercase letter",
+    "number": "Number",
+    "special_char": "Special character"
+  },
+  "sidebar": {
+    "dashboard": "Dashboard",
+    "booking": "Booking",
+    "my_trips": "My Trips",
+    "wallet": "Wallet & Offers",
+    "settings": "Settings",
+    "support": "Support",
+    "logout": "Log out"
+  },
+  "next_flight": {
+    "no_ticket": {
+      "title": "No upcoming trips yet?",
+      "desc": "Book today to get <1>20%</1> off domestic flights this summer.",
+      "btn": "Book now"
+    }
+  },
+  "flight_schedule": {
+    "title": "Flight Schedule",
+    "timeline_title": "Timeline (24h)",
+    "hint": "Hover over flight to view details",
+    "empty": "No flights scheduled for this day",
+    "status": {
+      "confirmed": "Confirmed",
+      "delayed": "Delayed",
+      "cancelled": "Cancelled"
+    }
+  },
+  "booking": {
+    "pageTitle": "Book a Flight",
+    "pageSubtitle": "Find the best flight prices for your journey",
+    "from": "From",
+    "to": "To",
+    "date": "Departure Date",
+    "departureTime": "Departure Time",
+    "passengers": "Passengers",
+    "search": "Search Flights",
+    "placeholders": {
+      "from": "Hanoi (HAN)",
+      "to": "Da Nang (DAD)"
+    }
+  },
+  "bookingPage": {
+    "title": "Booking Form",
+    "alertMaxSeats": "You can only select up to 5 seats",
+    "sections": {
+      "contact": "1. Contact Information",
+      "seatSelection": "2. Select Seats"
+    },
+    "form": {
+      "fullName": "Full Name",
+      "namePlaceholder": "John Doe",
+      "email": "Email",
+      "emailPlaceholder": "example@email.com",
+      "phone": "Phone Number",
+      "phonePlaceholder": "+84 912 xxx xxx",
+      "baggage": "Checked Baggage (Optional)",
+      "baggageOptions": {
+        "none": "No baggage",
+        "20kg": "20kg",
+        "30kg": "30kg"
+      },
+      "passport": "Passport number",
+      "passportPlaceholder": "PCXXXXXXXX567"
+    },
+    "summary": {
+      "basePrice": "Base Price:",
+      "selectedCount": "Selected Seats:",
+      "seats": "Seats:",
+      "noneSelected": "None",
+      "total": "Total:",
+      "payNow": "Confirm Booked Seat & Pay now"
+    },
+    "seatMap": {
+      "cockpit": "Cockpit",
+      "businessClass": "Business Class",
+      "economyClass": "Economy Class",
+      "screenDirection": "Screen this way",
+      "legend": {
+        "economy": "Economy",
+        "business": "Business",
+        "occupied": "Sold",
+        "selected": {
+          "another": "Selected by another person",
+          "personal": "Selected by yourself"
+        },
+        "pending": "Pending"
+      }
+    }
+  },
+  "paymentPage": {
+    "title": "Payment Confirmation",
+    "subtitle": "Please scan the QR code below to complete booking",
+    "actions": {
+      "download": "Save Image",
+      "share": "Share",
+      "home": "Return to Home",
+      "booking-page": "Return to Booking Page"
+    },
+    "details": {
+      "bank": "Bank:",
+      "accountName": "Account Name:",
+      "accountNo": "Account No.:",
+      "content": "Content:",
+      "amount": "Amount:"
+    },
+    "alerts": {
+      "downloadError": "Cannot download image, please try again or take a screenshot.",
+      "shareTitle": "FlightHK Booking Payment",
+      "shareText": "Payment for flight {{flightNo}}. Total: {{price}} VND.",
+      "shareCancel": "Share cancelled",
+      "copySuccess": "QR link copied to clipboard!",
+      "shareUnsupported": "Browser does not support sharing."
+    },
+    "note": {
+      "start": "*E-ticket will be sent to email",
+      "end": "after successful payment."
+    }
+  }
 }

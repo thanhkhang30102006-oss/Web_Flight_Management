@@ -3,7 +3,7 @@ const db = require("../models");
 const { DATEONLY } = require("sequelize");
 const Flight = db.FlightInformation;
 const Passenger = db.Passenger;
-
+const Payment = db.Payment;
 // Quy chuẩn giá tiền theo thời gian bay
 const priceStandard = async (req, res) => {
   const { flightNumber } = req.body;
@@ -148,4 +148,77 @@ const SearchFlights = async (req, res) => {
     res.status(500).json({ message: "Lỗi server: " + error.message });
   }
 };
-module.exports = { SearchFlights, priceStandard };
+
+// Xử lý đẩy thanh toán lên và lock-pending
+const timeLock = 15 * 60 * 1000;
+const createPayment = async (req, res) => {
+  try {
+    const { flightId, seats, totalPrice, passengerInfo } = req.body;
+    const io = req.app.get("socketio");
+
+    const unavailableSeats = [];
+    seats.forEach((seat) => {
+      const lockKey = `${flightId}_${seat.id}`;
+      if (global.lockedSeats[lockKey]) {
+        unavailableSeats.push(seat.id);
+      }
+    });
+    if (unavailableSeats.length > 0) {
+      return res.status(409).json({
+        message: "Ghế bị người khác chọn mất!",
+        seats: unavailableSeats,
+      });
+    }
+
+    const generatedPaymentID = `PAY${Date.now()}${Math.floor(
+      Math.random() * 100
+    )}`;
+    const now = new Date();
+
+    const newPayment = await Payment.create({
+      paymentID: generatedPaymentID,
+      paymentPrice: totalPrice,
+      paymentType: "QR Code",
+      paymentDate: now,
+      paymentState: "pending",
+    });
+
+    const expiredTime = now.getTime() + timeLock;
+    seats.forEach((seat) => {
+      const lockKey = `${flightId}_${seat.id}`;
+      const timer = setTimeout(async () => {
+        delete global.lockedSeats[lockKey];
+        await Payment.update(
+          { paymentState: "expired" },
+          { where: { paymentID: generatedPaymentID } }
+        );
+        io.to(flightId).emit("seatUnlocked", { seatId: seat.id });
+      }, timeLock);
+
+      global.lockedSeats[lockKey] = {
+        paymentID: generatedPaymentID,
+        timestamp: now.getTime(),
+        timer: timer,
+      };
+    });
+    io.to(flightId).emit("seatsLocked", {
+      seats: seats.map((s) => s.id),
+    });
+
+    return res.status(200).json({
+      message: "Tạo giao dịch thành công",
+      data: {
+        paymentID: newPayment.paymentID,
+        paymentPrice: newPayment.paymentPrice,
+        paymentType: newPayment.paymentType,
+        paymentState: newPayment.paymentState,
+        expiredTime: expiredTime,
+        seats: seats,
+      },
+    });
+  } catch (error) {
+    console.error("Create Payment Error:", error);
+    return res.status(500).json({ message: "Lỗi Server khi tạo thanh toán" });
+  }
+};
+module.exports = { SearchFlights, priceStandard, createPayment };

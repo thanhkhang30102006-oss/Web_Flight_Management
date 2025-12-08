@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom"; // Hook Fiều hướng
 import SeatMap from "./SeatMap";
 import { motion } from "framer-motion";
+import { useSocket } from "../../context/SocketContext";
 import { io } from "socket.io-client";
 import {
   ArrowLeft,
@@ -19,104 +20,171 @@ const BookingPage = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
-
-  const [liveSelections, setLiveSelections] = useState([]);
+  const [totalPrice, setTotalPrice] = useState(0);
+  const [selectedSeats, setSelectedSeats] = useState([]);
+  const [liveSelections, setLiveSelections] = useState({});
   const [mySocketID, setMySocketID] = useState(null);
   // Lấy dữ liệu chuyến bay từ trang trước (nếu có), nếu không dùng dữ liệu giả để test
   const flight = location.state?.flight || {};
-  const socketRef = useRef();
+  const { socket, connectSocket } = useSocket();
   useEffect(() => {
-    socketRef.current = io("http://localhost:3001");
-
-    socketRef.current.on("connect", () => {
-      setMySocketID(socketRef.current.id);
-    });
+    if (!socket) {
+      console.log("Socket chưa có, đang tiến hành kết nối...");
+      connectSocket();
+    }
+  }, [socket, connectSocket]);
+  const [pendingSeats, setPendingSeats] = useState([]);
+  useEffect(() => {
+    if (!socket) return;
+    setMySocketID(socket.id);
     if (flight && flight.flightNumber) {
-      socketRef.current.emit("joinIntoBooking", flight.flightNumber);
+      socket.emit("joinIntoBooking", flight.flightNumber);
       console.log(
         `Đã gửi thành công yêu cầu đặt phòng, ${flight.flightNumber}`
       );
     }
 
-    socketRef.current.on("updateSeatMap", (selections) => {
-      setLiveSelections(selections);
-    });
-
-    return () => {
-      if (socketRef.current) {
-        socketRef.current.disconnect();
-      }
+    const handleUpdateMap = (selections) => setLiveSelections(selections);
+    const handleSeatsLocked = ({ seats }) => {
+      setPendingSeats((prev) => [...new Set([...prev, ...seats])]);
     };
-  }, [flight.flightNumber]);
-  const [selectedSeats, setSelectedSeats] = useState([]);
 
+    const handleSeatUnlocked = ({ seatId }) => {
+      setPendingSeats((prev) => prev.filter((id) => id !== seatId));
+    };
+
+    socket.on("updateSeatMap", handleUpdateMap);
+    socket.on("seatsLocked", handleSeatsLocked);
+    socket.on("seatUnlocked", handleSeatUnlocked);
+    return () => {
+      socket.off("updateSeatMap", handleUpdateMap);
+      socket.off("seatsLocked", handleSeatsLocked);
+      socket.off("seatUnlocked", handleSeatUnlocked);
+    };
+  }, [socket, flight.flightNumber]);
+  useEffect(() => {
+    const total = selectedSeats.reduce((sum, item) => sum + item.price, 0);
+    setTotalPrice(total);
+  }, [selectedSeats]);
   const [loading, setLoading] = useState(false);
   const [passenger, setPassenger] = useState({
     name: "",
     email: "",
     phone: "",
+    luggage: "",
     passport: "",
   });
-  const occupiedSeats = ["1A", "2C", "5D", "8F"];
+
+  const isBookingValid = () => {
+    // 1. Phải chọn ít nhất 1 ghế
+    const hasSeats = selectedSeats.length > 0;
+    const hasInfo =
+      passenger.name.trim() !== "" &&
+      passenger.email.trim() !== "" &&
+      passenger.phone.trim() !== "" &&
+      passenger.passport.trim() !== "";
+    return hasSeats && hasInfo;
+  };
+  const occupiedSeats = [];
   const handlePassengerChange = (e) => {
     const { name, value } = e.target;
     setPassenger((prev) => ({ ...prev, [name]: value }));
   };
-  const handlePayment = () => {
-    // Chuyển sang trang thanh toán và mang theo "hành lý" dữ liệu
-    navigate("/user/payment", {
-      state: {
-        flight,
-        selectedSeats,
-        passenger,
-        totalPrice,
-      },
-    });
+  const handlePayment = async (e) => {
+    e.preventDefault();
+    const token = localStorage.getItem("accessToken");
+    if (!token) {
+      alert("Bạn cần đăng nhập để thanh toán!");
+      return;
+    }
+    const response = await fetch(
+      `http://localhost:3001/api/user/booking/payment/create`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          flightId: flight.flightNumber,
+          seats: selectedSeats,
+          totalPrice: totalPrice,
+          passengerInfo: passenger,
+        }),
+
+        credentials: "include",
+      }
+    );
+    const result = await response.json();
+
+    if (!response.ok) {
+      alert(data.message);
+      const errorText = await response.text();
+      console.error("Lỗi từ Server:", errorText);
+      alert(
+        `Lỗi khi gửi thông tin thanh toán (${response.status}): Vui lòng kiểm tra lại thông tin.`
+      );
+      return;
+    } else {
+      navigate("/user/payment", {
+        state: {
+          flight,
+          selectedSeats,
+          passenger,
+          totalPrice,
+          paymentInfo: result.data,
+          expiredTime: result.data.expiredTime,
+        },
+      });
+    }
   };
   const handleSeatClick = (seatId, type) => {
+    if (!socket) return;
     const holderId = liveSelections[seatId];
 
-    const myCurrentId = socketRef.current ? socketRef.current.id : null;
+    const myCurrentId = socket.id;
     console.log(
       `Ghế: ${seatId} | Người giữ: ${holderId} | Tui là: ${myCurrentId}`
     );
+    if (pendingSeats.includes(seatId)) {
+      alert("Ghế này đang được người khác thanh toán!");
+      return;
+    }
     if (holderId && holderId !== myCurrentId) {
       alert("Ghế này đang có người khác chọn!");
       return;
     }
     const isUnselecting = holderId === myCurrentId;
-
-    if (!isUnselecting) {
+    if (isUnselecting) {
+      socket.emit("selectSeat", {
+        flightId: flight.flightNumber,
+        seatId,
+      });
+      setSelectedSeats((prev) => prev.filter((s) => s.id !== seatId));
+    } else {
       if (selectedSeats.length >= 5) {
         alert("Bạn chỉ được chọn tối đa 5 ghế!");
         return;
       }
-    }
-    socketRef.current.emit("selectSeat", {
-      flightId: flight.flightNumber,
-      seatId: seatId,
-    });
-    //
-    const exists = selectedSeats.find((s) => s.id === seatId);
-    if (exists) {
-      setSelectedSeats(selectedSeats.filter((s) => s.id !== seatId));
-    } else {
-      if (selectedSeats.length < 5) {
-        const seatPrice =
-          type === "business" ? flight.price * 1.5 : flight.price;
 
-        const newSeat = {
-          id: seatId,
-          type: type,
-          price: seatPrice,
-        };
-        setSelectedSeats([...selectedSeats, newSeat]);
-      } else {
-        alert(t("bookingPage.alertMaxSeats"));
-      }
+      socket.emit("selectSeat", {
+        flightId: flight.flightNumber,
+        seatId: seatId,
+      });
+      //
+      const basePrice = flight.finalPrice?.economy || 0;
+      const businessPrice = flight.finalPrice?.business || 0;
+
+      const seatPrice = type === "business" ? businessPrice : basePrice;
+
+      const newSeatItem = {
+        id: seatId,
+        type: type,
+        price: seatPrice,
+      };
+      setSelectedSeats((prev) => [...prev, newSeatItem]);
     }
   };
-  const totalPrice = flight.price * (selectedSeats.length || 1);
 
   return (
     <div className="booking-layout">
@@ -194,27 +262,40 @@ const BookingPage = () => {
                 />
               </div>
             </div>
-
-            <div className="form-group">
-              <label>
-                <Luggage size={16} /> {t("bookingPage.form.baggage")}
-              </label>
-              <select
-                className="custom-select"
-                name="luggage"
-                onChange={handlePassengerChange}
-                value={passenger.luggage}
-              >
-                <option value="none">
-                  {t("bookingPage.form.baggageOptions.none")}
-                </option>
-                <option value="20kg">
-                  {t("bookingPage.form.baggageOptions.20kg")}
-                </option>
-                <option value="30kg">
-                  {t("bookingPage.form.baggageOptions.30kg")}
-                </option>
-              </select>
+            <div className="row-2-input">
+              <div className="form-group">
+                <label>
+                  <Luggage size={16} /> {t("bookingPage.form.baggage")}
+                </label>
+                <select
+                  className="custom-select"
+                  name="luggage"
+                  onChange={handlePassengerChange}
+                  value={passenger.luggage}
+                >
+                  <option value="none">
+                    {t("bookingPage.form.baggageOptions.none")}
+                  </option>
+                  <option value="20kg">
+                    {t("bookingPage.form.baggageOptions.20kg")}
+                  </option>
+                  <option value="30kg">
+                    {t("bookingPage.form.baggageOptions.30kg")}
+                  </option>
+                </select>
+              </div>
+              <div className="form-group">
+                <label>
+                  <CreditCard size={16} /> {t("bookingPage.form.passport")}{" "}
+                </label>
+                <input
+                  type="text"
+                  name="passport"
+                  placeholder={t("bookingPage.form.passportPlaceholder")}
+                  value={passenger.passport}
+                  onChange={handlePassengerChange}
+                />
+              </div>
             </div>
 
             {/* Tóm tắt thanh toán */}
@@ -222,7 +303,7 @@ const BookingPage = () => {
               <div className="summary-row">
                 <span>{t("bookingPage.summary.basePrice")}</span>
                 <span>
-                  {Number(flight.finalPrice.economy).toLocaleString("vi-VN")}{" "}
+                  {Number(flight.finalPrice?.economy).toLocaleString("vi-VN")}{" "}
                   VND
                 </span>
               </div>
@@ -248,8 +329,11 @@ const BookingPage = () => {
             </div>
 
             <button
-              className="checkout-btn"
-              disabled={selectedSeats.length === 0}
+              className={`checkout-btn ${
+                isBookingValid() ? "active" : "disabled"
+              }`}
+              // Logic: Nếu chưa Valid thì Disabled = true
+              disabled={!isBookingValid()}
               onClick={handlePayment}
             >
               <CreditCard size={20} /> {t("bookingPage.summary.payNow")}
@@ -265,7 +349,8 @@ const BookingPage = () => {
             <div className="seat-picker-wrapper custom-scrollbar">
               <SeatMap
                 liveSelections={liveSelections}
-                mySocketID={mySocketID}
+                pendingSeats={pendingSeats}
+                mySocketID={socket ? socket.id : null}
                 selectedSeats={selectedSeats}
                 occupiedSeats={occupiedSeats}
                 onSeatClick={handleSeatClick}

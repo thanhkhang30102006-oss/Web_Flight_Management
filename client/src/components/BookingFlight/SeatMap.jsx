@@ -1,12 +1,14 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import "./SeatMap.css";
 import { useLocation, useNavigate } from "react-router-dom";
 const SeatMap = ({
   liveSelections = {},
+  pendingSeats = [],
   mySocketID = null,
   seats = [],
   selectedSeats = [],
+  occupiedSeats = [],
   onSeatClick,
   flightSelected = [],
 }) => {
@@ -24,6 +26,7 @@ const SeatMap = ({
   const priceEconomy = flightSelected.finalPrice?.economy || 0;
   const priceBusiness = flightSelected.finalPrice?.business || 0;
 
+  const [totalPrice, setTotalPrice] = useState(0);
   const seatDatabaseMap = useMemo(() => {
     return seats.reduce((acc, seat) => {
       acc[seat.seatNumber] = seat;
@@ -46,9 +49,12 @@ const SeatMap = ({
 
           // 2. Xác định ID ghế (seatNumber)
           const seatId = `${rowIndex + 1}${col}`;
+
           // 3. Lấy thông tin ghế từ DB map
           const seatInfo = seatDatabaseMap[seatId];
-
+          const isSold = occupiedSeats.includes(seatId);
+          const isPending = pendingSeats.includes(seatId);
+          const holderSocketId = liveSelections[seatId];
           const type = seatInfo?.seatType || defaultType;
 
           // 5. Xác định Trạng thái
@@ -59,9 +65,8 @@ const SeatMap = ({
 
           // - Kiểm tra xem người dùng có đang chọn ghế này không (Client state)
           const isSelected = selectedSeats.some((s) => s.id === seatId);
-
-          const holderSocketId = liveSelections[seatId];
-
+          const isHeldByOther = holderSocketId && holderSocketId !== mySocketID;
+          const isDisabled = isSold || isPending || isHeldByOther;
           // 2. Logic xác định class màu sắc
           let additionalClass = "";
           // Logic xác định trạng thái hiển thị (text)
@@ -80,15 +85,15 @@ const SeatMap = ({
           const typeText = type === "business" ? "Thương gia" : "Phổ thông";
           const currentPrice =
             type === "business" ? priceBusiness : priceEconomy;
-          // if (isOccupied) {
-          //   additionalClass = "occupied";
-          // }
+
           // Nếu có người đang chọn (Realtime)
-          if (holderSocketId) {
+          if (isSold) additionalClass = "occupied";
+          else if (isPending) additionalClass = "pending";
+          else if (holderSocketId) {
             if (holderSocketId === mySocketID) {
-              additionalClass = "selected personal";
+              additionalClass = "selected personal"; // Vàng (Của mình)
             } else {
-              additionalClass = "selected";
+              additionalClass = "selected"; // Xanh (Của người khác)
             }
           }
           return (
@@ -97,8 +102,8 @@ const SeatMap = ({
               // Class kết hợp: seat-item + loại ghế + trạng thái
               className={`seat-item ${defaultType} ${additionalClass}`}
               // Khi click, truyền cả ID và Type để cha xử lý tính tiền
-              onClick={() => !isOccupied && onSeatClick(seatId, type)}
-              disabled={isOccupied}
+              onClick={() => onSeatClick(seatId, type)}
+              disabled={isDisabled}
             >
               {/* --- PHẦN MỚI THÊM: TOOLTIP --- */}
               <div className="seat-tooltip">
