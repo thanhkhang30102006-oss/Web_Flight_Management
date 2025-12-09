@@ -1,0 +1,634 @@
+/* --- StaffDashboard.css --- */
+.fade-in { animation: fadeIn 0.5s ease-in-out; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding-bottom: 15px;
+}
+.panel-title { color: white; margin: 0; font-size: 20px; }
+
+
+/* Thẻ thống kê */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  margin-bottom: 25px;
+}
+
+.stat-card {
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.6); 
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.45); 
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  color: white;
+}
+.stat-card h3 { font-size: 14px; color: #f9fafc; margin: 0 0 5px 0; }
+.stat-card .value { font-size: 24px; font-weight: 800; color: #facc15; }
+
+/* Bảng dữ liệu Glassmorphism */
+.glass-table-container {
+  overflow-x: auto;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.glass-table {
+  width: 100%;
+  border-collapse: collapse;
+  color: white;
+  font-size: 14px;
+}
+
+.glass-table thead {
+  background: rgba(80, 80, 80, 0.3);
+}
+
+.glass-table th, .glass-table td {
+  padding: 15px;
+  text-align: left;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.glass-table th { font-weight: 600; color: #ffffff; }
+
+/* Nút hành động trong bảng */
+.action-btn {
+  padding: 5px 10px;
+  border-radius: 6px;
+  border: none;
+  font-size: 12px;
+  cursor: pointer;
+  margin-right: 5px;
+}
+.btn-edit { background: #3b82f6; color: white; }
+.btn-delete { background: #ef4444; color: white; }
+
+/* Trạng thái */
+.status-badge {
+  padding: 4px 8px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.status-ontime { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
+.status-delayed { background: rgba(234, 179, 8, 0.2); color: #facc15; }
+.status-cancelled { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+
+
+
+
+
+/* -------------------- DashboardOverview.css -------------------- */
+
+/* --- BIỂU ĐỒ DASHBOARD --- */
+
+.dashboard-charts-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); 
+  gap: 15px;
+  margin-top: 30px;
+}
+
+@media (max-width: 1024px) {
+  .dashboard-charts-grid {
+    grid-template-columns: 1fr; /* Mobile/Tablet: 1 cột */
+  }
+}
+
+.chart-card {
+  background: rgba(255, 255, 255, 0.05); /* Nền mờ nhẹ */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 30px;
+  
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
+  overflow: hidden;
+}
+.chart-card:hover {
+  transform: translateY(-5px);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.chart-title {
+  margin: 0 0 20px 0;
+  font-size: 16px;
+  color: #f5f7f9;
+  font-weight: 600;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+  padding-bottom: 10px;
+}
+.recharts-cartesian-axis-tick-value{
+  fill: #ffffff;
+
+}
+.recharts-cartesian-axis-tick-labels.recharts-yAxis-tick-labels{
+  transform: translateX(5px); 
+}
+
+.dashboard-overview-container {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+/* Grid layout cho phần Chart và Weather */
+.charts-weather-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Chia đôi màn hình */
+  gap: 25px;
+}
+
+@media (max-width: 900px) {
+  .charts-weather-grid { grid-template-columns: 1fr; } /* Mobile dồn cột */
+}
+
+/* Panel nhỏ */
+.panel-title-small {
+  font-size: 16px; color: #fcfcfd; margin: 0 0 15px 0;
+  border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 8px;
+}
+
+/* Weather Widget 3 Miền */
+.weather-3-regions {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.weather-item-mini {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(59, 157, 255, 0.542);
+  padding: 15px;
+  border-radius: 12px;
+  width: 125px;
+  transition: transform 0.2s;
+}
+.weather-item-mini:hover { transform: translateY(-5px); background: rgba(85, 182, 255, 0.799); }
+
+.city-name { font-size: 14px; font-weight: bold; color: #fff; margin-bottom: 8px; }
+.weather-icon { margin-bottom: 8px; }
+.temp-val { font-size: 18px; font-weight: 800; color: #facc15; }
+
+.weather-note {
+    margin-top: 20px;
+    font-size: 11px; color: #64748b; text-align: center; font-style: italic;
+}
+
+.weather-loading { text-align: center; color: #94a3b8; padding: 20px; }
+
+/* ---------------------------- FLIGHT MANAGEMENT STYLES ---------------------------- */
+
+/* Toolbar (Search & Filter) */
+.table-toolbar {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.search-box-large {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 0 15px;
+  transition: border-color 0.2s;
+}
+.search-box-large:focus-within { border-color: #3b82f6; }
+.search-box-large input {
+  width: 100%; background: transparent; border: none; color: white;
+  padding: 12px 10px; outline: none; font-size: 14px;
+}
+.search-box-large .search-icon { color: #94a3b8; }
+
+.filter-dropdown {
+  position: relative;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  display: flex; align-items: center;
+  padding: 0 10px;
+}
+.filter-dropdown .filter-icon { position: absolute; left: 12px; color: #94a3b8; pointer-events: none;}
+.filter-dropdown select {
+  background: transparent; border: none; color: white;
+  padding: 12px 15px 12px 30px; outline: none; cursor: pointer;
+  appearance: none; /* Ẩn mũi tên mặc định trình duyệt */
+  min-width: 160px;
+}
+.filter-dropdown select option { background: #1e293b; color: white; padding: 10px; }
+
+/* Table Elements */
+.flight-id-wrapper { display: flex; align-items: center; gap: 10px; }
+.plane-icon-box { 
+  width: 32px; height: 32px; background: rgba(59, 130, 246, 0.1); 
+  border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #60a5fa;
+}
+
+.route-badge-outline {
+  font-family: monospace; font-weight: 600; font-size: 13px; color: #e2e8f0;
+}
+.route-badge-outline .arrow { color: #64748b; margin: 0 5px; }
+
+.time-display { font-family: monospace; font-size: 13px; }
+.time-main { color: #fff; font-weight: 600; }
+.time-sub { color: #94a3b8; }
+.time-sep { margin: 0 6px; color: #64748b; }
+
+/* Action Icons */
+.action-icon-btn {
+  background: transparent; border: none; padding: 6px; 
+  border-radius: 6px; cursor: pointer; transition: 0.2s; margin: 0 2px;
+}
+.action-icon-btn.edit { color: #60a5fa; }
+.action-icon-btn.edit:hover { background: rgba(59, 130, 246, 0.1); }
+.action-icon-btn.delete { color: #f87171; }
+.action-icon-btn.delete:hover { background: rgba(239, 68, 68, 0.1); }
+
+/* Pagination */
+.pagination-container {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-top: 20px; padding-top: 15px;
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+.page-info { font-size: 13px; color: #94a3b8; }
+.page-controls { display: flex; gap: 8px; }
+.page-btn {
+  background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white; width: 32px; height: 32px; border-radius: 6px;
+  display: flex; align-items: center; justify-content: center; cursor: pointer;
+  transition: 0.2s;
+}
+.page-btn:hover:not(:disabled) { background: #3b82f6; border-color: #3b82f6; }
+.page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+
+/* ---------------------------- REVENUE REPORTS CSS ---------------------------- */
+
+.revenue-container {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+/* Header & Filter */
+.report-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.report-actions {
+  display: flex;
+  gap: 15px;
+}
+
+.filter-group {
+  display: flex;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  padding: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.filter-btn {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  padding: 6px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.filter-btn.active {
+  background: #3b82f6;
+  color: white;
+  font-weight: 600;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.btn-export {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(34, 197, 94, 0.2);
+  color: #4ade80;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  padding: 0 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.btn-export:hover {
+  background: rgba(34, 197, 94, 0.3);
+  transform: translateY(-2px);
+}
+
+/* Stats Card Styles (Nâng cao cho Revenue) */
+.card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 15px;
+}
+
+.icon-box {
+  width: 45px; height: 45px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+}
+.icon-box.blue { background: rgba(81, 182, 250, 0.2); color: #b1ebfd; border: 1px solid rgb(184, 211, 255);}
+.icon-box.green { background: rgba(74, 222, 128, 0.2); color: #4ade80; border: 1px solid rgb(125, 241, 168);}
+.icon-box.yellow { background: rgba(250, 204, 21, 0.2); color: #facc15; border: 1px solid rgb(255, 232, 139);}
+
+.growth {
+  display: flex; align-items: center; gap: 4px;
+  font-size: 12px; font-weight: 700;
+  padding: 4px 8px; border-radius: 20px;
+}
+.growth.positive { color: #4ade80; background: rgba(74, 222, 128, 0.1); }
+.growth.negative { color: #f87171; background: rgba(248, 113, 113, 0.1); }
+
+/* Split Layout (2 Cột dưới cùng) */
+.split-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 25px;
+}
+
+@media (max-width: 900px) {
+  .split-layout { grid-template-columns: 1fr; }
+}
+
+/* Tiện ích */
+.text-xs { font-size: 11px; }
+.text-sm { font-size: 13px; }
+.font-bold { font-weight: 700; }
+.font-semibold { font-weight: 600; }
+.text-green-400 { color: #4ade80; }
+.text-gray-400 { color: #94a3b8; }
+.text-blue-400 { color: #60a5fa; }
+.flex { display: flex; }
+.justify-between { justify-content: space-between; }
+.items-center { align-items: center; }
+.mb-3 { margin-bottom: 12px; }
+
+/* --- RECHARTS TOOLTIP CUSTOMIZATION --- */
+
+/* 1. Wrapper chính: Định vị và Z-index */
+.recharts-tooltip-wrapper {
+  z-index: 1000 !important; /* Đảm bảo luôn nổi lên trên cùng */
+  outline: none !important; /* Xóa đường viền xanh khi focus/click */
+  transition: transform 0.2s ease-out; /* Làm mượt chuyển động đi theo chuột */
+}
+
+/* 2. Định dạng nội dung bên trong Tooltip */
+/* Class này do Recharts tự sinh ra cho hộp nội dung mặc định */
+.recharts-default-tooltip {
+  background-color: rgba(15, 23, 42, 0.95) !important; /* Màu nền tối (Slate-900) */
+  border: 1px solid rgba(255, 255, 255, 0.2) !important; /* Viền sáng mờ */
+  border-radius: 12px !important; /* Bo góc mềm mại */
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5) !important; /* Đổ bóng sâu */
+  padding: 10px 15px !important;
+}
+
+/* 3. Chỉnh text bên trong */
+.recharts-tooltip-label {
+  color: #94a3b8 !important; /* Màu chữ tiêu đề (xám nhạt) */
+  font-size: 12px;
+  margin-bottom: 5px;
+  font-weight: 600;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+  padding-bottom: 5px;
+}
+
+.recharts-tooltip-item {
+  font-size: 13px;
+  padding-top: 3px !important;
+  padding-bottom: 3px !important;
+}
+
+/* Màu chữ giá trị (Value) */
+.recharts-tooltip-item-value {
+  color: #fff !important;
+  font-weight: bold;
+}
+.recharts-rectangle.recharts-tooltip-cursor{
+  fill: rgba(241, 241, 241, 0.1);
+}
+.recharts-tooltip-wrapper{
+  color: white;
+}
+.text-xs.text-blue-400{
+  background: transparent;
+}
+.text-xs.text-blue-400:hover, .text-xs.text-blue-400:active{
+  outline: none !important;
+}
+
+
+/* -------------------------------- CHAT SUPPORT STYLES -------------------------------- */
+
+.chat-layout {
+  display: flex;
+  gap: 20px;
+  height: 100%; /* Chiếm hết chiều cao panel */
+  overflow: hidden;
+  margin-top: 10px;
+}
+
+/* 1. Sidebar (Danh sách User) */
+.chat-sidebar {
+  width: 30%;
+  min-width: 250px;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-search {
+  padding: 15px;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  gap: 10px;
+}
+.chat-search input {
+  background: transparent; border: none; outline: none; color: white; width: 100%; font-size: 13px;
+}
+
+.user-list {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.user-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 15px;
+  cursor: pointer;
+  transition: 0.2s;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+}
+.user-item:hover { background: rgba(255, 255, 255, 0.05); }
+.user-item.active { background: rgba(59, 130, 246, 0.1); border-left: 3px solid #3b82f6; }
+
+.user-avatar {
+  width: 40px; height: 40px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+  color: #cbd5e1;
+}
+.status-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  position: absolute;
+  bottom: 0; right: 0;
+  border: 2px solid #1e293b;
+}
+.status-dot.online { background: #4ade80; }
+.status-dot.offline { background: #94a3b8; }
+
+.user-info { flex: 1; overflow: hidden; }
+.user-name-row { display: flex; justify-content: space-between; margin-bottom: 4px; }
+.user-info .name { font-size: 14px; font-weight: 600; color: #fff; }
+.user-info .time { font-size: 11px; color: #64748b; }
+.user-info .last-msg { font-size: 12px; color: #94a3b8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* 2. Chat Window (Cửa sổ chat) */
+.chat-window {
+  flex: 1;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Chat Header */
+.chat-header {
+  padding: 15px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(0,0,0,0.1);
+}
+.user-details { display: flex; align-items: center; gap: 12px; }
+.avatar-circle {
+  width: 36px; height: 36px; background: #60a5fa; color: white;
+  border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;
+}
+.chat-username { margin: 0; font-size: 15px; color: white; }
+.chat-status { font-size: 11px; color: #94a3b8; }
+
+/* Messages Area */
+.messages-area {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.message-row { display: flex; gap: 10px; max-width: 70%; }
+.message-row.sent { align-self: flex-end; flex-direction: row-reverse; }
+.message-row.received { align-self: flex-start; }
+
+.msg-avatar {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.message-row.received .msg-avatar { background: rgba(255,255,255,0.1); color: #cbd5e1; }
+.message-row.sent .msg-avatar { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+
+.message-bubble {
+  padding: 10px 14px;
+  border-radius: 12px;
+  position: relative;
+  font-size: 14px;
+  line-height: 1.4;
+}
+.message-row.received .message-bubble {
+  background: rgba(255, 255, 255, 0.1);
+  color: #e2e8f0;
+  border-top-left-radius: 2px;
+}
+.message-row.sent .message-bubble {
+  background: #3b82f6;
+  color: white;
+  border-top-right-radius: 2px;
+}
+
+.msg-time {
+  display: block;
+  font-size: 10px;
+  margin-top: 5px;
+  opacity: 0.7;
+  text-align: right;
+}
+
+/* Input Area */
+.chat-input-area {
+  padding: 15px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(0,0,0,0.1);
+}
+.chat-input-area input {
+  flex: 1;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 10px 15px;
+  border-radius: 20px;
+  color: white;
+  outline: none;
+}
+.chat-input-area input:focus { border-color: #3b82f6; }
+
+.icon-btn {
+  background: transparent; border: none; color: #94a3b8; cursor: pointer; padding: 5px; transition: 0.2s;
+}
+.icon-btn:hover { color: white; }
+
+.send-btn {
+  background: #3b82f6; color: white; border: none;
+  width: 36px; height: 36px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: 0.2s;
+}
+.send-btn:hover { background: #2563eb; transform: scale(1.05); }
+
+/* Empty State */
+.empty-chat {
+  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #64748b;
+}
+.empty-chat p { margin-top: 10px; font-size: 14px; }

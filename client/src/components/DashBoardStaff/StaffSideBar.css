@@ -1,0 +1,56 @@
+/* --- SUBMENU STYLES --- */
+
+/* Mũi tên chỉ xuống/ngang */
+.arrow-icon {
+  margin-left: auto; 
+  transition: transform 0.3s ease;
+  opacity: 0.6;
+}
+
+.menu-item.expanded .arrow-icon {
+  transform: rotate(180deg);
+  opacity: 1;
+}
+
+/* Container chứa menu con */
+.submenu-container {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.7s ease-in-out, opacity 0.6s ease-in-out;
+  background: rgba(0, 0, 0, 0.2);
+  margin-left:10px;
+  border-radius: 8px;
+  margin-bottom: 0; 
+}
+.submenu-container.open {
+  max-height: 300px; 
+  opacity: 1;
+  margin-bottom: 5px;
+  padding-top: 5px; 
+}
+/* Item con */
+.submenu-item {
+  display: flex;
+  align-items: center;
+  padding: 10px 10px 10px 45px;
+  font-size: 13px;
+  color: #fafcff;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+}
+
+
+
+.submenu-item:hover {
+  color: #e7f2ff;
+  transform: translateX(10px);
+}
+
+.submenu-item.active {
+  color: #95c5ff;
+  background: rgba(59, 130, 246, 0.1);
+  font-weight: 600;
+  border-right: 3px solid #2a86f6;
+}

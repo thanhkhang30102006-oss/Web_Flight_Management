@@ -1,130 +1,79 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Header } from "../components/DashboardUser/header";
 import StaffSidebar from "../components/DashBoardStaff/StaffSideBar";
+import videoWallpaper from "../assets//videos/backgroud-wallpaper-staff.mp4";
+
 // File CSS bố cục (đã tạo ở bước trước)
-import "../pages/DashboardLayout.css";
+import "./StaffDashboard.css";
+import DashboardOverview from "../components/DashBoardStaff/DashboardOverview";
+import FlightManagement from "../components/DashBoardStaff/FlightManagement";
+import BookingOperations from "../components/DashBoardStaff/BookingOperations";
+import RevenueReports from "../components/DashBoardStaff/RevenueReports";
+import CustomerSupport from "../components/DashBoardStaff/CustomerSupport";
 
-/* --- KHU VỰC CÁC COMPONENT CON (Sau này nên tách ra file riêng) --- */
-
-// 1. Quản lý chuyến bay (Tạo, Update, Xem chỗ)
-const FlightManagement = () => (
-  <div className="glass-panel fade-in">
-    <h2 className="panel-title">Quản lý chuyến bay</h2>
-    <div
-      className="action-buttons"
-      style={{ display: "flex", gap: "10px", marginBottom: "20px" }}
-    >
-      <button className="btn-primary">Thêm chuyến bay mới</button>
-      <button className="btn-secondary">
-        Cập nhật trạng thái (Delay/Cancel)
-      </button>
-    </div>
-    <p>
-      Bảng danh sách chuyến bay + Cột hiển thị % ghế (Load Factor) sẽ ở đây...
-    </p>
-  </div>
-);
-
-// 2. Nghiệp vụ vé (Tìm, Sửa, Hủy, Hoàn tiền)
-const BookingOperations = () => (
-  <div className="glass-panel fade-in">
-    <h2 className="panel-title">Tra cứu & Xử lý đặt chỗ</h2>
-    <div className="search-box" style={{ marginBottom: "20px" }}>
-      <input
-        type="text"
-        placeholder="Nhập mã đặt chỗ hoặc SĐT khách..."
-        style={{ padding: "10px", borderRadius: "8px", width: "300px" }}
-      />
-      <button className="btn-search">Tìm kiếm</button>
-    </div>
-    <div className="features-grid">
-      <div className="card">Đổi ngày bay/Ghế</div>
-      <div className="card">Hủy vé & Hoàn tiền</div>
-    </div>
-  </div>
-);
-
-// 3. Báo cáo doanh thu
-const RevenueReports = () => (
-  <div className="glass-panel fade-in">
-    <h2 className="panel-title">Báo cáo doanh thu</h2>
-    <div className="filters">
-      <button>Theo Ngày</button> <button>Theo Tuần</button>{" "}
-      <button>Theo Tháng</button>
-    </div>
-    <div
-      className="chart-placeholder"
-      style={{
-        height: "300px",
-        background: "rgba(0,0,0,0.2)",
-        marginTop: "20px",
-      }}
-    >
-      {/* Nơi vẽ biểu đồ ChartJS hoặc Recharts */}
-      <p style={{ textAlign: "center", paddingTop: "130px" }}>
-        Biểu đồ doanh thu hiển thị tại đây
-      </p>
-    </div>
-  </div>
-);
-
-// 4. Chat hỗ trợ
-const CustomerSupport = () => (
-  <div className="glass-panel fade-in">
-    <h2 className="panel-title">Hỗ trợ trực tuyến</h2>
-    <div className="chat-layout" style={{ display: "flex", gap: "20px" }}>
-      <div className="user-list" style={{ width: "30%" }}>
-        Danh sách khách đang chờ...
-      </div>
-      <div
-        className="chat-window"
-        style={{ width: "70%", height: "400px", border: "1px solid #ccc" }}
-      >
-        Khung chat
-      </div>
-    </div>
-  </div>
-);
-
-const DashboardOverview = () => (
-  <div className="glass-panel">
-    <h2>Xin chào, Staff!</h2>
-    <p>Chọn một chức năng bên trái để bắt đầu làm việc.</p>
-  </div>
-);
-
-/* --- MAIN DASHBOARD COMPONENT --- */
-
+// Dữ liệu mô phỏng bảng `flightinformations`
 const StaffDashboard = () => {
   const [currentTab, setCurrentTab] = useState("dashboard");
 
-  // Hàm điều hướng hiển thị nội dung
+  // Hàm render nội dung dựa trên tab được chọn
   const renderContent = () => {
     switch (currentTab) {
       case "dashboard":
         return <DashboardOverview />;
+
+      // Nhóm Flight Management
       case "flight-mgt":
+      case "flight-create":
+      case "flight-schedule":
+      case "flight-status":
+      case "flight-load":
+        // Ở đây tạm thời return FlightManagement chung,
+        // sau này bạn có thể tạo component riêng cho Create/Schedule...
         return <FlightManagement />;
-      case "booking-mgt":
+
+      // Nhóm Booking Operations
+      case "booking-ops":
+      case "booking-search":
+      case "booking-change":
+      case "booking-cancel":
+      case "booking-refund":
         return <BookingOperations />;
+
+      // Nhóm Revenue
       case "revenue":
+      case "report-daily":
+      case "report-weekly":
+      case "report-monthly":
         return <RevenueReports />;
+
+      // Nhóm Support
       case "support":
+      case "support-chat":
         return <CustomerSupport />;
+
       default:
         return <DashboardOverview />;
     }
   };
-
   return (
-    <div className="dashboard-container">
-      {/* Sidebar bên trái */}
+    <div className="dashboard-layout">
+      {/* Background Video */}
+      <video className="background-video" autoPlay muted loop playsInline>
+        <source src={videoWallpaper} type="video/webm" />
+        {/* Fallback nếu không chạy được */}
+        <source src={videoWallpaper} type="video/mp4" />
+      </video>
+
+      {/* Lớp phủ mờ */}
+      <div className="video-overlay"></div>
+
+      {/* Sidebar */}
       <StaffSidebar currentTab={currentTab} onTabChange={setCurrentTab} />
 
-      {/* Main Content bên phải */}
+      {/* Nội dung chính */}
       <main className="main-content">
-        <Header /> {/* Header dùng chung, tự hiện tên Staff */}
-        <div className="content-body">{renderContent()}</div>
+        <Header />
+        <div className="content-container">{renderContent()}</div>
       </main>
     </div>
   );
