@@ -46,6 +46,8 @@ const PaymentPage = () => {
       const loggedInUser = storedUserStr ? JSON.parse(storedUserStr) : null;
 
       const currentPassengerID = loggedInUser?.id;
+
+      const contactPassenger = passenger;
       console.log(currentPassengerID);
       const currentPaymentID = paymentInfo?.paymentID;
       const currentFlightNumber = flight?.flightNumber;
@@ -83,6 +85,7 @@ const PaymentPage = () => {
         paymentID: currentPaymentID,
         seats: seatsData,
         ticketInfo: ticketData,
+        contactPassenger: contactPassenger,
       };
 
       console.log("Dữ liệu gửi đi Backend:", payload);

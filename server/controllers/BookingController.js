@@ -238,8 +238,14 @@ const finalizeBooking = async (req, res) => {
   const t = await sequelize.transaction();
 
   try {
-    const { flightNumber, passengerID, paymentID, seats, ticketInfo } =
-      req.body;
+    const {
+      flightNumber,
+      passengerID,
+      paymentID,
+      seats,
+      ticketInfo,
+      contactPassenger,
+    } = req.body;
 
     const [updatedCount] = await Payment.update(
       { paymentState: "completed" },
@@ -268,6 +274,10 @@ const finalizeBooking = async (req, res) => {
       ticketBookTime: new Date(),
       ticketState: "valid",
       paymentID: paymentID,
+      contactName: contactPassenger.name,
+      contactEmail: contactPassenger.email,
+      contactPhone: contactPassenger.phone,
+      contactPassport: contactPassenger.passport,
     }));
 
     const createdTickets = await Ticket.bulkCreate(ticketsToCreate, {
