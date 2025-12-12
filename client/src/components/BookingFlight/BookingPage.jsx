@@ -28,8 +28,12 @@ const BookingPage = () => {
   const [mySocketID, setMySocketID] = useState(null);
   const [pendingSeats, setPendingSeats] = useState([]);
   const [pendingBooking, setPendingBooking] = useState(null);
+  const pendingBookingRef = useRef(pendingBooking);
   const isNavigatingToPayment = useRef(false);
   const [dbOccupiedSeats, setDbOccupiedSeats] = useState([]);
+  useEffect(() => {
+    pendingBookingRef.current = pendingBooking;
+  }, [pendingBooking]);
   useEffect(() => {
     const fetchOccupiedSeats = async () => {
       const currentFlight = location.state?.flight || pendingBooking?.flight;
@@ -104,13 +108,64 @@ const BookingPage = () => {
       setPendingSeats((prev) => prev.filter((id) => id !== seatId));
     };
 
+    const handleSeatOccupied = ({ seats }) => {
+      const flightNumStr = String(flight.flightNumber);
+      setDbOccupiedSeats((prev) => {
+        const newOccupied = seats.map((seat) => ({
+          seatNumber: seat,
+        }));
+        const prevIds = prev.map((p) => p.seatNumber);
+        const uniqueNew = newOccupied.filter(
+          (n) => !prevIds.includes(n.seatNumber)
+        );
+        const merged = [...prev, ...newOccupied];
+        return merged;
+      });
+
+      const flightNum = flight.flightNumber;
+      const seatIdBaseOnSystem = seats.map((seat) =>
+        seat.replace(flightNum, "")
+      );
+
+      setPendingSeats((prev) =>
+        prev.filter((id) => !seatIdBaseOnSystem.includes(id))
+      );
+
+      setLiveSelections((prev) => {
+        const updated = { ...prev };
+        seatIdBaseOnSystem.forEach((seatId) => {
+          if (updated[seatId]) delete updated[seatId];
+        });
+        return updated;
+      });
+
+      const currentPending = pendingBookingRef.current;
+      if (currentPending && currentPending.selectedSeats) {
+        const myPendingIds = currentPending.selectedSeats.map((s) => s.id);
+
+        const isMyBookingSuccess = myPendingIds.some((id) =>
+          seatIdBaseOnSystem.includes(id)
+        );
+
+        if (isMyBookingSuccess) {
+          console.log("Thanh toán thành công! Đang xóa timer...");
+
+          // Chặn timer và xóa timer
+          setPendingBooking(null);
+          setSelectedSeats([]);
+        }
+      }
+    };
+
     socket.on("updateSeatMap", handleUpdateMap);
     socket.on("seatsLocked", handleSeatsLocked);
     socket.on("seatUnlocked", handleSeatUnlocked);
+    socket.on("seatsSold", handleSeatOccupied);
     return () => {
       socket.off("updateSeatMap", handleUpdateMap);
       socket.off("seatsLocked", handleSeatsLocked);
       socket.off("seatUnlocked", handleSeatUnlocked);
+      socket.on("seatsSold", handleSeatOccupied);
     };
   }, [socket, flight.flightNumber]);
   useEffect(() => {
@@ -161,7 +216,6 @@ const BookingPage = () => {
       if (currentTime >= expiredTime) {
         alert("Thời gian giữ ghế đã hết! Bạn có thể đặt lại.");
 
-        // --- ĐOẠN CODE CẦN THÊM ---
         if (socket && pendingBooking.selectedSeats) {
           // Lấy danh sách ID ghế
           const seatsToUnlock = pendingBooking.selectedSeats.map((s) => s.id);
@@ -549,15 +603,15 @@ const BookingPage = () => {
       {pendingBooking && (
         <div
           style={{
-            position: "fixed", // Cố định vị trí
-            bottom: 0, // Dính sát đáy
-            left: 0, // Dính sát trái
-            width: "100%", // Rộng toàn màn hình
+            position: "fixed",
+            bottom: 0,
+            left: 0,
+            width: "100%",
             background: "white",
-            boxShadow: "0 -2px 10px rgba(0,0,0,0.2)", // Đổ bóng nhẹ cho đẹp
+            boxShadow: "0 -2px 10px rgba(0,0,0,0.2)",
             padding: "10px 20px",
-            zIndex: 9999, // Luôn nổi lên trên
-            borderTop: "3px solid #f0ad4e", // Viền vàng cảnh báo
+            zIndex: 9999,
+            borderTop: "3px solid #f0ad4e",
             display: "flex",
             flexDirection: "column",
             gap: "5px",
@@ -566,7 +620,7 @@ const BookingPage = () => {
           {/* Component Timer Thanh Ngang */}
           <CountdownTimer
             targetDate={pendingBooking.expiredTime}
-            totalDuration={600} // Giả sử 10 phút, bạn có thể chỉnh số này
+            totalDuration={600}
             onExpire={() => {
               alert("Hết giờ giữ ghế!");
             }}

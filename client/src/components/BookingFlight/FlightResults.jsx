@@ -13,10 +13,10 @@ import {
   CreditCard,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { useEffect } from "react";
 
 // Rót dữ liệu vào
 
-// --- 2. COMPONENT: MODAL CHỌN GHẾ & ĐIỀN THÔNG TIN ---
 const BookingModal = ({ flight, onClose }) => {
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [passengerInfo, setPassengerInfo] = useState({
@@ -420,7 +420,8 @@ const FlightResults = ({ searchTriggered, flights = [] }) => {
                 </div>
                 {/**Phải edit lại số chỗ floghtTotalSeat- seatAlreadyBooked */}
                 <div className="fc-seat-info">
-                  <Armchair size={14} /> Còn {flight.flightTotalSeat} chỗ
+                  <Armchair size={14} /> Còn{" "}
+                  {flight.flightTotalSeat - flight.seatCount} chỗ
                 </div>
                 <button
                   className="btn-select"

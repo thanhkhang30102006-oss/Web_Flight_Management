@@ -9,6 +9,7 @@ import BookingPage from "./components/BookingFlight/BookingPage.jsx";
 import PaymentPage from "./components/BookingFlight/PaymentPage.jsx";
 import StaffDashboard from "./pages/StaffDashboard.jsx";
 import AdminDashboard from "./pages/AdminDashboard.jsx";
+import BookSuccess from "./components/BookingFlight/BookingSuccess.jsx";
 export default function App() {
   return (
     <Routes>
@@ -19,6 +20,7 @@ export default function App() {
       <Route path="/loginsignup" element={<LoginSignupPage />} />
       <Route path="/user" element={<DashBoard />} />
       <Route path="/user/booking-details" element={<BookingPage />} />
+      <Route path="/user/booking-success" element={<BookSuccess />} />
       <Route path="/user/payment" element={<PaymentPage />} />
       <Route path="*" element={<HomePage />} />
       <Route path="/staff-dashboard" element={<StaffDashboard />} />
