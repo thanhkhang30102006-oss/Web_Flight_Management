@@ -22,6 +22,8 @@ const PaymentPage = () => {
     paymentInfo,
     expiredTime,
   } = location.state || {};
+  const [isPaymentSuccess, setIsPaymentSuccess] = useState(false);
+  const timerRef = useRef(null);
   const getSeatType = (seatCode, totalSeats) => {
     console.log(seatCode, "   ", totalSeats);
     const codeStr = String(seatCode);
@@ -35,8 +37,7 @@ const PaymentPage = () => {
     return "economy";
   };
   const MOCK_PAYMENT_DELAY = 10000;
-  const [isMockPaymentSuccessful, setIsMockPaymentSuccessful] = useState(false);
-
+  const [isPressButton, setIsPressButton] = useState(false);
   const handleProcessBooking = async () => {
     setIsProcessing(true);
 
@@ -46,6 +47,8 @@ const PaymentPage = () => {
       const loggedInUser = storedUserStr ? JSON.parse(storedUserStr) : null;
 
       const currentPassengerID = loggedInUser?.id;
+
+      const contactPassenger = passenger;
       console.log(currentPassengerID);
       const currentPaymentID = paymentInfo?.paymentID;
       const currentFlightNumber = flight?.flightNumber;
@@ -83,6 +86,7 @@ const PaymentPage = () => {
         paymentID: currentPaymentID,
         seats: seatsData,
         ticketInfo: ticketData,
+        contactPassenger: contactPassenger,
       };
 
       console.log("Dữ liệu gửi đi Backend:", payload);
@@ -101,8 +105,11 @@ const PaymentPage = () => {
       const result = await response.json();
 
       if (result.success) {
+        setIsPaymentSuccess(true);
         disconnectSocket();
         alert(t("paymentPage.alerts.success", "Thanh toán thành công!"));
+        setIsPressButton(false);
+        localStorage.removeItem("pendingBooking");
         navigate("/user/booking-success", {
           state: { flight, passenger, totalPrice, ticketInfo: result.data },
         });
@@ -117,7 +124,13 @@ const PaymentPage = () => {
     }
   };
 
-  useEffect(() => {
+  const handleConfirmPayment = () => {
+    if (isPressButton || isProcessing) {
+      return;
+    }
+
+    setIsPressButton(true);
+
     if (!flight) {
       navigate("/");
       return;
@@ -129,13 +142,19 @@ const PaymentPage = () => {
       } giây...`
     );
 
-    const timer = setTimeout(() => {
+    timerRef.current = setTimeout(() => {
       console.log("Đã hết 10 giây. Bắt đầu gọi API xử lý đơn hàng...");
       handleProcessBooking();
     }, MOCK_PAYMENT_DELAY);
+  };
 
-    return () => clearTimeout(timer);
-  }, [flight, navigate]);
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+    };
+  }, []);
   const handleGoHome = () => {
     disconnectSocket();
     navigate("/user");
@@ -151,7 +170,7 @@ const PaymentPage = () => {
 
     disconnectSocket();
 
-    navigate("/user");
+    navigate(-1);
   };
   const BANK_ID = "970418";
   const ACCOUNT_NO = "8852915518";
@@ -315,6 +334,19 @@ const PaymentPage = () => {
             </p>
           </div>
         </motion.div>
+
+        <button
+          className={`test-button ${isPressButton ? "disabled" : ""}`}
+          onClick={handleConfirmPayment}
+          style={{
+            opacity: isPressButton || isProcessing ? 0.7 : 1,
+            cursor: isPressButton || isProcessing ? "wait" : "pointer",
+            pointerEvents: isPressButton || isProcessing ? "none" : "auto",
+            zIndex: 999999,
+          }}
+        >
+          {isPressButton ? `Đang xác thực giao dịch...` : "Đã thanh toán"}
+        </button>
       </div>
     </>
   );

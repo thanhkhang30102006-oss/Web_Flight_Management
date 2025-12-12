@@ -79,11 +79,17 @@ const SeatMap = ({
           let statusColorClass = "text-green";
 
           if (holderSocketId && holderSocketId === mySocketID) {
-            statusText = "Đang chọn (Tôi)";
+            statusText = " Đang chọn (Tôi)";
             statusColorClass = "text-green";
           } else if (holderSocketId) {
-            statusText = "Đang được chọn (Khách khác)";
+            statusText = " Đang được chọn (Khách khác)";
             statusColorClass = "text-orange";
+          } else if (isPending) {
+            statusText = " Đang bị giữ";
+            statusColorClass = "text-red";
+          } else if (isSold) {
+            statusText = " Đã bán";
+            statusColorClass = "text-gray";
           }
           const typeText = type === "business" ? "Thương gia" : "Phổ thông";
           const currentPrice =

@@ -4,7 +4,6 @@ const { DATEONLY } = require("sequelize");
 const Flight = db.FlightInformation;
 const Passenger = db.Passenger;
 const Payment = db.Payment;
-
 const Seat = db.Seat;
 const Ticket = db.Ticket;
 const { Op } = require("sequelize");
@@ -111,42 +110,51 @@ const SearchFlights = async (req, res) => {
       return res.status(200).json([]);
     }
 
-    const flightWithPrice = flights.map((flight) => {
-      const basePrices = { economy: 1000000, business: 3000000 };
+    const flightWithPrice = await Promise.all(
+      flights.map(async (flight) => {
+        const basePrices = { economy: 1000000, business: 3000000 };
 
-      const departureFullStr = `${flight.departureDay}T${flight.departureTime}`;
-      const arriveFullStr = `${flight.arriveDay}T${flight.arriveTime}`;
-      const departureDate = new Date(departureFullStr);
-      const arriveDate = new Date(arriveFullStr);
-      const now = new Date();
+        const departureFullStr = `${flight.departureDay}T${flight.departureTime}`;
+        const arriveFullStr = `${flight.arriveDay}T${flight.arriveTime}`;
+        const departureDate = new Date(departureFullStr);
+        const arriveDate = new Date(arriveFullStr);
+        const now = new Date();
 
-      // Tính tiền theo thời lượng (1h = 500k)
-      const flightDurationMs = arriveDate - departureDate;
-      const flightDurationHours = flightDurationMs / (1000 * 60 * 60);
-      const pricePerDuration = Math.round(flightDurationHours * 500000);
+        // Tính tiền theo thời lượng (1h = 500k)
+        const flightDurationMs = arriveDate - departureDate;
+        const flightDurationHours = flightDurationMs / (1000 * 60 * 60);
+        const pricePerDuration = Math.round(flightDurationHours * 500000);
 
-      const timeUntilDepartureMs = departureDate - now;
-      const daysUntilDeparture = timeUntilDepartureMs / (1000 * 60 * 60 * 24);
+        const timeUntilDepartureMs = departureDate - now;
+        const daysUntilDeparture = timeUntilDepartureMs / (1000 * 60 * 60 * 24);
 
-      let discountPercent = 0;
-      if (daysUntilDeparture >= 30) {
-        discountPercent = 0.05;
-      }
+        let discountPercent = 0;
+        if (daysUntilDeparture >= 30) {
+          discountPercent = 0.05;
+        }
 
-      // Hàm tính giá cuối cùng
-      const calculateFinal = (base) => {
-        const gross = base + pricePerDuration;
-        return Math.round(gross - gross * discountPercent);
-      };
+        // Hàm tính giá cuối cùng
+        const calculateFinal = (base) => {
+          const gross = base + pricePerDuration;
+          return Math.round(gross - gross * discountPercent);
+        };
 
-      return {
-        ...flight,
-        finalPrice: {
-          economy: calculateFinal(basePrices.economy),
-          business: calculateFinal(basePrices.business),
-        },
-      };
-    });
+        const count = await Seat.count({
+          where: {
+            flightNumber: flight.flightNumber,
+          },
+        });
+
+        return {
+          ...flight,
+          seatCount: count,
+          finalPrice: {
+            economy: calculateFinal(basePrices.economy),
+            business: calculateFinal(basePrices.business),
+          },
+        };
+      })
+    );
     res.status(200).json(flightWithPrice);
   } catch (error) {
     res.status(500).json({ message: "Lỗi server: " + error.message });
@@ -154,7 +162,7 @@ const SearchFlights = async (req, res) => {
 };
 
 // Xử lý đẩy thanh toán lên và lock-pending
-const timeLock = 2 * 60 * 1000;
+const timeLock = 4 * 60 * 1000;
 const createPayment = async (req, res) => {
   try {
     const { flightId, seats, totalPrice, passengerInfo } = req.body;
@@ -192,11 +200,14 @@ const createPayment = async (req, res) => {
       const lockKey = `${flightId}_${seat.id}`;
       const timer = setTimeout(async () => {
         delete global.lockedSeats[lockKey];
-        await Payment.update(
+        const [updateRow] = await Payment.update(
           { paymentState: "expired" },
-          { where: { paymentID: generatedPaymentID } }
+          { where: { paymentID: generatedPaymentID, paymentState: "pending" } }
         );
-        io.to(flightId).emit("seatUnlocked", { seatId: seat.id });
+
+        if (updateRow > 0) {
+          io.to(flightId).emit("seatUnlocked", { seatId: seat.id });
+        }
       }, timeLock);
 
       global.lockedSeats[lockKey] = {
@@ -236,11 +247,31 @@ const generateUniqueId = (prefix) => {
 const finalizeBooking = async (req, res) => {
   const sequelize = db.sequelize;
   const t = await sequelize.transaction();
-
+  const io = req.app.get("socketio");
   try {
-    const { flightNumber, passengerID, paymentID, seats, ticketInfo } =
-      req.body;
+    const {
+      flightNumber,
+      passengerID,
+      paymentID,
+      seats,
+      ticketInfo,
+      contactPassenger,
+    } = req.body;
 
+    if (global.lockedSeats) {
+      seats.forEach((seat) => {
+        const lockKey = `${flightNumber}_${seat.seatNumber}`;
+
+        if (global.lockedSeats[lockKey]) {
+          const lockData = global.lockedSeats[lockKey];
+          if (lockData.timer) {
+            clearTimeout(lockData.timer);
+          }
+
+          delete global.lockedSeats[lockKey];
+        }
+      });
+    }
     const [updatedCount] = await Payment.update(
       { paymentState: "completed" },
       {
@@ -249,17 +280,23 @@ const finalizeBooking = async (req, res) => {
       }
     );
     // Seats
-    const seatsPayload = seats.map((seat) => ({
-      seatNumber: seat.seatNumber,
-      seatType: seat.seatType,
-      seatState: "occupied",
-      flightNumber: flightNumber,
-    }));
+    const soldSeatIds = [];
+    const seatsPayload = seats.map((seat) => {
+      const combinedSeatId = `${seat.seatNumber}`;
+
+      soldSeatIds.push(combinedSeatId);
+      return {
+        seatNumber: seat.seatNumber,
+        seatType: seat.seatType,
+        seatState: "occupied",
+        flightNumber: flightNumber,
+      };
+    });
 
     await Seat.bulkCreate(seatsPayload, {
       updateOnDuplicate: ["seatState", "seatType"],
     });
-
+    // Ticket
     const ticketsToCreate = seats.map((seat) => ({
       ticketID: generateUniqueId("TKT"),
       passengerID: passengerID,
@@ -268,13 +305,20 @@ const finalizeBooking = async (req, res) => {
       ticketBookTime: new Date(),
       ticketState: "valid",
       paymentID: paymentID,
+      contactName: contactPassenger.name,
+      contactEmail: contactPassenger.email,
+      contactPhone: contactPassenger.phone,
+      contactPassport: contactPassenger.passport,
     }));
 
     const createdTickets = await Ticket.bulkCreate(ticketsToCreate, {
       transaction: t,
     });
-
     await t.commit();
+    io.to(flightNumber).emit("seatsSold", {
+      flightNumber: flightNumber,
+      seats: soldSeatIds,
+    });
 
     return res.status(200).json({
       success: true,
