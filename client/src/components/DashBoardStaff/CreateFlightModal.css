@@ -1,0 +1,91 @@
+/* --- MODAL STYLES --- */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.7); /* Nền tối mờ */
+  backdrop-filter: blur(5px);
+  border-radius: 24px;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.45); 
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  width: 600px;
+  max-width: 90%;
+  background: rgba(30, 41, 59, 0.95); 
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+  padding: 30px;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 15px;
+  margin-bottom: 20px;
+}
+
+.btn-close {
+  background: transparent; border: none; color: #94a3b8; cursor: pointer; transition: 0.2s;
+}
+.btn-close:hover { color: #f87171; transform: scale(1.1); }
+
+/* Form Elements */
+.flight-form { display: flex; flex-direction: column; gap: 15px; }
+
+.form-row { display: flex; gap: 15px; align-items: center; }
+.form-group { flex: 1; display: flex; flex-direction: column; gap: 5px; }
+.form-group label { font-size: 14px; color: #eeeeee; font-weight: 500; }
+
+.input-with-icon {
+  position: relative;
+  display: flex; align-items: center;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 0 10px;
+}
+.input-with-icon svg { color: #94a3b8; margin-right: 8px; }
+.input-with-icon input, 
+.input-with-icon select {
+  width: 100%; background: transparent; border: none; color: white;
+  padding: 10px 0; outline: none; font-size: 14px;
+}
+.input-with-icon select { cursor: pointer; }
+.input-with-icon input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1); cursor: pointer;
+}
+
+.arrow-separator { font-size: 20px; color: #64748b; margin-top: 15px; }
+.form-section-label { 
+    font-size: 13px; color: #60a5fa; font-weight: 600; margin-top: 5px; 
+    border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 5px;
+}
+
+/* Modal Footer Buttons */
+.modal-footer {
+  display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;
+  padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+.btn-cancel {
+  background: transparent; border: 1px solid rgba(255, 255, 255, 0.2); color: #cbd5e1;
+  padding: 10px 20px; border-radius: 8px; cursor: pointer; transition: 0.2s;
+}
+.btn-cancel:hover { background: rgba(255,255,255,0.1); color: white; }
+
+.btn-save {
+  background: #2eff66ba; /* Màu xanh của bạn */
+  color: #0f172a;
+  border: none;
+  padding: 10px 25px; border-radius: 8px; cursor: pointer; font-weight: 700;
+  display: flex; align-items: center; gap: 8px;
+  box-shadow: 0 4px 15px rgba(46, 255, 102, 0.3);
+  transition: 0.2s;
+}
+.btn-save:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(46, 255, 102, 0.4); }

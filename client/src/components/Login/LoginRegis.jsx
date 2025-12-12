@@ -199,6 +199,14 @@ const LoginRegis = () => {
         localStorage.setItem("userRole", userRole);
         localStorage.setItem("userData", JSON.stringify(data.user));
 
+        if (data.user && data.user.privateKey) {
+          const storageKey =
+            userRole === "staff"
+              ? "STAFF_PRIVATE_KEY"
+              : "PASSENGER_PRIVATE_KEY";
+          localStorage.setItem(storageKey, data.user.privateKey);
+          console.log(`Đã lưu Private Key cho ${userRole} vào LocalStorage!`);
+        }
         alert(`Đăng nhập thành công!`);
         navigate(redirectPath);
       }
@@ -293,19 +301,28 @@ const LoginRegis = () => {
       alert("Vui lòng kiểm tra lại mật khẩu!");
       return;
     }
+    try {
+      const response = await fetch(`api/user/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(registerData),
+      });
 
-    const response = await fetch(`api/user/register`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(registerData),
-    });
-
-    const data = await response.json();
-    if (!response.ok) throw new Error("Request failed");
-    else {
-      // Chuyển hướng qua login
-      alert("Đăng ký thành công");
-      toggleView();
+      const data = await response.json();
+      if (!response.ok) {
+        alert(data.message || "Đăng ký thất bại");
+      } else {
+        // Chuyển hướng qua login
+        if (data.privateKey) {
+          localStorage.setItem("PASSENGER_PRIVATE_KEY", data.privateKey);
+          console.log("Đã lưu Private Key ngay sau khi đăng ký!");
+        }
+        alert("Đăng ký thành công");
+        toggleView();
+      }
+    } catch (error) {
+      console.error("Register Error:", error);
+      alert("Lỗi kết nối khi đăng ký");
     }
   };
 

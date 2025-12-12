@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import {
   Plus,
   Search,
@@ -10,7 +10,7 @@ import {
   ChevronRight,
   Plane,
 } from "lucide-react";
-import { DB_FLIGHTS } from "../../data/staffMockData";
+import CreateFlightModal from "./CreateFlightModal";
 
 // Hàm giả lập tính giờ đến (Departure + 2h15p)
 const calculateArrivalTime = (depTime) => {
@@ -36,17 +36,61 @@ const FlightManagement = () => {
   const [filterStatus, setFilterStatus] = useState("all"); // 'all' | 'active' | 'delayed' | 'cancelled'
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8; // Số dòng mỗi trang
+  const [refreshKey, setRefreshKey] = useState(0);
+  const [flights, setFlights] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  // useEffect load dữ liệu ra trang
+  useEffect(() => {
+    const getFlights = async () => {
+      try {
+        const res = await fetch(
+          "http://localhost:3001/api/staff/flightmanagement/showflight"
+        );
+
+        if (!res.ok) {
+          console.log("Lỗi server");
+          return;
+        }
+
+        const data = await res.json();
+        if (Array.isArray(data)) {
+          setFlights(data);
+          console.log("Đã load lại dữ liệu!", data);
+        } else {
+          setFlights([]);
+        }
+      } catch (err) {
+        console.error(err);
+        setFlights([]);
+      }
+    };
+    getFlights();
+  }, [refreshKey]);
+  const handleCreateFlight = (newFlightData) => {
+    // Thêm vào đầu danh sách
+    const newFlight = {
+      ...newFlightData,
+      // Nếu không nhập giờ đến thì tự tính giả lập để hiển thị cho đẹp
+      arriveTime:
+        newFlightData.arriveTime ||
+        calculateArrivalTime(newFlightData.departureTime),
+    };
+
+    setFlights([newFlight, ...flights]);
+    alert(`Đã tạo chuyến bay ${newFlight.flightNumber} thành công!`);
+  };
 
   // 1. Lọc dữ liệu
   const filteredFlights = useMemo(() => {
-    return DB_FLIGHTS.filter((flight) => {
+    if (!flights) return []; // Check null
+    return flights.filter((flight) => {
       // Lọc theo search (ID hoặc Route)
       const matchesSearch =
-        flight.flightNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        flight.flightNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         flight.departurePoint
-          .toLowerCase()
+          ?.toLowerCase()
           .includes(searchTerm.toLowerCase()) ||
-        flight.arrivePoint.toLowerCase().includes(searchTerm.toLowerCase());
+        flight.arrivePoint?.toLowerCase().includes(searchTerm.toLowerCase());
 
       // Lọc theo status
       const matchesStatus =
@@ -54,8 +98,7 @@ const FlightManagement = () => {
 
       return matchesSearch && matchesStatus;
     });
-  }, [searchTerm, filterStatus]);
-
+  }, [searchTerm, filterStatus, flights]);
   // 2. Phân trang
   const totalPages = Math.ceil(filteredFlights.length / itemsPerPage);
   const displayedFlights = filteredFlights.slice(
@@ -78,13 +121,22 @@ const FlightManagement = () => {
           <h2 className="panel-title">Quản lý chuyến bay</h2>
           <p
             className="sub-text"
-            style={{ fontSize: "13px", color: "#94a3b8" }}
+            style={{ fontSize: "13px", color: "#dfe6f0ff" }}
           >
             Tổng số chuyến bay hôm nay:{" "}
-            <strong style={{ color: "#fff" }}>{DB_FLIGHTS.length}</strong>
+            <strong style={{ color: "#fff" }}>{flights.length}</strong>
           </p>
         </div>
-        <button className="btn-action primary">
+        <button
+          className="btn-action primary"
+          onClick={() => setIsModalOpen(true)}
+          style={{
+            background: "#2eff66ba",
+            border: "1px solid rgba(255, 255, 255, 0.6)",
+            boxShadow: "2px 0 10px rgba(0, 0, 0, 0.45)",
+            color: "#0f172a",
+          }}
+        >
           <Plus size={18} /> Thêm chuyến mới
         </button>
       </div>
@@ -205,6 +257,12 @@ const FlightManagement = () => {
           </tbody>
         </table>
       </div>
+      {/* --- MODAL COMPONENT --- */}
+      <CreateFlightModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSave={handleCreateFlight}
+      />
 
       {/* FOOTER: Pagination */}
       {totalPages > 1 && (

@@ -54,43 +54,67 @@ function StaffSidebar({ currentTab, onTabChange }) {
   const menuItems = [
     {
       id: "dashboard",
-      name: "Tổng quan",
+      name: t("sidebar.dashboard", "Tổng quan"),
       icon: <LayoutDashboard size={20} />,
       type: "single", // Menu đơn
     },
     {
       id: "flight-mgt",
-      name: "Quản lý chuyến bay",
+      name: t("sidebar.flightManagement", "Quản lý chuyến bay"),
       icon: <Plane size={20} />,
       type: "dropdown", // Menu cha
       subItems: [
-        { id: "flight-create", name: "Tạo chuyến bay" },
-        { id: "flight-schedule", name: "Lên lịch bay" },
-        { id: "flight-status", name: "Cập nhật trạng thái" }, // Delay/Cancel
-        { id: "flight-load", name: "Tình trạng ghế (Load)" },
+        {
+          id: "flight-create",
+          name: t("sidebar.createFlight", "Tạo chuyến bay"),
+        },
+        {
+          id: "flight-schedule",
+          name: t("sidebar.flightSchedule", "Lên lịch bay"),
+        },
+        {
+          id: "flight-status",
+          name: t("sidebar.updateStatus", "Cập nhật trạng thái"),
+        },
+        {
+          id: "flight-load",
+          name: t("sidebar.seatLoad", "Tình trạng ghế (Load)"),
+        },
       ],
     },
     {
       id: "booking-ops",
-      name: "Nghiệp vụ vé",
+      name: t("sidebar.bookingOps", "Nghiệp vụ vé"),
       icon: <Ticket size={20} />,
       type: "dropdown",
       subItems: [
-        { id: "booking-search", name: "Tra cứu vé" },
-        { id: "booking-change", name: "Đổi ngày/chỗ" },
-        { id: "booking-cancel", name: "Hủy vé" },
-        { id: "booking-refund", name: "Hoàn tiền" },
+        {
+          id: "booking-search",
+          name: t("sidebar.searchBooking", "Tra cứu vé"),
+        },
+        {
+          id: "booking-change",
+          name: t("sidebar.changeBooking", "Đổi ngày/chỗ"),
+        },
+        {
+          id: "booking-cancel",
+          name: t("sidebar.cancelBooking", "Hủy vé"),
+        },
+        {
+          id: "booking-refund",
+          name: t("sidebar.refund", "Hoàn tiền"),
+        },
       ],
     },
     {
       id: "revenue",
-      name: "Doanh thu & Báo cáo",
+      name: t("sidebar.revenueReports", "Doanh thu & Báo cáo"),
       icon: <BarChart3 size={20} />,
       type: "single",
     },
     {
       id: "support",
-      name: "Hỗ trợ khách hàng",
+      name: t("sidebar.customerSupport", "Hỗ trợ khách hàng"),
       icon: <MessageSquare size={20} />,
       type: "single",
     },
@@ -175,7 +199,7 @@ function StaffSidebar({ currentTab, onTabChange }) {
           <span className="icon-wrapper">
             <LogOut size={20} />
           </span>
-          <span className="item-name">Đăng xuất</span>
+          <span className="item-name">{t("sidebar.logout")}</span>
         </button>
       </div>
     </aside>

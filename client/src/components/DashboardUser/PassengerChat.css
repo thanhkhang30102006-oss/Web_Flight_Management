@@ -1,0 +1,332 @@
+/* Container chung */
+.passenger-chat-wrapper {
+  width: 100%;
+  height: calc(100vh - 150px); /* Trừ header/padding */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* --- 1. PRE-CHAT STYLES --- */
+.pre-chat-container {
+  width: 500px;
+  max-width: 95%;
+  text-align: center;
+  padding: 40px !important;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+}
+
+.icon-glow {
+  width: 80px; height: 80px;
+  background: rgba(59, 130, 246, 0.2);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 20px;
+  margin-left:10px;
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+}
+
+.welcome-title { font-size: 22px; margin-bottom: 10px; color: white; }
+.sub-text { color: #f5e4e4; font-size: 14px; margin-bottom: 30px; }
+
+.topic-selection {
+  width: 100%;
+  display: flex; flex-direction: column; gap: 12px;
+  margin-bottom: 30px;
+}
+
+.topic-item {
+  display: flex; align-items: center; gap: 15px;
+  padding: 12px 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: 0.3s;
+  color: #e2e8f0;
+  text-align: left;
+}
+
+.topic-item:hover { background: rgba(255, 255, 255, 0.1); transform: translateX(5px); }
+.topic-item.active {
+  background: rgba(59, 130, 246, 0.15);
+  border-color: #3b82f6;
+  color: white;
+}
+
+.radio-circle {
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  border: 2px solid #64748b;
+  display: flex; align-items: center; justify-content: center;
+}
+.topic-item.active .radio-circle { border-color: #3b82f6; }
+.dot { width: 8px; height: 8px; background: #3b82f6; border-radius: 50%; }
+
+.btn-start-chat {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  transition: 0.2s;
+  box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
+}
+.btn-start-chat:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(37, 99, 235, 0.5); }
+
+/* --- 2. CHAT INTERFACE STYLES --- */
+.chat-interface {
+  width: 800px; /* Rộng hơn pre-chat */
+  height: 600px;
+  max-width: 95%;
+  display: flex; flex-direction: column;
+  padding: 0 !important; /* Xóa padding mặc định của glass-panel */
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.chat-header {
+  padding: 15px 20px;
+  background: rgba(0, 0, 0, 0.2);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex; justify-content: space-between; align-items: center;
+}
+
+.support-info { display: flex; align-items: center; gap: 12px; }
+.avatar-support {
+  width: 40px; height: 40px;
+  background: rgba(59, 130, 246, 0.2);
+  color: #60a5fa;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+}
+.online-dot {
+  width: 10px; height: 10px; background: #4ade80;
+  border-radius: 50%; border: 2px solid #1e293b;
+  position: absolute; bottom: 0; right: 0;
+}
+.chat-header h3 { margin: 0; font-size: 16px; color: white; }
+.status-text { font-size: 12px; color: #94a3b8; }
+
+.btn-end-chat {
+  background: transparent; border: 1px solid rgba(248, 113, 113, 0.3);
+  color: #f87171; padding: 6px 12px; border-radius: 6px; cursor: pointer;
+  font-size: 12px; transition: 0.2s;
+}
+.btn-end-chat:hover { background: rgba(248, 113, 113, 0.1); }
+
+/* Messages */
+.chat-messages {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  display: flex; flex-direction: column; gap: 15px;
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.msg-row { display: flex; align-items: flex-end; gap: 8px; max-width: 75%; }
+.msg-left { align-self: flex-start; }
+.msg-right { align-self: flex-end; flex-direction: row-reverse; }
+
+.msg-avatar-small {
+  width: 24px; height: 24px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: #cbd5e1; font-size: 10px;
+}
+
+.msg-bubble {
+  padding: 10px 14px;
+  border-radius: 12px;
+  position: relative;
+  font-size: 14px;
+  line-height: 1.5;
+  
+  /* --- QUAN TRỌNG: XỬ LÝ XUỐNG DÒNG --- */
+  white-space: pre-wrap;       
+  word-wrap: break-word;      
+  overflow-wrap: break-word;   
+  word-break: break-word;      
+  max-width: 100%;             
+}
+
+.msg-left .msg-bubble {
+  background: rgba(255, 255, 255, 0.1);
+  color: #e2e8f0;
+  border-bottom-left-radius: 4px;
+}
+
+.msg-right .msg-bubble {
+  background: #3b82f6;
+  color: white;
+  border-bottom-right-radius: 4px;
+  box-shadow: 0 2px 10px rgba(59, 130, 246, 0.3);
+}
+
+.msg-time {
+  font-size: 10px; opacity: 0.7; margin-top: 4px; display: block;
+  text-align: right;
+}
+.msg-left .msg-time { text-align: left; }
+
+/* -------------------- IMAGE/File IN CHAT STYLES -------------------- */
+
+/* Loại bỏ padding và background màu cho bong bóng chứa ảnh để ảnh đẹp hơn */
+.msg-bubble.bubble-image {
+  padding: 5px; /* Padding nhỏ thôi */
+  background: transparent !important; /* Trong suốt */
+  box-shadow: none; /* Bỏ bóng của bubble text */
+  border-radius: 12px;
+  max-width: 250px; /* Giới hạn chiều rộng ảnh */
+}
+
+/* Style cho thẻ IMG */
+.chat-sent-image {
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+  display: block;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: transform 0.2s;
+  cursor: pointer;
+}
+
+.chat-sent-image:hover {
+  transform: scale(1.02);
+}
+
+/* Chỉnh lại vị trí time cho ảnh */
+.bubble-image .msg-time {
+  text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+  margin-top: 2px;
+  color: #ccc; 
+  padding-right: 5px;
+}
+
+.msg-bubble.bubble-file {
+  padding: 0; /* Xóa padding mặc định để custom bên trong */
+  background: transparent !important;
+  box-shadow: none;
+  min-width: 220px;
+}
+
+/* Thẻ file bên trong */
+.file-attachment-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 12px;
+  transition: 0.2s;
+}
+
+/* Màu nền khác nhau cho người gửi/nhận */
+.msg-right .file-attachment-card {
+  background: rgba(59, 130, 246, 0.2); /* Xanh nhạt */
+  border-color: rgba(59, 130, 246, 0.4);
+}
+
+.msg-left .file-attachment-card {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.file-attachment-card:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.file-icon {
+  color: #cbd5e1;
+  display: flex;
+  align-items: center;
+}
+
+.file-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.file-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: white;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis; /* Cắt tên file dài... */
+  max-width: 150px;
+}
+
+.file-size {
+  font-size: 10px;
+  color: #94a3b8;
+  margin-top: 2px;
+}
+
+.btn-download {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  transition: 0.2s;
+}
+.btn-download:hover {
+  background: #3b82f6;
+  transform: scale(1.1);
+}
+
+/* Chỉnh lại thời gian cho file */
+.bubble-file .msg-time {
+  text-align: right;
+  margin-top: 4px;
+  padding-right: 5px;
+}
+
+/* -------------------- Input Zone  -------------------- */
+.chat-input-zone {
+  padding: 15px;
+  background: rgba(0, 0, 0, 0.2);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex; align-items: center; gap: 10px;
+}
+
+.chat-input-zone input {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 10px 15px;
+  border-radius: 20px;
+  color: white; outline: none;
+  transition: 0.2s;
+}
+.chat-input-zone input:focus { border-color: #3b82f6; background: rgba(0, 0, 0, 0.3); }
+
+.icon-tool {
+  background: transparent; border: none; color: #94a3b8;
+  cursor: pointer; padding: 5px; transition: 0.2s;
+}
+.icon-tool:hover { color: #60a5fa; }
+
+.btn-send {
+  width: 40px; height: 40px;
+  background: #3b82f6; color: white;
+  border: none; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: 0.2s;
+}
+.btn-send:hover { background: #2563eb; transform: scale(1.05); }

@@ -34,12 +34,20 @@ module.exports = (sequelize, DataTypes) => {
     },
     staffID: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: true
     },
     isBeenChecked: {
       type: DataTypes.STRING,
       allowNull: false,
       defaultValue: 'no' 
+    },
+    senderType: {
+      type: DataTypes.STRING, 
+      allowNull: false
+    },
+    messageType: {
+      type: DataTypes.STRING,
+      defaultValue: 'text'
     }
   }, {
     sequelize,

@@ -10,6 +10,7 @@ import {
 } from "./HomePageIndex.jsx";
 import "./Homepage.css";
 import Footer from "../components/HomePage/footer/footer.jsx";
+import Snowfall from "react-snowfall";
 
 const travelSlides = [
   "https://images.unsplash.com/photo-1506012787146-f92b2d7d6d96?w=1400",
@@ -51,7 +52,6 @@ export default function HomePage() {
 
       {/* Overlay tối nhẹ để chữ dễ đọc */}
       <div className="video-overlay"></div>
-
       {/* Header cố định */}
       <Header />
 

@@ -48,7 +48,6 @@ const StaffDashboard = () => {
 
       // Nhóm Support
       case "support":
-      case "support-chat":
         return <CustomerSupport />;
 
       default:

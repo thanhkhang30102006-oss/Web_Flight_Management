@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import {
   BarChart,
   Bar,
@@ -21,9 +22,14 @@ import {
   Calendar,
   Download,
   Filter,
+  FileText,
   ArrowUpRight,
   ArrowDownRight,
 } from "lucide-react";
+import * as XLSX from "xlsx"; // Import Excel
+import jsPDF from "jspdf"; // Import PDF
+import { autoTable } from "jspdf-autotable";
+import "./RevenueReports.css";
 import "../../pages/StaffDashboard.css"; // Dùng chung CSS
 
 // --- DỮ LIỆU GIẢ LẬP CHO BÁO CÁO ---
@@ -52,6 +58,7 @@ const TOP_ROUTES = [
 ];
 
 const RevenueReports = () => {
+  const { t, i18n } = useTranslation();
   const [filterType, setFilterType] = useState("week"); // 'week' | 'month'
 
   // Chọn dữ liệu dựa trên filter
@@ -68,15 +75,124 @@ const RevenueReports = () => {
     [currentData]
   );
 
+  const handleExportExcel = () => {
+    // 1. Chuẩn bị dữ liệu (Format lại key tiếng Việt cho đẹp)
+    const excelData = currentData.map((item) => ({
+      [t("report.fileExport.colTime")]: item.name,
+      [t("report.fileExport.colRevenue")]: item.revenue,
+      [t("report.fileExport.colTickets")]: item.ticket,
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(excelData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
+    XLSX.writeFile(workbook, `Report_FlightHK_${filterType}.xlsx`);
+
+    // 4. Xuất file
+    const fileName = `BaoCao_FlightHK_${
+      filterType === "week" ? "Tuan" : "Nam"
+    }.xlsx`;
+    XLSX.writeFile(workbook, fileName);
+  };
+
+  // --- HÀM 2: XUẤT PDF ---
+  const handleExportPDF = async () => {
+    const doc = new jsPDF();
+
+    // Link font Roboto (Hỗ trợ tiếng Việt)
+    const fontURL =
+      "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Regular.ttf";
+
+    try {
+      // 2. Dùng await để tải font
+      const response = await fetch(fontURL);
+      const blob = await response.blob();
+      const reader = new FileReader();
+
+      reader.readAsDataURL(blob);
+
+      reader.onloadend = () => {
+        const base64data = reader.result.split(",")[1];
+
+        doc.addFileToVFS("Roboto-Regular.ttf", base64data);
+        doc.addFont("Roboto-Regular.ttf", "Roboto", "normal");
+        doc.setFont("Roboto");
+
+        // 4. Viết nội dung
+        doc.setFontSize(18);
+        doc.text(t("report.fileExport.title"), 14, 22);
+
+        doc.setFontSize(11);
+        const periodText =
+          filterType === "week"
+            ? t("report.fileExport.periodWeek")
+            : t("report.fileExport.periodYear");
+        doc.text(`${t("report.fileExport.period")}: ${periodText}`, 14, 30);
+
+        const dateStr = new Date().toLocaleDateString(
+          i18n.language === "vi" ? "vi-VN" : "en-US"
+        );
+        doc.text(`${t("report.fileExport.exportDate")}: ${dateStr}`, 14, 36);
+
+        const revenueStr = totalRevenue.toLocaleString(
+          i18n.language === "vi" ? "vi-VN" : "en-US"
+        );
+        const ticketStr = totalTickets.toLocaleString(
+          i18n.language === "vi" ? "vi-VN" : "en-US"
+        );
+
+        doc.text(
+          `${t("report.fileExport.totalRevenue")}: ${revenueStr} ${t(
+            "report.fileExport.currency"
+          )}`,
+          14,
+          45
+        );
+        doc.text(
+          `${t("report.fileExport.totalTickets")}: ${ticketStr} ${t(
+            "report.fileExport.ticketUnit"
+          )}`,
+          14,
+          51
+        );
+
+        // 5. Vẽ bảng (Sử dụng autoTable trực tiếp)
+        const tableColumn = [
+          t("report.fileExport.colTime"),
+          t("report.fileExport.colRevenue"),
+          t("report.fileExport.colTickets"),
+        ];
+        const tableRows = currentData.map((item) => [
+          item.name,
+          item.revenue,
+          item.ticket,
+        ]);
+
+        autoTable(doc, {
+          head: [tableColumn],
+          body: tableRows,
+          startY: 60,
+          theme: "grid",
+          styles: { font: "Roboto", fontStyle: "normal", fontSize: 10 }, // Set font cho bảng
+          headStyles: { fillColor: [59, 130, 246] },
+        });
+
+        // 6. Lưu file
+        doc.save(`Report_FlightHK_${filterType}.pdf`);
+      };
+    } catch (error) {
+      console.error("Lỗi xuất PDF:", error);
+      alert("Không thể tải font. Vui lòng kiểm tra mạng.");
+    }
+  };
+
   return (
     <div className="fade-in revenue-container">
       {/* --- HEADER: TITLE & FILTER --- */}
       <div className="report-header">
         <div>
-          <h2 className="panel-title">Báo cáo doanh thu & Hiệu suất</h2>
-          <p className="sub-text">
-            Theo dõi chỉ số tài chính theo thời gian thực
-          </p>
+          <h2 className="panel-title">{t("sidebar.revenueReports")}</h2>
+          <p className="sub-text">{t("report.subTitle")}</p>
         </div>
 
         <div className="report-actions">
@@ -85,17 +201,23 @@ const RevenueReports = () => {
               className={`filter-btn ${filterType === "week" ? "active" : ""}`}
               onClick={() => setFilterType("week")}
             >
-              Tuần này
+              {t("report.fileExport.periodWeek")}
             </button>
             <button
               className={`filter-btn ${filterType === "month" ? "active" : ""}`}
               onClick={() => setFilterType("month")}
             >
-              Năm nay
+              {t("report.fileExport.periodYear")}
             </button>
           </div>
-          <button className="btn-export">
-            <Download size={16} /> Xuất Excel
+          {/* NÚT EXCEL */}
+          <button className="btn-export excel" onClick={handleExportExcel}>
+            <Download size={16} /> Excel
+          </button>
+
+          {/* NÚT PDF (Thêm mới) */}
+          <button className="btn-export pdf" onClick={handleExportPDF}>
+            <FileText size={16} /> PDF
           </button>
         </div>
       </div>
@@ -111,9 +233,12 @@ const RevenueReports = () => {
               <ArrowUpRight size={16} /> +12.5%
             </span>
           </div>
-          <h3>Tổng Doanh Thu</h3>
-          <div className="value">{totalRevenue.toLocaleString()} Triệu</div>
-          <small>So với kỳ trước</small>
+          <h3>{t("report.fileExport.totalRevenue")}</h3>
+          <div className="value">
+            {totalRevenue.toLocaleString()}
+            {t("report.fileExport.currency")}
+          </div>
+          <small>{t("report.comparePeriod")}</small>
         </div>
 
         <div className="stat-card">
@@ -125,9 +250,9 @@ const RevenueReports = () => {
               <ArrowUpRight size={16} /> +8.2%
             </span>
           </div>
-          <h3>Vé Đã Bán</h3>
+          <h3>{t("report.fileExport.totalTickets")}</h3>
           <div className="value">{totalTickets.toLocaleString()}</div>
-          <small>Vé / Kỳ</small>
+          <small>{t("report.ticketPerPeriod")}</small>
         </div>
 
         <div className="stat-card">
@@ -139,17 +264,17 @@ const RevenueReports = () => {
               <ArrowDownRight size={16} /> -2.1%
             </span>
           </div>
-          <h3>Giá Vé TB</h3>
+          <h3>{t("report.avgTicketPrice")}</h3>
           <div className="value">
             {((totalRevenue / totalTickets) * 1000).toLocaleString()} k
           </div>
-          <small>VND / Vé</small>
+          <small>{t("report.vndPerTicket")}</small>
         </div>
       </div>
 
       {/* --- SECTION 2: MAIN CHART (AREA) --- */}
       <div className="glass-panel chart-section">
-        <h3 className="panel-title-small">Biểu đồ tăng trưởng doanh thu</h3>
+        <h3 className="panel-title-small">{t("report.growthChart")}</h3>
         <div style={{ width: "100%", height: 350 }}>
           <ResponsiveContainer>
             <AreaChart
@@ -175,7 +300,7 @@ const RevenueReports = () => {
                   border: "1px solid #334155",
                   color: "#fff",
                 }}
-                formatter={(val) => `${val} Triệu VNĐ`}
+                formatter={(val) => `${val} ${t("report.fileExport.currency")}`}
               />
               <Area
                 type="monotone"
@@ -184,7 +309,7 @@ const RevenueReports = () => {
                 fillOpacity={1}
                 fill="url(#colorRevenue)"
                 strokeWidth={3}
-                name="Doanh thu"
+                name={t("report.colRevenue")}
               />
             </AreaChart>
           </ResponsiveContainer>
@@ -195,7 +320,7 @@ const RevenueReports = () => {
       <div className="split-layout">
         {/* CỘT TRÁI: TOP ROUTES (BAR CHART) */}
         <div className="glass-panel">
-          <h3 className="panel-title-small">Top Chặng Bay (Doanh thu)</h3>
+          <h3 className="panel-title-small">{t("report.topRoutes")}</h3>
           <div style={{ width: "100%", height: 250 }}>
             <ResponsiveContainer>
               <BarChart
@@ -234,10 +359,10 @@ const RevenueReports = () => {
         <div className="glass-panel">
           <div className="flex justify-between items-center mb-3">
             <h3 className="panel-title-small" style={{ marginBottom: 0 }}>
-              Giao dịch gần đây
+              {t("report.recentTransactions")}{" "}
             </h3>
             <button className="text-xs text-blue-400 hover:text-white">
-              Xem tất cả
+              {t("report.viewAll")}{" "}
             </button>
           </div>
 
@@ -248,10 +373,10 @@ const RevenueReports = () => {
             <table className="glass-table">
               <thead>
                 <tr>
-                  <th>Mã GD</th>
-                  <th>Khách</th>
-                  <th>Số tiền</th>
-                  <th>TT</th>
+                  <th>{t("report.transId")}</th>
+                  <th>{t("report.customer")}</th>
+                  <th>{t("report.amount")}</th>
+                  <th>{t("report.status")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -265,7 +390,9 @@ const RevenueReports = () => {
                       {(1000 + i * 500).toLocaleString()}k
                     </td>
                     <td>
-                      <span className="status-badge state-active">Xong</span>
+                      <span className="status-badge state-active">
+                        {t("report.statusDone")}
+                      </span>
                     </td>
                   </tr>
                 ))}

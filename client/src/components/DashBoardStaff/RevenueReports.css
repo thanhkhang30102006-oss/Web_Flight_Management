@@ -1,0 +1,127 @@
+
+/* ---------------------------- REVENUE REPORTS CSS ---------------------------- */
+
+.revenue-container {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+/* Header & Filter */
+.report-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.report-actions {
+  display: flex;
+  gap: 15px;
+}
+
+.filter-group {
+  display: flex;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  padding: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.filter-btn {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  padding: 6px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.filter-btn.active {
+  background: #3b82f6;
+  color: white;
+  font-weight: 600;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.btn-export {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.btn-export.excel{
+  background: rgba(34, 197, 94, 0.2);
+  color: #4ade80;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+.btn-export.excel:hover {
+  background: rgba(34, 197, 94, 0.3);
+  transform: translateY(-2px);
+}
+.btn-export.pdf {
+  background: rgba(248, 113, 113, 0.2);
+  color: #f87171; /* Đỏ */
+  border-color: rgba(248, 113, 113, 0.3);
+}
+.btn-export.pdf:hover {
+  background: rgba(248, 113, 113, 0.3);
+  transform: translateY(-2px);
+}
+
+
+
+/* Stats Card Styles (Nâng cao cho Revenue) */
+.card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 15px;
+}
+
+.icon-box {
+  width: 45px; height: 45px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+}
+.icon-box.blue { background: rgba(81, 182, 250, 0.2); color: #b1ebfd; border: 1px solid rgb(184, 211, 255);}
+.icon-box.green { background: rgba(74, 222, 128, 0.2); color: #4ade80; border: 1px solid rgb(125, 241, 168);}
+.icon-box.yellow { background: rgba(250, 204, 21, 0.2); color: #facc15; border: 1px solid rgb(255, 232, 139);}
+
+.growth {
+  display: flex; align-items: center; gap: 4px;
+  font-size: 12px; font-weight: 700;
+  padding: 4px 8px; border-radius: 20px;
+}
+.growth.positive { color: #4ade80; background: rgba(74, 222, 128, 0.1); }
+.growth.negative { color: #f87171; background: rgba(248, 113, 113, 0.1); }
+
+/* Split Layout (2 Cột dưới cùng) */
+.split-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 25px;
+}
+
+@media (max-width: 900px) {
+  .split-layout { grid-template-columns: 1fr; }
+}
+
+/* Tiện ích */
+.text-xs { font-size: 11px; }
+.text-sm { font-size: 13px; }
+.font-bold { font-weight: 700; }
+.font-semibold { font-weight: 600; }
+.text-green-400 { color: #4ade80; }
+.text-gray-400 { color: #94a3b8; }
+.text-blue-400 { color: #60a5fa; }
+.flex { display: flex; }
+.justify-between { justify-content: space-between; }
+.items-center { align-items: center; }
+.mb-3 { margin-bottom: 12px; }

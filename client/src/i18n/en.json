@@ -133,6 +133,20 @@
     "wallet": "Wallet & Offers",
     "settings": "Settings",
     "support": "Support",
+    "flightManagement": "Flight Management",
+    "createFlight": "Create Flight",
+    "flightSchedule": "Flight Schedule",
+    "updateStatus": "Update Status",
+    "seatLoad": "Seat Load",
+    "bookingOps": "Booking Operations",
+    "searchBooking": "Search Booking",
+    "changeBooking": "Change Date/Seat",
+    "cancelBooking": "Cancel Booking",
+    "refund": "Refund",
+    "revenueReports": "Revenue & Reports",
+    "customerSupport": "Customer Support",
+    "liveChat": "Live Chat",
+    "staffRole": "Staff",
     "logout": "Log out"
   },
   "next_flight": {
@@ -243,5 +257,35 @@
       "start": "*E-ticket will be sent to email",
       "end": "after successful payment."
     }
+  },
+  "report": {
+    "fileExport": {
+      "title": "FLIGHTHK REVENUE REPORT",
+      "period": "Report Period",
+      "periodWeek": "This Week",
+      "periodYear": "This Year",
+      "exportDate": "Export Date",
+      "totalRevenue": "Total Revenue",
+      "totalTickets": "Total Tickets Sold",
+      "colTime": "Time",
+      "colRevenue": "Revenue (M.VND)",
+      "colTickets": "Tickets",
+      "currency": "Million VND",
+      "ticketUnit": "Tickets"
+    },
+    "subTitle": "Track key financial indicators in real time.",
+    "avgTicketPrice": "Avg Ticket Price",
+    "comparePeriod": "vs. last period",
+    "ticketPerPeriod": "Tickets / Period",
+    "vndPerTicket": "VND / Ticket",
+    "growthChart": "Revenue Growth Chart",
+    "topRoutes": "Top Routes (Revenue)",
+    "recentTransactions": "Recent Transactions",
+    "viewAll": "View All",
+    "transId": "Trans ID",
+    "customer": "Customer",
+    "amount": "Amount",
+    "status": "Sts",
+    "statusDone": "Done"
   }
 }

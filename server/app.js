@@ -5,6 +5,9 @@ var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 var cors = require("cors");
+const { Op } = require("sequelize");
+
+const db = require("./models");
 
 var app = express();
 require("dotenv").config();
@@ -16,6 +19,7 @@ app.use(
     credentials: true,
   })
 );
+app.use("/uploads", express.static(path.join(__dirname, "public/uploads")));
 
 //config server socket
 const server = http.createServer(app);
@@ -26,6 +30,31 @@ const io = new Server(server, {
   },
 });
 let seatSelections = {};
+
+// Logic lấy Staff ngẫu nhiên để nhắn tin
+async function getAvailableStaff(passengerID) {
+  try {
+    // 1. Kiểm tra xem khách này từng chat với ai chưa?
+    const lastMessage = await db.Message.findOne({
+      where: { 
+        passengerID: passengerID,
+        staffID: { [Op.ne]: null } 
+      },
+      order: [['createdAt', 'DESC']],
+    });
+
+    if (lastMessage && lastMessage.staffID) {
+      return lastMessage.staffID; 
+    }
+    return null;
+  } catch (error) {
+    console.error("Lỗi getAvailableStaff:", error);
+    return null;
+  }
+}
+
+
+
 io.on("connection", (socket) => {
   console.log("User connected:", socket.id);
 
@@ -118,7 +147,51 @@ io.on("connection", (socket) => {
       }
     });
   });
+  // ----------------- Tin Nhắn -----------------
+  socket.on("join_room", (data) => {
+    if(data.passengerID) {
+        socket.join(data.passengerID);
+       
+    }
+  });
+
+  socket.on("send_message", async (data) => {
+    console.log("📩 Server nhận tin nhắn:", data); // Log để debug
+    try {
+      let targetStaffID = data.staffID;
+
+      if (data.senderType === 'passenger') {
+          if (!targetStaffID) {
+             targetStaffID = await getAvailableStaff(data.passengerID);
+         }
+         if (!targetStaffID) {
+             console.log("⚠️ Không tìm thấy Staff cũ, gán mặc định: 25STF062");
+             targetStaffID = "25STF062"; 
+         }
+      }
+      // Lưu vào Database (Sử dụng Model Message đã tạo ở bước trước)
+      const savedMessage = await db.Message.create({
+        passengerID: data.passengerID,
+        staffID: targetStaffID, 
+        contentMessage: data.content,
+        senderType: data.senderType, // 'passenger' hoặc 'staff'
+        messageType: data.type || 'text',
+        isBeenChecked: 'no',
+        messageTime: new Date(),
+      });
+
+      console.log("✅ Đã lưu DB ID:", savedMessage.messageID);
+      // Gửi realtime cho những người trong phòng (Passenger & Staff đang xem)
+      io.in(data.passengerID).emit("receive_message", savedMessage);
+      
+    } catch (err) {
+      console.error("Lỗi lưu tin nhắn Socket:", err);
+    }
+  });
+  
+
 });
+
 const PORT = 3001;
 server.listen(PORT, () => {
   console.log(`Server Socket & Express is running on port ${PORT}`);
@@ -146,8 +219,15 @@ const loginStaffRouter = require("./routes/loginStaffAdminRoutes");
 app.use("/api/staff", loginStaffRouter);
 app.use("/api/admin", loginStaffRouter);
 
+// Xử lý liên quan tới quản lý chuyến bay
+const flightmanagement=require("./routes/flightManagementRoutes");
+app.use("/api/staff/flightmanagement", flightmanagement);
 // Pending seats
 if (!global.lockedSeats) {
   global.lockedSeats = {};
 }
+
+const messageRouter = require("./routes/messageRoutes"); 
+app.use("/api/messages", messageRouter);
+
 module.exports = app;

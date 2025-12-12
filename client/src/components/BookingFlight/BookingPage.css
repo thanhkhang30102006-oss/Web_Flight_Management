@@ -93,10 +93,10 @@
 }
 
 /* --- STYLE CHO FORM (Cột Trái) --- */
-.form-group { margin-bottom: 15px; }
+.form-group { margin-bottom: 30px; }
 .form-group label {
   display: flex; align-items: center; gap: 8px;
-  font-size: 13px; color: #e3eaf4; margin-bottom: 8px;
+  font-size: 12px; color: #e7edf5; margin-bottom: 8px;
 }
 .form-group input, .custom-select {
   width: 100%;
@@ -122,7 +122,7 @@
   border: 1px solid rgba(59, 130, 246, 0.2);
   border-radius: 12px;
   padding: 20px;
-  margin-top: 20px;
+  margin-top: 10px;
 }
 .summary-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; color: #cbd5e1; }
 .highlight-text { font-weight: bold; color: white; }

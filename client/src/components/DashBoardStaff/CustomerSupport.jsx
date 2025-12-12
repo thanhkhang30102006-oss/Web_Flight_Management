@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   Search,
   Send,
@@ -7,81 +7,211 @@ import {
   User,
   Headset,
   Circle,
+  Smile,
   MessageSquare,
+  FileText,
+  Download,
 } from "lucide-react";
-import "../../pages/StaffDashboard.css"; // Sử dụng CSS chung
+import io from "socket.io-client";
+import axios from "axios";
+import "./CustomerSupport.css";
+import "../../pages/StaffDashboard.css";
 
-// --- MOCK DATA ---
-const MOCK_USERS = [
-  {
-    id: 1,
-    name: "Nguyễn Văn A",
-    lastMsg: "Cho mình hỏi về vé đi Đà Nẵng",
-    time: "10:30",
-    status: "online",
-  },
-  {
-    id: 2,
-    name: "Trần Thị B",
-    lastMsg: "Mình muốn hoàn vé BK-192",
-    time: "09:15",
-    status: "offline",
-  },
-  {
-    id: 3,
-    name: "Lê Văn C",
-    lastMsg: "Cảm ơn bạn nhé!",
-    time: "Hôm qua",
-    status: "online",
-  },
-  {
-    id: 4,
-    name: "Phạm Minh D",
-    lastMsg: "Thủ tục check-in online thế nào?",
-    time: "Hôm qua",
-    status: "offline",
-  },
-];
-
-const MOCK_MESSAGES = [
-  {
-    id: 1,
-    sender: "user",
-    text: "Xin chào, cho mình hỏi về vé đi Đà Nẵng ngày mai còn không?",
-    time: "10:28",
-  },
-  {
-    id: 2,
-    sender: "staff",
-    text: "Chào bạn A, để mình kiểm tra giúp bạn nhé. Bạn muốn đi chuyến sáng hay chiều ạ?",
-    time: "10:29",
-  },
-  { id: 3, sender: "user", text: "Mình muốn đi tầm 9h sáng.", time: "10:30" },
-];
+const API_URL = "http://localhost:3001";
+const socket = io.connect(API_URL);
 
 const CustomerSupport = () => {
-  const [selectedUser, setSelectedUser] = useState(MOCK_USERS[0]);
-  const [messages, setMessages] = useState(MOCK_MESSAGES);
-  const [inputText, setInputText] = useState("");
+  const [currentStaff, setCurrentStaff] = useState(null);
+  useEffect(() => {
+    const staffStr = localStorage.getItem("userData");
+    console.log("🛠️ Checking localStorage 'userData':", staffStr); // DEBUG LOG
+    if (staffStr) {
+      try {
+        const staff = JSON.parse(staffStr);
+        setCurrentStaff(staff);
+      } catch (e) {
+        console.error("Lỗi đọc dữ liệu Staff:", e);
+      }
+    } else {
+      console.warn("⚠️ Không tìm thấy userData trong localStorage");
+    }
+  }, []);
+  const [users, setUsers] = useState([]);
+  const [selectedUser, setSelectedUser] = useState(null); // Khách đang chọn
+  const [messages, setMessages] = useState([]); // Tin nhắn hiện tại
+  const [inputValue, setInputValue] = useState("");
 
-  const handleSendMessage = (e) => {
-    e.preventDefault();
-    if (!inputText.trim()) return;
+  const messagesEndRef = useRef(null);
+  const fileInputRef = useRef(null);
 
-    const newMsg = {
-      id: messages.length + 1,
-      sender: "staff",
-      text: inputText,
-      time: new Date().toLocaleTimeString("vi-VN", {
-        hour: "2-digit",
-        minute: "2-digit",
-      }),
+  useEffect(() => {
+    if (!currentStaff) {
+      console.log("⏳ Chờ thông tin Staff...");
+      return;
+    }
+    const fetchConversations = async () => {
+      console.log("🚀 Bắt đầu gọi API lấy danh sách hội thoại...");
+      try {
+        const res = await axios.get(`${API_URL}/api/messages/conversations`);
+        console.log("✅ API Conversations Data:", res.data); // DEBUG LOG
+        if (Array.isArray(res.data)) {
+          const formattedUsers = res.data.map((conv) => ({
+            id: conv.passengerID,
+            name: conv.passengerName || conv.passengerID,
+            avatar: conv.passengerImage,
+            lastMsg: conv.lastMsg || "Hình ảnh/File",
+            time: conv.lastTime
+              ? new Date(conv.lastTime).toLocaleTimeString("vi-VN", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })
+              : "",
+            status: "online",
+          }));
+          setUsers(formattedUsers);
+        }
+      } catch (error) {
+        console.error("Lỗi load conversations:", error);
+      }
+    };
+    fetchConversations();
+    const interval = setInterval(fetchConversations, 5000);
+    return () => clearInterval(interval);
+  }, [currentStaff]);
+
+  // --- 2. KHI CHỌN KHÁCH HÀNG -> JOIN ROOM & LOAD HISTORY ---
+  useEffect(() => {
+    if (selectedUser && currentStaff) {
+      // A. Join Room của khách (ID phòng = ID Khách)
+      socket.emit("join_room", { passengerID: selectedUser.id });
+
+      // B. Load History
+      const loadHistory = async () => {
+        try {
+          const res = await axios.get(
+            `${API_URL}/api/messages/history/${selectedUser.id}`
+          );
+          const dbMessages = res.data.map((msg) => ({
+            id: msg.messageID,
+            sender: msg.senderType === "staff" ? "staff" : "user",
+            text: msg.messageType === "text" ? msg.contentMessage : "",
+            fileUrl: msg.messageType !== "text" ? msg.contentMessage : "",
+            type: msg.messageType,
+            time: new Date(msg.messageTime).toLocaleTimeString("vi-VN", {
+              hour: "2-digit",
+              minute: "2-digit",
+            }),
+          }));
+          setMessages(dbMessages);
+        } catch (error) {
+          console.error("Lỗi load history:", error);
+        }
+      };
+      loadHistory();
+    }
+  }, [selectedUser, currentStaff]);
+
+  // --- 3. LẮNG NGHE TIN NHẮN MỚI ---
+  useEffect(() => {
+    const handleReceiveMessage = (data) => {
+      if (selectedUser && data.passengerID === selectedUser.id) {
+        const newMsg = {
+          id: data.messageID || Date.now(),
+          sender: data.senderType === "staff" ? "staff" : "user",
+          text: data.messageType === "text" ? data.contentMessage : "",
+          fileUrl: data.messageType !== "text" ? data.contentMessage : "",
+          type: data.messageType,
+          time: new Date(data.messageTime).toLocaleTimeString("vi-VN", {
+            hour: "2-digit",
+            minute: "2-digit",
+          }),
+        };
+        setMessages((prev) => [...prev, newMsg]);
+        scrollToBottom();
+      }
     };
 
-    setMessages([...messages, newMsg]);
-    setInputText("");
+    socket.on("receive_message", handleReceiveMessage);
+    return () => socket.off("receive_message", handleReceiveMessage);
+  }, [selectedUser]);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+  useEffect(() => scrollToBottom(), [messages]);
+
+  // --- 4. GỬI TIN NHẮN (STAFF GỬI) ---
+  const handleSend = async (e) => {
+    e.preventDefault();
+    if (!inputValue.trim() || !selectedUser) return;
+
+    const msgData = {
+      passengerID: selectedUser.id,
+      staffID: currentStaff.id,
+      content: inputValue,
+      senderType: "staff",
+      type: "text",
+    };
+
+    await socket.emit("send_message", msgData);
+    setInputValue("");
   };
 
+  // Upload File (Tương tự PassengerChat)
+  const handleFileUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      // A. Upload file lên Server qua API
+      const res = await axios.post(`${API_URL}/api/messages/upload`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      const { url } = res.data;
+      const fileType = file.type.startsWith("image/") ? "image" : "file";
+
+      const msgData = {
+        passengerID: selectedUser.id,
+        staffID: null,
+        content: url,
+        senderType: "staff",
+        type: fileType,
+      };
+
+      await socket.emit("send_message", msgData);
+    } catch (error) {
+      console.error("Lỗi upload file:", error);
+      alert("Không thể gửi file. Vui lòng thử lại.");
+    }
+    e.target.value = null;
+  };
+
+  const triggerFileInput = () => {
+    fileInputRef.current.click();
+  };
+  if (!currentStaff) {
+    return (
+      <div
+        className="glass-panel fade-in"
+        style={{
+          height: "650px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          flexDirection: "column",
+        }}
+      >
+        <h3>Đang tải dữ liệu...</h3>
+        <p style={{ color: "#aaa", fontSize: 12 }}>
+          Vui lòng đảm bảo bạn đã đăng nhập Staff
+        </p>
+      </div>
+    );
+  }
   return (
     <div
       className="glass-panel fade-in"
@@ -100,7 +230,7 @@ const CustomerSupport = () => {
 
           {/* User List */}
           <div className="user-list custom-scrollbar">
-            {MOCK_USERS.map((user) => (
+            {users.map((user) => (
               <div
                 key={user.id}
                 className={`user-item ${
@@ -136,11 +266,7 @@ const CustomerSupport = () => {
                   </div>
                   <div>
                     <h4 className="chat-username">{selectedUser.name}</h4>
-                    <span className="chat-status">
-                      {selectedUser.status === "online"
-                        ? "Đang hoạt động"
-                        : "Truy cập 1 giờ trước"}
-                    </span>
+                    <span className="chat-status">Đang kết nối</span>
                   </div>
                 </div>
                 <button className="icon-btn">
@@ -148,16 +274,14 @@ const CustomerSupport = () => {
                 </button>
               </div>
 
-              {/* Messages Area */}
               <div className="messages-area custom-scrollbar">
-                {messages.map((msg) => (
+                {messages.map((msg, idx) => (
                   <div
-                    key={msg.id}
+                    key={idx}
                     className={`message-row ${
                       msg.sender === "staff" ? "sent" : "received"
                     }`}
                   >
-                    {/* Avatar nhỏ bên cạnh tin nhắn */}
                     <div className="msg-avatar">
                       {msg.sender === "staff" ? (
                         <Headset size={16} />
@@ -165,27 +289,73 @@ const CustomerSupport = () => {
                         <User size={16} />
                       )}
                     </div>
-
-                    <div className="message-bubble">
-                      <p>{msg.text}</p>
+                    <div
+                      className={`message-bubble ${
+                        msg.type !== "text" ? "bubble-file" : ""
+                      }`}
+                    >
+                      {msg.type === "text" && <p>{msg.text}</p>}
+                      {msg.type === "image" && (
+                        <img
+                          src={msg.fileUrl}
+                          alt="Sent"
+                          className="chat-sent-image"
+                          onClick={() => window.open(msg.fileUrl, "_blank")}
+                        />
+                      )}
+                      {msg.type === "file" && (
+                        <div className="file-attachment-card">
+                          <div className="file-icon">
+                            <FileText size={24} />
+                          </div>
+                          <div className="file-info">
+                            <span className="file-name">{msg.fileName}</span>
+                            <span className="file-size">{msg.fileSize}</span>
+                          </div>
+                          <a
+                            href={msg.fileUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="btn-download"
+                          >
+                            <Download size={16} />
+                          </a>
+                        </div>
+                      )}
                       <span className="msg-time">{msg.time}</span>
                     </div>
                   </div>
                 ))}
+                <div ref={messagesEndRef} />
               </div>
 
               {/* Input Area */}
-              <form className="chat-input-area" onSubmit={handleSendMessage}>
-                <button type="button" className="icon-btn">
+              <form className="chat-input-zone" onSubmit={handleSend}>
+                {/* INPUT FILE: Thêm accept cho PDF, DOC */}
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  style={{ display: "none" }}
+                  accept="image/*, .pdf, .doc, .docx, .xls, .xlsx"
+                  onChange={handleFileUpload}
+                />
+                <button
+                  type="button"
+                  className="icon-tool"
+                  onClick={triggerFileInput}
+                >
                   <Paperclip size={20} />
                 </button>
                 <input
                   type="text"
                   placeholder="Nhập tin nhắn..."
-                  value={inputText}
-                  onChange={(e) => setInputText(e.target.value)}
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
                 />
-                <button type="submit" className="send-btn">
+                <button type="button" className="icon-tool">
+                  <Smile size={20} />
+                </button>
+                <button type="submit" className="btn-send">
                   <Send size={18} />
                 </button>
               </form>

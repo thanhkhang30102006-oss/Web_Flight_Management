@@ -30,7 +30,12 @@
     "todesc": "Sân bay đến",
     "depart": "Ngày đi",
     "passengers": "Hành khách",
-    "passengerOptions": ["1 người", "2 người", "3 người", "4+ người"],
+    "passengerOptions": [
+      "1 người",
+      "2 người",
+      "3 người",
+      "4+ người"
+    ],
     "search": "Tìm chuyến bay"
   },
   "topRating": "Điểm Đến Được Yêu Thích Nhất",
@@ -128,6 +133,20 @@
     "wallet": "Ví & Ưu đãi",
     "settings": "Cài đặt",
     "support": "Hỗ trợ",
+    "flightManagement": "Quản lý chuyến bay",
+    "createFlight": "Tạo chuyến bay",
+    "flightSchedule": "Lên lịch bay",
+    "updateStatus": "Cập nhật trạng thái",
+    "seatLoad": "Tình trạng ghế",
+    "bookingOps": "Nghiệp vụ vé",
+    "searchBooking": "Tra cứu vé",
+    "changeBooking": "Đổi ngày/chỗ",
+    "cancelBooking": "Hủy vé",
+    "refund": "Hoàn tiền",
+    "revenueReports": "Doanh thu & Báo cáo",
+    "customerSupport": "Hỗ trợ khách hàng",
+    "liveChat": "Chat trực tiếp",
+    "staffRole": "Nhân viên",
     "logout": "Đăng xuất"
   },
   "next_flight": {
@@ -238,5 +257,35 @@
       "start": "*Vé điện tử sẽ được gửi về email",
       "end": "sau khi thanh toán thành công."
     }
+  },
+  "report": {
+    "fileExport": {
+      "title": "BÁO CÁO DOANH THU FLIGHTHK",
+      "period": "Kỳ báo cáo",
+      "periodWeek": "Tuần này",
+      "periodYear": "Năm nay",
+      "exportDate": "Ngày xuất",
+      "totalRevenue": "Tổng doanh thu",
+      "totalTickets": "Tổng vé bán",
+      "colTime": "Thời gian",
+      "colRevenue": "Doanh thu (Tr.VND)",
+      "colTickets": "Số vé",
+      "currency": " Triệu VND",
+      "ticketUnit": "Vé"
+    },
+    "subTitle": "Theo dõi chỉ số tài chính theo thời gian thực.",
+    "avgTicketPrice": "Giá Vé TB",
+    "comparePeriod": "So với kỳ trước",
+    "ticketPerPeriod": "Vé / Kỳ",
+    "vndPerTicket": "VND / Vé",
+    "growthChart": "Biểu đồ tăng trưởng doanh thu",
+    "topRoutes": "Top Chặng Bay (Doanh thu)",
+    "recentTransactions": "Giao dịch gần đây",
+    "viewAll": "Xem tất cả",
+    "transId": "Mã GD",
+    "customer": "Khách hàng",
+    "amount": "Số tiền",
+    "status": "TT",
+    "statusDone": "Xong"
   }
 }
