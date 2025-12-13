@@ -3,6 +3,7 @@
   gap: 20px;
   height: 100%;
   width: 100%;
+  
 }
 
 /* Sidebar bên trái của settings */
@@ -12,8 +13,13 @@
   flex-direction: column;
   gap: 10px;
   padding: 20px;
+  
 }
-
+.settings-sidebar.glass-panel{
+  background:#3b83f64e;
+  border: 2px solid rgba(255, 255, 255, 0.6); 
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.45); 
+}
 .settings-sidebar h3 {
   color: white;
   margin-bottom: 15px;
@@ -54,7 +60,11 @@
   padding: 30px;
   overflow-y: auto;
 }
-
+.settings-content.glass-panel{
+  background: #153569d9;
+  border: 2px solid rgba(255, 255, 255, 0.6); 
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.45); 
+}
 .section-title {
   color: white;
   border-bottom: 1px solid rgba(255,255,255,0.1);
@@ -88,6 +98,8 @@
   position: absolute;
   bottom: 0;
   right: 0;
+  height: 36px;
+  width: 36px;
   background: #3b82f6;
   color: white;
   padding: 8px;
@@ -190,4 +202,49 @@
     margin-top: 40px;
     color: rgba(255,255,255,0.4);
     font-size: 13px;
+}
+/* Validate Password Criteria Styles */
+.password-criteria {
+  margin-top: -10px; /* Kéo gần lại input mật khẩu mới */
+  margin-bottom: 20px;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 15px;
+  border-radius: 8px;
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+}
+
+.password-criteria ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
+.password-criteria li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  transition: all 0.3s ease;
+}
+
+/* Chưa đạt điều kiện (Màu xám/mờ) */
+.password-criteria li.invalid {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.password-criteria li.invalid svg {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+/* Đã đạt điều kiện (Màu xanh lá) */
+.password-criteria li.valid {
+  color: #4ade80; /* Màu xanh lá sáng */
+  font-weight: 500;
+}
+
+.password-criteria li.valid svg {
+  color: #4ade80;
 }

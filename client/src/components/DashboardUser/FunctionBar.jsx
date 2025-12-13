@@ -31,11 +31,7 @@ function LeftSide({ currentTab, onTabChange }) {
       name: t("sidebar.my_trips"),
       icon: <Luggage size={20} />,
     },
-    {
-      id: "wallet",
-      name: t("sidebar.wallet"),
-      icon: <Wallet size={20} />,
-    },
+
     {
       id: "settings",
       name: t("sidebar.settings"),

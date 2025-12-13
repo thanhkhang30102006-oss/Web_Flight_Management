@@ -12,13 +12,40 @@ import {
   CreditCard,
   Globe,
   Loader2,
+  Check,
+  Circle,
 } from "lucide-react";
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import "./Settings.css";
 
 const API_BASE_URL = "http://localhost:3001/api/user/";
 
+// Hàm validate (Copy từ LoginRegis)
+function validatePassword(password) {
+  const minLength = /.{8,}/;
+  const hasLower = /[a-z]/;
+  const hasUpper = /[A-Z]/;
+  const hasNumber = /[0-9]/;
+  const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/;
+
+  return {
+    length: minLength.test(password),
+    lower: hasLower.test(password),
+    upper: hasUpper.test(password),
+    number: hasNumber.test(password),
+    special: hasSpecial.test(password),
+    isValid:
+      minLength.test(password) &&
+      hasLower.test(password) &&
+      hasUpper.test(password) &&
+      hasNumber.test(password) &&
+      hasSpecial.test(password),
+  };
+}
+
 const Settings = () => {
+  const { t } = useTranslation();
   const [activeSection, setActiveSection] = useState("profile");
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
@@ -39,6 +66,14 @@ const Settings = () => {
     currentPassword: "",
     newPassword: "",
     confirmPassword: "",
+  });
+  const [passCriteria, setPassCriteria] = useState({
+    length: false,
+    lower: false,
+    upper: false,
+    number: false,
+    special: false,
+    isValid: false,
   });
 
   useEffect(() => {
@@ -84,6 +119,10 @@ const Settings = () => {
   const handlePasswordChange = (e) => {
     const { name, value } = e.target;
     setPasswords({ ...passwords, [name]: value });
+    if (name === "newPassword") {
+      const validationResult = validatePassword(value);
+      setPassCriteria(validationResult);
+    }
   };
 
   // Helper chuyển file sang Base64 để gửi lên server (Vì Controller nhận String)
@@ -124,6 +163,7 @@ const Settings = () => {
           passengerName: profile.passengerName,
           passengerGender: profile.passengerGender,
           passengerNationality: profile.passengerNationality,
+          passengerEmail: profile.passengerEmail,
           passengerPassport: profile.passengerPassport,
           passengerMobile: profile.passengerMobile,
           passengerImage: profile.passengerImage, // Gửi chuỗi Base64
@@ -148,12 +188,14 @@ const Settings = () => {
   // --- 3. GỌI API ĐỔI MẬT KHẨU ---
   const handleChangePassword = async (e) => {
     e.preventDefault();
-    if (passwords.newPassword !== passwords.confirmPassword) {
-      alert("Mật khẩu xác nhận không khớp!");
+    if (!passCriteria.isValid) {
+      alert(
+        "Mật khẩu mới chưa đủ mạnh (cần 8 ký tự, hoa, thường, số, ký tự đặc biệt)!"
+      );
       return;
     }
-    if (passwords.newPassword.length < 6) {
-      alert("Mật khẩu mới phải có ít nhất 6 ký tự");
+    if (passwords.newPassword !== passwords.confirmPassword) {
+      alert("Mật khẩu xác nhận không khớp!");
       return;
     }
 
@@ -179,9 +221,15 @@ const Settings = () => {
           newPassword: "",
           confirmPassword: "",
         });
-        // Tùy chọn: Logout user ra
-        // localStorage.removeItem("accessToken");
-        // window.location.href = "/login";
+        // Reset criteria
+        setPassCriteria({
+          length: false,
+          lower: false,
+          upper: false,
+          number: false,
+          special: false,
+          isValid: false,
+        });
       } else {
         alert(result.message || "Đổi mật khẩu thất bại!");
       }
@@ -250,7 +298,7 @@ const Settings = () => {
                     className="avatar-img"
                   />
                   <label htmlFor="avatar-upload" className="avatar-edit-btn">
-                    <Camera size={16} />
+                    <Camera size={20} />
                   </label>
                   <input
                     type="file"
@@ -281,12 +329,14 @@ const Settings = () => {
                 </div>
                 <div className="input-group">
                   <label>
-                    <Mail size={14} /> Email (Không thể sửa)
+                    <Mail size={14} /> Email
                   </label>
                   <input
-                    className="glass-input disabled"
+                    className="glass-input"
+                    name="passengerEmail"
                     value={profile.passengerEmail || ""}
-                    readOnly
+                    onChange={handleProfileChange}
+                    required
                   />
                 </div>
                 <div className="input-group">
@@ -303,7 +353,7 @@ const Settings = () => {
                 </div>
                 <div className="input-group">
                   <label>
-                    <CreditCard size={14} /> Số Hộ Chiếu/CCCD
+                    <CreditCard size={14} /> Số Hộ Chiếu
                   </label>
                   <input
                     className="glass-input"
@@ -360,6 +410,7 @@ const Settings = () => {
             <h2 className="section-title">Đổi mật khẩu</h2>
             <form onSubmit={handleChangePassword} className="security-form">
               <div className="input-group">
+                <br></br>
                 <label>Mật khẩu hiện tại</label>
                 <input
                   type="password"
@@ -371,6 +422,7 @@ const Settings = () => {
                 />
               </div>
               <div className="input-group">
+                <br></br>
                 <label>Mật khẩu mới</label>
                 <input
                   type="password"
@@ -382,7 +434,67 @@ const Settings = () => {
                   placeholder="Tối thiểu 6 ký tự"
                 />
               </div>
+
+              {/* 3. CHÈN UI VALIDATE MẬT KHẨU TẠI ĐÂY */}
+              {passwords.newPassword && (
+                <div className="password-criteria">
+                  <ul>
+                    <li className={passCriteria.length ? "valid" : "invalid"}>
+                      {passCriteria.length ? (
+                        <Check size={14} />
+                      ) : (
+                        <Circle size={14} />
+                      )}
+                      <span>
+                        {t("validation.min_length", "Tối thiểu 8 ký tự")}
+                      </span>
+                    </li>
+                    <li className={passCriteria.upper ? "valid" : "invalid"}>
+                      {passCriteria.upper ? (
+                        <Check size={14} />
+                      ) : (
+                        <Circle size={14} />
+                      )}
+                      <span>
+                        {t("validation.uppercase", "Chữ in hoa (A-Z)")}
+                      </span>
+                    </li>
+                    <li className={passCriteria.lower ? "valid" : "invalid"}>
+                      {passCriteria.lower ? (
+                        <Check size={14} />
+                      ) : (
+                        <Circle size={14} />
+                      )}
+                      <span>
+                        {t("validation.lowercase", "Chữ thường (a-z)")}
+                      </span>
+                    </li>
+                    <li className={passCriteria.number ? "valid" : "invalid"}>
+                      {passCriteria.number ? (
+                        <Check size={14} />
+                      ) : (
+                        <Circle size={14} />
+                      )}
+                      <span>{t("validation.number", "Số (0-9)")}</span>
+                    </li>
+                    <li className={passCriteria.special ? "valid" : "invalid"}>
+                      {passCriteria.special ? (
+                        <Check size={14} />
+                      ) : (
+                        <Circle size={14} />
+                      )}
+                      <span>
+                        {t(
+                          "validation.special_char",
+                          "Ký tự đặc biệt (!@#...)"
+                        )}
+                      </span>
+                    </li>
+                  </ul>
+                </div>
+              )}
               <div className="input-group">
+                <br></br>
                 <label>Xác nhận mật khẩu mới</label>
                 <input
                   type="password"
@@ -393,6 +505,9 @@ const Settings = () => {
                   required
                 />
               </div>
+              <br></br>
+              <br></br>
+
               <button type="submit" className="save-btn warning">
                 Đổi mật khẩu
               </button>
@@ -430,7 +545,10 @@ const Settings = () => {
               <p>
                 Developed by: <strong>ThanhKhang & TrungHieu</strong>
               </p>
-              <p>© 2025 Vietnam-Korea University (VKU)</p>
+              <p>
+                © 2025 Vietnam - Korea University of Information and
+                Communication Technology (VKU)
+              </p>
             </div>
           </motion.div>
         )}
