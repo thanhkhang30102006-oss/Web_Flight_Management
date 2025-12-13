@@ -18,25 +18,58 @@ import {
 } from "lucide-react";
 import "./NextFlight.css";
 import { useNavigate } from "react-router-dom";
-
 const AIRPORT_COORDS = {
+  // Miền Bắc
   HAN: { name: "Hà Nội", lat: 21.213, lon: 105.803 },
-  SGN: { name: "TP.HCM", lat: 10.818, lon: 106.651 },
-  DAD: { name: "Đà Nẵng", lat: 16.054, lon: 108.202 },
-  PQC: { name: "Phú Quốc", lat: 10.168, lon: 103.992 },
   HPH: { name: "Hải Phòng", lat: 20.818, lon: 106.733 },
+  VDO: { name: "Vân Đồn", lat: 21.11, lon: 107.41 },
+  DIN: { name: "Điện Biên", lat: 21.39, lon: 103.0 },
+  THD: { name: "Thanh Hóa", lat: 19.9, lon: 105.46 },
+  VII: { name: "Vinh", lat: 18.73, lon: 105.67 },
+
+  // Miền Trung
+  DAD: { name: "Đà Nẵng", lat: 16.054, lon: 108.202 },
+  CXR: { name: "Nha Trang", lat: 11.998, lon: 109.219 },
+  HUI: { name: "Huế", lat: 16.4, lon: 107.7 },
+  VDH: { name: "Đồng Hới", lat: 17.51, lon: 106.59 },
+  VCL: { name: "Chu Lai", lat: 15.4, lon: 108.7 },
+  UIH: { name: "Quy Nhơn", lat: 13.95, lon: 109.05 },
+  TBB: { name: "Tuy Hòa", lat: 13.04, lon: 109.33 },
+
+  // Tây Nguyên
+  DLI: { name: "Đà Lạt", lat: 11.75, lon: 108.37 },
+  BMV: { name: "Buôn Ma Thuột", lat: 12.66, lon: 108.12 },
+  PXU: { name: "Pleiku", lat: 14.0, lon: 108.01 },
+
+  // Miền Nam
+  SGN: { name: "TP.HCM", lat: 10.818, lon: 106.651 },
+  PQC: { name: "Phú Quốc", lat: 10.168, lon: 103.992 },
+  VCA: { name: "Cần Thơ", lat: 10.085, lon: 105.712 },
+  VCS: { name: "Côn Đảo", lat: 8.73, lon: 106.63 },
+  VKG: { name: "Rạch Giá", lat: 10.0, lon: 105.13 },
+  CAH: { name: "Cà Mau", lat: 9.17, lon: 105.17 },
 };
 // --- MOCK DATA (Dữ liệu giả lập cho Weather & Flight) ---
 const getWeatherIcon = (code) => {
   if (code === 0 || code === 1)
     return <Sun className="weather-icon-w text-yellow-400" />;
   if (code === 2 || code === 3)
-    return <CloudSun className="weather-icon-w text-gray-200" />;
+    return <CloudSun className="weather-icon-w text-gray-400" />;
   if (code >= 51 && code <= 67)
-    return <CloudRain className="weather-icon-w text-blue-300" />;
+    return <CloudRain className="weather-icon-w text-blue-400" />;
   if (code >= 95)
     return <CloudLightning className="weather-icon-w text-purple-400" />;
   return <Cloud className="weather-icon-w text-gray-300" />;
+};
+
+const getWeatherDescription = (code) => {
+  if (code <= 1) return "Nắng đẹp";
+  if (code <= 3) return "Có mây";
+  if (code >= 45 && code <= 48) return "Sương mù";
+  if (code >= 51 && code <= 67) return "Có mưa";
+  if (code >= 80 && code <= 82) return "Mưa rào";
+  if (code >= 95) return "Mưa dông";
+  return "Nhiều mây";
 };
 let isHasTicket = false;
 
@@ -149,40 +182,56 @@ const WeatherWidget = ({ depCode, arrCode, weatherData, loading }) => {
       </div>
     );
   if (!weatherData) return null;
-
+  const SimpleRow = ({ code, data, color }) => (
+    <div
+      className="weather-row-simple"
+      style={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        padding: "10px 0",
+      }}
+    >
+      <div
+        className="loc"
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          width: "30%",
+        }}
+      >
+        <MapPin size={20} className={color} />
+        <span style={{ fontWeight: "bold" }}>{code}</span>
+      </div>
+      <div
+        className="stat"
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "12px",
+          flex: 1,
+          justifyContent: "flex-end",
+        }}
+      >
+        {getWeatherIcon(data.code)}
+        <div style={{ textAlign: "right" }}>
+          <div style={{ fontSize: "1.2rem", fontWeight: "bold" }}>
+            {data.temp}°C
+          </div>
+          <div style={{ fontSize: "0.85rem", color: "#555" }}>
+            {getWeatherDescription(data.code)}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
   return (
     <div className="weather-widget">
-      <h4 className="widget-title">Thời tiết hiện tại</h4>
-
-      {/* Nơi đi */}
-      <div className="weather-row">
-        <div className="location-info">
-          <MapPin size={24} className="text-blue" />
-          <span>{AIRPORT_COORDS[depCode]?.name || depCode}</span>
-        </div>
-        <div className="weather-stats">
-          {getWeatherIcon(weatherData.dep.code)}
-          <span className="temp">{weatherData.dep.temp}°C</span>
-        </div>
-      </div>
-
+      <h4 className="widget-title">Dự báo ngày bay</h4>
+      <SimpleRow code={depCode} data={weatherData.dep} color="text-blue-500" />
       <div className="divider-dashed"></div>
-
-      {/* Nơi đến */}
-      <div className="weather-row">
-        <div className="location-info">
-          <MapPin size={24} className="text-red" />
-          <span>{AIRPORT_COORDS[arrCode]?.name || arrCode}</span>
-        </div>
-        <div className="weather-stats">
-          {getWeatherIcon(weatherData.arr.code)}
-          <span className="temp">{weatherData.arr.temp}°C</span>
-        </div>
-      </div>
-
-      <div className="weather-summary">
-        <p>Gió: {weatherData.arr.wind} km/h tại điểm đến</p>
-      </div>
+      <SimpleRow code={arrCode} data={weatherData.arr} color="text-red-500" />
     </div>
   );
 };
@@ -230,10 +279,12 @@ function NextFlightCard({ passengerID, passengerName }) {
           setLoading(false);
           return;
         }
-
-        const depUrl = `https://api.open-meteo.com/v1/forecast?latitude=${depCoords.lat}&longitude=${depCoords.lon}&current_weather=true`;
-        const arrUrl = `https://api.open-meteo.com/v1/forecast?latitude=${arrCoords.lat}&longitude=${arrCoords.lon}&current_weather=true`;
-
+        const depDate = flight.departureDay;
+        const arrDate = flight.arriveDay;
+        const getUrl = (lat, lon, date) =>
+          `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=weather_code,temperature_2m_max,temperature_2m_min&start_date=${date}&end_date=${date}&timezone=auto`;
+        const depUrl = getUrl(depCoords.lat, depCoords.lon, depDate);
+        const arrUrl = getUrl(arrCoords.lat, arrCoords.lon, arrDate);
         // --- BẮT ĐẦU: Logic dùng FETCH ---
 
         // 1. Gọi song song 2 request
@@ -253,14 +304,14 @@ function NextFlightCard({ passengerID, passengerName }) {
         // 4. Set State
         setWeather({
           dep: {
-            temp: dataDep.current_weather.temperature,
-            code: dataDep.current_weather.weathercode,
-            wind: dataDep.current_weather.windspeed,
+            temp: Math.round(dataDep.daily.temperature_2m_max[0]),
+            min: Math.round(dataDep.daily.temperature_2m_min[0]),
+            code: dataDep.daily.weather_code[0],
           },
           arr: {
-            temp: dataArr.current_weather.temperature,
-            code: dataArr.current_weather.weathercode,
-            wind: dataArr.current_weather.windspeed,
+            temp: Math.round(dataArr.daily.temperature_2m_max[0]),
+            min: Math.round(dataArr.daily.temperature_2m_min[0]),
+            code: dataArr.daily.weather_code[0],
           },
         });
         // --- KẾT THÚC: Logic dùng FETCH ---
