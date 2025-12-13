@@ -14,8 +14,10 @@ import {
   AlertCircle,
   Ticket,
   Loader2,
+  User,
 } from "lucide-react";
 import "./NextFlight.css";
+import { useNavigate } from "react-router-dom";
 
 const AIRPORT_COORDS = {
   HAN: { name: "Hà Nội", lat: 21.213, lon: 105.803 },
@@ -36,9 +38,11 @@ const getWeatherIcon = (code) => {
     return <CloudLightning className="weather-icon-w text-purple-400" />;
   return <Cloud className="weather-icon-w text-gray-300" />;
 };
+let isHasTicket = false;
 
 // Component 1: Khi CHƯA có vé (No Flight)
 const NoFlightView = () => {
+  const navigate = useNavigate();
   const { t } = useTranslation(); // 2. Khởi tạo hook
   return (
     <motion.div
@@ -61,7 +65,10 @@ const NoFlightView = () => {
           </p>
         </div>
       </div>
-      <button className="btn-primary-glass">
+      <button
+        className="btn-primary-glass"
+        onClick={() => navigate("/user/booking")}
+      >
         {t("next_flight.no_ticket.btn")}
         <ArrowRight size={18} />
       </button>
@@ -70,62 +77,68 @@ const NoFlightView = () => {
 };
 
 // Component 2a: Phần Vé máy bay (Left Side)
-const TicketView = ({ flight }) => (
-  <div className="ticket-visual">
-    {/* Header Vé: Logo & Status */}
-    <div className="ticket-header">
-      <div className="airline-brand">
-        <Plane className="airline-logo-placeholder" size={24} />
-        <span className="flight-no">{flight.flightNumber}</span>
-      </div>
-      <span className={`flight-status ${flight.flightState}`}>
-        {flight.flightState === "ontime" ? "Đúng giờ" : "Bị hoãn"}
-      </span>
-    </div>
-
-    {/* Body Vé: Tuyến đường */}
-    <div className="ticket-body">
-      <div className="route-point">
-        <span className="city-code">{flight.departurePoint}</span>
-        <span className="time-large">{flight.departureTime}</span>
-        <span className="date-small">{flight.departureDay}</span>
-      </div>
-
-      <div className="flight-path">
-        <span className="duration">Bay thẳng</span>
-        <div className="path-line">
-          <div className="dot start"></div>
-          <Plane className="plane-icon-center" size={24} />
-          <div className="dot end"></div>
+const TicketView = ({ flight, seat, passengerName }) => {
+  const realSeatNumber = seat.seatNumber.replace(flight.flightNumber, "");
+  return (
+    <>
+      <div className="ticket-visual">
+        {/* Header Vé: Logo & Status */}
+        <div className="ticket-header">
+          <div className="airline-brand">
+            <Plane className="airline-logo-placeholder" size={24} />
+            <span className="flight-no">{flight.flightNumber}</span>
+          </div>
+          <span className={`flight-status ${flight.flightState}`}>
+            {flight.flightState === "active" ? "Đúng giờ" : "Bị hoãn"}
+          </span>
         </div>
-        <span className="type">{flight.planeType}</span>
-      </div>
 
-      <div className="route-point text-right">
-        <span className="city-code">{flight.arrivePoint}</span>
-        <span className="time-large">--:--</span>{" "}
-        {/* Thường vé đi chưa hiện giờ đến chính xác hoặc tự tính */}
-        <span className="date-small">Dự kiến</span>
-      </div>
-    </div>
+        {/* Body Vé: Tuyến đường */}
+        <div className="ticket-body">
+          <div className="route-point">
+            <span className="city-code">{flight.departurePoint}</span>
+            <span className="time-large">{flight.departureTime}</span>
+            <span className="date-small">{flight.departureDay}</span>
+          </div>
 
-    <div className="ticket-footer">
-      <div className="info-item">
-        <Armchair size={20} />{" "}
-        <span className="value">{flight.seat || "Chưa chọn"}</span>
+          <div className="flight-path">
+            <span className="duration">Bay thẳng</span>
+            <div className="path-line">
+              <div className="dot start"></div>
+              <Plane className="plane-icon-center" size={24} />
+              <div className="dot end"></div>
+            </div>
+            <span className="type">{flight.planeType}</span>
+          </div>
+
+          <div className="route-point text-right">
+            <span className="city-code">{flight.arrivePoint}</span>
+            <span className="time-large">{flight.arriveTime}</span>
+            <span className="date-small">{flight.arriveDay}</span>
+          </div>
+        </div>
+
+        <div className="ticket-footer">
+          <div className="info-item">
+            <Armchair size={20} />{" "}
+            <span className="value">{realSeatNumber || "Chưa chọn"}</span>
+          </div>
+          <div className="info-item">
+            <User size={20} /> <span className="value">{passengerName}</span>
+          </div>
+          <div className="info-item">
+            <Ticket size={20} />{" "}
+            <span className="value">
+              {seat.seatType === "economy" ? "Phổ thông" : "Thương gia"}
+            </span>
+          </div>
+        </div>
+        <div className="ticket-notch left"></div>
+        <div className="ticket-notch right"></div>
       </div>
-      <div className="info-item">
-        <Ticket size={20} /> <span className="value">Phổ thông</span>
-      </div>
-      <div className="info-item">
-        <AlertCircle size={20} />{" "}
-        <span className="value">Cổng {flight.gate || "--"}</span>
-      </div>
-    </div>
-    <div className="ticket-notch left"></div>
-    <div className="ticket-notch right"></div>
-  </div>
-);
+    </>
+  );
+};
 
 // Component 2b: Phần Thời tiết (Right Side)
 const WeatherWidget = ({ depCode, arrCode, weatherData, loading }) => {
@@ -175,12 +188,36 @@ const WeatherWidget = ({ depCode, arrCode, weatherData, loading }) => {
 };
 
 // --- COMPONENT CHÍNH ---
-function NextFlightCard({ flight }) {
+function NextFlightCard({ passengerID, passengerName }) {
   const [weather, setWeather] = useState(null);
   const [loading, setLoading] = useState(false);
-
+  const [flightPoint, setFlightPoint] = useState(null);
+  const [isHasTicket, setIsHasTicket] = useState(false);
   useEffect(() => {
-    if (!flight) return;
+    const fecthFligthTicket = async () => {
+      try {
+        if (!passengerID) return;
+        const response = await fetch(
+          `api/user/dashboard/latestticket/passenger/${passengerID}`
+        );
+        const result = await response.json();
+
+        if (result.success && result.flight) {
+          setIsHasTicket(true);
+          setFlightPoint(result);
+        } else {
+          setIsHasTicket(false);
+          setFlightPoint(null);
+        }
+      } catch (error) {
+        console.error("Không thể tải danh sách ghế đã bán:", error);
+      }
+    };
+    fecthFligthTicket();
+  }, [passengerID]);
+  useEffect(() => {
+    if (!flightPoint || !flightPoint.flight) return;
+    const flight = flightPoint.flight;
 
     const fetchWeather = async () => {
       setLoading(true);
@@ -235,10 +272,10 @@ function NextFlightCard({ flight }) {
     };
 
     fetchWeather();
-  }, [flight]);
+  }, [flightPoint]);
 
-  if (!flight) return <NoFlightView />;
-
+  if (!flightPoint || !flightPoint.flight) return <NoFlightView />;
+  const { flight, seat } = flightPoint;
   return (
     <motion.div
       className="flight-dashboard-row"
@@ -249,7 +286,7 @@ function NextFlightCard({ flight }) {
     >
       <div className="col-ticket">
         <div className="glass-panel-title">Chuyến bay sắp tới</div>
-        <TicketView flight={flight} />
+        <TicketView flight={flight} seat={seat} passengerName={passengerName} />
       </div>
 
       <div className="col-weather">

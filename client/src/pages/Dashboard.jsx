@@ -9,45 +9,15 @@ import "./DashboardLayout.css";
 import videoWallpaper from "../assets//videos/background-wallpaper-user1.mp4";
 import Booking from "./BookingFlow";
 import { Snowfall } from "react-snowfall";
-const MOCK_USER_BOOKINGS = [
-  {
-    id: "BK-001",
-    flightNumber: "VN-192",
-    departurePoint: "SGN",
-    arrivePoint: "HAN",
-    departureDay: "12/12/2025",
-    departureTime: "08:30",
-    planeType: "Boeing 787-9 Dreamliner",
-    seat: "12A",
-    gate: "04",
-    flightState: "ontime",
-    status: "upcoming",
-  },
-  {
-    id: "BK-002",
-    flightNumber: "VJ-512",
-    departurePoint: "HAN",
-    arrivePoint: "DAD",
-    departureDay: "05/10/2025",
-    departureTime: "14:00",
-    planeType: "Airbus A320",
-    seat: "20D",
-    gate: "11",
-    flightState: "completed",
-    status: "completed",
-  },
-];
 
 function DashBoard() {
   const [nextFlight, setNextFlight] = useState(null);
   const [activeTab, setActiveTab] = useState("home");
-  useEffect(() => {
-    // Tìm chuyến bay có status là "upcoming" đầu tiên
-    const upcoming = MOCK_USER_BOOKINGS.find(
-      (flight) => flight.status === "upcoming"
-    );
-    setNextFlight(upcoming || null);
-  }, []);
+  const userDataString = localStorage.getItem("userData");
+  const passenger = JSON.parse(userDataString);
+  const passengerID = passenger.id;
+  const passengerName = passenger.name;
+  console.log("Check ID:", passengerID);
   return (
     <div className="dashboard-layout">
       <video className="background-video" autoPlay muted loop playsInline>
@@ -68,7 +38,10 @@ function DashBoard() {
           {activeTab === "home" && (
             <div className="animate-fade-in">
               <div className="widgets-row">
-                <NextFlightCard flight={nextFlight} />
+                <NextFlightCard
+                  passengerID={passengerID}
+                  passengerName={passengerName}
+                />
                 {/* <StatsComponents /> có thể để ở đây nếu muốn chia cột */}
               </div>
               <FlightSchedule />
@@ -91,43 +64,6 @@ function DashBoard() {
               <Settings />
             </div>
           )}
-        </div>
-        <div
-          style={{
-            position: "fixed",
-            bottom: 20,
-            right: 20,
-            zIndex: 9999,
-            display: "flex",
-            gap: 10,
-          }}
-        >
-          <button
-            onClick={() => setNextFlight(null)}
-            style={{
-              padding: "5px 10px",
-              background: "red",
-              color: "white",
-              border: "none",
-              borderRadius: 4,
-              cursor: "pointer",
-            }}
-          >
-            Test: Không vé
-          </button>
-          <button
-            onClick={() => setNextFlight(MOCK_USER_BOOKINGS[0])}
-            style={{
-              padding: "5px 10px",
-              background: "green",
-              color: "white",
-              border: "none",
-              borderRadius: 4,
-              cursor: "pointer",
-            }}
-          >
-            Test: Có vé
-          </button>
         </div>
       </main>
     </div>

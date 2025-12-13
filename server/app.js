@@ -219,6 +219,10 @@ const loginStaffRouter = require("./routes/loginStaffAdminRoutes");
 app.use("/api/staff", loginStaffRouter);
 app.use("/api/admin", loginStaffRouter);
 
+// Xử lý hiện thông tin dashboard
+const dashBoardRouter = require("./routes/dashboardRoutes");
+app.use("/api/user/dashboard", dashBoardRouter);
+
 // Xử lý liên quan tới quản lý chuyến bay
 const flightmanagement=require("./routes/flightManagementRoutes");
 app.use("/api/staff/flightmanagement", flightmanagement);
