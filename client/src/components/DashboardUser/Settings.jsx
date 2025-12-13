@@ -1,0 +1,442 @@
+import React, { useState, useEffect, useRef } from "react";
+import {
+  User,
+  Lock,
+  Info,
+  Camera,
+  Save,
+  Github,
+  Mail,
+  Phone,
+  MapPin,
+  CreditCard,
+  Globe,
+  Loader2,
+} from "lucide-react";
+import { motion } from "framer-motion";
+import "./Settings.css";
+
+const API_BASE_URL = "http://localhost:3001/api/user/";
+
+const Settings = () => {
+  const [activeSection, setActiveSection] = useState("profile");
+  const [loading, setLoading] = useState(false);
+  const [fetching, setFetching] = useState(true);
+  // State cho Profile
+  const [profile, setProfile] = useState({
+    passengerName: "",
+    passengerEmail: "",
+    passengerMobile: "",
+    passengerPassport: "",
+    passengerNationality: "",
+    passengerGender: true,
+    passengerImage: "",
+    passengerID: "",
+  });
+
+  // State cho Password
+  const [passwords, setPasswords] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const token = localStorage.getItem("accessToken");
+        if (!token) return;
+
+        const response = await fetch(`${API_BASE_URL}/profile`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const result = await response.json();
+        if (result.success) {
+          setProfile(result.data);
+        } else {
+          console.error("Lỗi lấy thông tin:", result.message);
+        }
+      } catch (error) {
+        console.error("Lỗi kết nối server:", error);
+      } finally {
+        setFetching(false);
+      }
+    };
+
+    fetchProfile();
+  }, []);
+
+  const handleProfileChange = (e) => {
+    const { name, value } = e.target;
+    // Xử lý riêng cho select box gender (convert string "true"/"false" sang boolean)
+    if (name === "passengerGender") {
+      setProfile({ ...profile, [name]: value === "true" });
+    } else {
+      setProfile({ ...profile, [name]: value });
+    }
+  };
+
+  const handlePasswordChange = (e) => {
+    const { name, value } = e.target;
+    setPasswords({ ...passwords, [name]: value });
+  };
+
+  // Helper chuyển file sang Base64 để gửi lên server (Vì Controller nhận String)
+  const convertFileToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+    });
+  };
+  const handleAvatarChange = async (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      try {
+        const base64 = await convertFileToBase64(file);
+        // Cập nhật state để hiển thị preview ngay lập tức
+        setProfile({ ...profile, passengerImage: base64 });
+      } catch (error) {
+        alert("Lỗi khi đọc file ảnh");
+      }
+    }
+  };
+
+  const handleSaveProfile = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    const token = localStorage.getItem("accessToken");
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/update-profile`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          passengerName: profile.passengerName,
+          passengerGender: profile.passengerGender,
+          passengerNationality: profile.passengerNationality,
+          passengerPassport: profile.passengerPassport,
+          passengerMobile: profile.passengerMobile,
+          passengerImage: profile.passengerImage, // Gửi chuỗi Base64
+        }),
+      });
+
+      const result = await response.json();
+      if (response.ok && result.success) {
+        alert("Cập nhật thông tin thành công!");
+        // Cập nhật lại state với dữ liệu mới từ server trả về (để đồng bộ)
+        setProfile(result.data);
+      } else {
+        alert(result.message || "Cập nhật thất bại!");
+      }
+    } catch (error) {
+      alert("Lỗi kết nối server!");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // --- 3. GỌI API ĐỔI MẬT KHẨU ---
+  const handleChangePassword = async (e) => {
+    e.preventDefault();
+    if (passwords.newPassword !== passwords.confirmPassword) {
+      alert("Mật khẩu xác nhận không khớp!");
+      return;
+    }
+    if (passwords.newPassword.length < 6) {
+      alert("Mật khẩu mới phải có ít nhất 6 ký tự");
+      return;
+    }
+
+    const token = localStorage.getItem("accessToken");
+    try {
+      const response = await fetch(`${API_BASE_URL}/change-password`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          currentPassword: passwords.currentPassword,
+          newPassword: passwords.newPassword,
+        }),
+      });
+
+      const result = await response.json();
+      if (response.ok && result.success) {
+        alert("Đổi mật khẩu thành công! Vui lòng đăng nhập lại.");
+        setPasswords({
+          currentPassword: "",
+          newPassword: "",
+          confirmPassword: "",
+        });
+        // Tùy chọn: Logout user ra
+        // localStorage.removeItem("accessToken");
+        // window.location.href = "/login";
+      } else {
+        alert(result.message || "Đổi mật khẩu thất bại!");
+      }
+    } catch (error) {
+      alert("Lỗi hệ thống khi đổi mật khẩu.");
+    }
+  };
+  if (fetching) {
+    return (
+      <div className="flex justify-center items-center h-full text-white">
+        <Loader2 className="animate-spin" size={40} />
+      </div>
+    );
+  }
+
+  return (
+    <div className="settings-container animate-fade-in">
+      {/* SIDEBAR MINI CHO SETTINGS */}
+      <div className="settings-sidebar glass-panel">
+        <h3>Cài đặt</h3>
+        <button
+          className={`settings-nav-btn ${
+            activeSection === "profile" ? "active" : ""
+          }`}
+          onClick={() => setActiveSection("profile")}
+        >
+          <User size={18} /> Hồ sơ cá nhân
+        </button>
+        <button
+          className={`settings-nav-btn ${
+            activeSection === "security" ? "active" : ""
+          }`}
+          onClick={() => setActiveSection("security")}
+        >
+          <Lock size={18} /> Bảo mật
+        </button>
+        <button
+          className={`settings-nav-btn ${
+            activeSection === "about" ? "active" : ""
+          }`}
+          onClick={() => setActiveSection("about")}
+        >
+          <Info size={18} /> Về phần mềm
+        </button>
+      </div>
+
+      {/* NỘI DUNG CHÍNH */}
+      <div className="settings-content glass-panel">
+        {/* --- TAB PROFILE --- */}
+        {activeSection === "profile" && (
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+          >
+            <h2 className="section-title">Thông tin cá nhân</h2>
+            <form onSubmit={handleSaveProfile} className="profile-form">
+              {/* Avatar Upload */}
+              <div className="avatar-section">
+                <div className="avatar-wrapper">
+                  <img
+                    src={
+                      profile.passengerImage ||
+                      "https://via.placeholder.com/150"
+                    }
+                    alt="Avatar"
+                    className="avatar-img"
+                  />
+                  <label htmlFor="avatar-upload" className="avatar-edit-btn">
+                    <Camera size={16} />
+                  </label>
+                  <input
+                    type="file"
+                    id="avatar-upload"
+                    hidden
+                    accept="image/*"
+                    onChange={handleAvatarChange}
+                  />
+                </div>
+                <div className="avatar-info">
+                  <p className="user-id">ID: {profile.passengerID}</p>
+                  <span className="role-badge">Hành khách</span>
+                </div>
+              </div>
+
+              <div className="form-grid-2">
+                <div className="input-group">
+                  <label>
+                    <User size={14} /> Họ và tên
+                  </label>
+                  <input
+                    className="glass-input"
+                    name="passengerName"
+                    value={profile.passengerName || ""}
+                    onChange={handleProfileChange}
+                    required
+                  />
+                </div>
+                <div className="input-group">
+                  <label>
+                    <Mail size={14} /> Email (Không thể sửa)
+                  </label>
+                  <input
+                    className="glass-input disabled"
+                    value={profile.passengerEmail || ""}
+                    readOnly
+                  />
+                </div>
+                <div className="input-group">
+                  <label>
+                    <Phone size={14} /> Số điện thoại
+                  </label>
+                  <input
+                    className="glass-input"
+                    name="passengerMobile"
+                    value={profile.passengerMobile || ""}
+                    onChange={handleProfileChange}
+                    required
+                  />
+                </div>
+                <div className="input-group">
+                  <label>
+                    <CreditCard size={14} /> Số Hộ Chiếu/CCCD
+                  </label>
+                  <input
+                    className="glass-input"
+                    name="passengerPassport"
+                    value={profile.passengerPassport || ""}
+                    onChange={handleProfileChange}
+                    required
+                  />
+                </div>
+                <div className="input-group">
+                  <label>
+                    <Globe size={14} /> Quốc tịch
+                  </label>
+                  <input
+                    className="glass-input"
+                    name="passengerNationality"
+                    value={profile.passengerNationality || ""}
+                    onChange={handleProfileChange}
+                    required
+                  />
+                </div>
+                <div className="input-group">
+                  <label>Giới tính</label>
+                  <select
+                    className="glass-input"
+                    name="passengerGender"
+                    value={profile.passengerGender ? "true" : "false"}
+                    onChange={handleProfileChange}
+                  >
+                    <option value="true">Nam</option>
+                    <option value="false">Nữ</option>
+                  </select>
+                </div>
+              </div>
+
+              <button type="submit" className="save-btn" disabled={loading}>
+                {loading ? (
+                  <Loader2 className="animate-spin" size={18} />
+                ) : (
+                  <Save size={18} />
+                )}
+                {loading ? " Đang lưu..." : " Lưu thay đổi"}
+              </button>
+            </form>
+          </motion.div>
+        )}
+
+        {/* --- TAB SECURITY --- */}
+        {activeSection === "security" && (
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+          >
+            <h2 className="section-title">Đổi mật khẩu</h2>
+            <form onSubmit={handleChangePassword} className="security-form">
+              <div className="input-group">
+                <label>Mật khẩu hiện tại</label>
+                <input
+                  type="password"
+                  className="glass-input"
+                  name="currentPassword"
+                  value={passwords.currentPassword}
+                  onChange={handlePasswordChange}
+                  required
+                />
+              </div>
+              <div className="input-group">
+                <label>Mật khẩu mới</label>
+                <input
+                  type="password"
+                  className="glass-input"
+                  name="newPassword"
+                  value={passwords.newPassword}
+                  onChange={handlePasswordChange}
+                  required
+                  placeholder="Tối thiểu 6 ký tự"
+                />
+              </div>
+              <div className="input-group">
+                <label>Xác nhận mật khẩu mới</label>
+                <input
+                  type="password"
+                  className="glass-input"
+                  name="confirmPassword"
+                  value={passwords.confirmPassword}
+                  onChange={handlePasswordChange}
+                  required
+                />
+              </div>
+              <button type="submit" className="save-btn warning">
+                Đổi mật khẩu
+              </button>
+            </form>
+          </motion.div>
+        )}
+
+        {/* --- TAB ABOUT --- */}
+        {activeSection === "about" && (
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="about-section"
+          >
+            <div className="app-logo-large">✈️</div>
+            <h2>Flight Management System</h2>
+            <p className="version">Version 1.0.0 (Beta)</p>
+            <p className="description">
+              Hệ thống quản lý vé máy bay trực tuyến, hỗ trợ đặt vé, tra cứu
+              chuyến bay và quản lý thông tin hành khách tiện lợi.
+            </p>
+
+            <div className="links">
+              <a
+                href="https://github.com/thanhkhang30102006-oss/Web_Flight_Management"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="github-link"
+              >
+                <Github size={20} /> Xem mã nguồn trên GitHub
+              </a>
+            </div>
+
+            <div className="credits">
+              <p>
+                Developed by: <strong>ThanhKhang & TrungHieu</strong>
+              </p>
+              <p>© 2025 Vietnam-Korea University (VKU)</p>
+            </div>
+          </motion.div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default Settings;

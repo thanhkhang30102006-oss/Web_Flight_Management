@@ -326,7 +326,7 @@
   width: 40px; height: 40px;
   background: #3b82f6; color: white;
   border: none; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
+  display: grid; align-items: center; justify-content: center;
   cursor: pointer; transition: 0.2s;
 }
 .btn-send:hover { background: #2563eb; transform: scale(1.05); }

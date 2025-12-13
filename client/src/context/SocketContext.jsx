@@ -6,11 +6,9 @@ const SocketContext = createContext();
 export const useSocket = () => useContext(SocketContext);
 
 export const SocketProvider = ({ children }) => {
-  // SỬA ĐỔI: Dùng useState thay vì useRef để component cập nhật được giá trị mới
   const [socket, setSocket] = useState(null);
 
   const connectSocket = () => {
-    // Chỉ kết nối nếu chưa có socket
     if (!socket) {
       const newSocket = io("http://localhost:3001", {
         transports: ["websocket"],

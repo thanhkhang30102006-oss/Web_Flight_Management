@@ -131,7 +131,7 @@ const PassengerChat = () => {
         socket.off("receive_message", handleReceiveMessage);
       };
     }
-  }, [chatStarted, currentUser]);
+  }, [chatStarted, currentUser.id]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -355,7 +355,7 @@ const PassengerChat = () => {
               <Smile size={20} />
             </button>
             <button type="submit" className="btn-send">
-              <Send size={18} />
+              <Send size={20} />
             </button>
           </form>
         </div>

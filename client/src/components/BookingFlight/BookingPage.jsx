@@ -14,6 +14,7 @@ import {
   Luggage,
   Plane,
 } from "lucide-react";
+import { Snowfall } from "react-snowfall";
 import "./BookingPage.css";
 import videoWallpaper from "../../assets/videos/background-wallpaper-bookingpage.mp4";
 import CountdownTimer from "../Timer/CountdownTimer";
@@ -387,6 +388,7 @@ const BookingPage = () => {
         <source src={videoWallpaper} type="video/webm" />
         <source src={videoWallpaper.replace("webm", "mp4")} type="video/mp4" />
       </video>
+      <Snowfall color="white" />
       <div className="booking-overlay"></div>
       <motion.div
         initial={{ opacity: 0, x: 20 }}

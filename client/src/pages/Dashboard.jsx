@@ -4,11 +4,11 @@ import LeftSide from "../components/DashboardUser/FunctionBar";
 import { NextFlightCard } from "../components/DashboardUser/NextFlight";
 import FlightSchedule from "../components/DashboardUser/FlightSchedule";
 import PassengerChat from "../components/DashboardUser/PassengerChat";
+import Settings from "../components/DashboardUser/Settings";
 import "./DashboardLayout.css";
 import videoWallpaper from "../assets//videos/background-wallpaper-user1.mp4";
 import Booking from "./BookingFlow";
 import { Snowfall } from "react-snowfall";
-
 const MOCK_USER_BOOKINGS = [
   {
     id: "BK-001",
@@ -84,7 +84,13 @@ function DashBoard() {
               </div>
             </div>
           )}
+
           {activeTab === "support" && <PassengerChat />}
+          {activeTab === "settings" && (
+            <div className="animate-fade-in">
+              <Settings />
+            </div>
+          )}
         </div>
         <div
           style={{

@@ -37,7 +37,7 @@ function LeftSide({ currentTab, onTabChange }) {
       icon: <Wallet size={20} />,
     },
     {
-      id: "setting",
+      id: "settings",
       name: t("sidebar.settings"),
       icon: <Settings size={20} />,
     },

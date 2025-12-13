@@ -12,13 +12,14 @@ import {
   FileText,
   Download,
 } from "lucide-react";
+import { useSocket } from "../../context/SocketContext";
+
 import io from "socket.io-client";
 import axios from "axios";
 import "./CustomerSupport.css";
 import "../../pages/StaffDashboard.css";
 
-const API_URL = "http://localhost:3001";
-const socket = io.connect(API_URL);
+const { socket } = useSocket;
 
 const CustomerSupport = () => {
   const [currentStaff, setCurrentStaff] = useState(null);
@@ -356,7 +357,7 @@ const CustomerSupport = () => {
                   <Smile size={20} />
                 </button>
                 <button type="submit" className="btn-send">
-                  <Send size={18} />
+                  <Send size={20} />
                 </button>
               </form>
             </>
