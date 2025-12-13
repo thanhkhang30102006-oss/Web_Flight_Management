@@ -146,6 +146,9 @@ const loginStaffRouter = require("./routes/loginStaffAdminRoutes");
 app.use("/api/staff", loginStaffRouter);
 app.use("/api/admin", loginStaffRouter);
 
+// Xử lý hiện thông tin dashboard
+const dashBoardRouter = require("./routes/dashboardRoutes");
+app.use("/api/user/dashboard", dashBoardRouter);
 // Pending seats
 if (!global.lockedSeats) {
   global.lockedSeats = {};
