@@ -46,7 +46,7 @@ function DashBoard() {
                 />
                 {/* <StatsComponents /> có thể để ở đây nếu muốn chia cột */}
               </div>
-              <FlightSchedule />
+              <FlightSchedule passengerID={passengerID} />
             </div>
           )}
 

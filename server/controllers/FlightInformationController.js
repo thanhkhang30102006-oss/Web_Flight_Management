@@ -2,6 +2,7 @@ const db = require("../models");
 const Flight = db.FlightInformation;
 const Seat = db.Seat;
 const Ticket = db.Ticket;
+const { Op } = require("sequelize");
 const getInfoToTicket = async (req, res) => {
   try {
     const { passengerID } = req.params;
@@ -59,4 +60,37 @@ const getInfoToTicket = async (req, res) => {
     res.status(500).json({ message: "Lỗi server:" + error.message });
   }
 };
-module.exports = { getInfoToTicket };
+
+const flightSchedule = async (req, res) => {
+  try {
+    const { passengerID } = req.params;
+    const tickets = await Ticket.findAll({
+      where: {
+        passengerID: passengerID,
+      },
+    });
+    if (!tickets) {
+      res.status(401).json({ message: "Thiếu thông tin vé" });
+    }
+    const flightNumbers = tickets.map((ticket) => {
+      return ticket.flightNumber; // Danh sách tất cả các chuyến bay mà người dùng đã đặt vé
+    });
+
+    console.log("Danh sách các chuyến bay: ", flightNumbers);
+
+    const flights = await Flight.findAll({
+      where: {
+        flightNumber: { [Op.in]: flightNumbers },
+      },
+    });
+    res.status(200).json({
+      flights: flights,
+      success: "success",
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Lỗi server: " + error.message,
+    });
+  }
+};
+module.exports = { getInfoToTicket, flightSchedule };

@@ -5,63 +5,77 @@ import { isSameDay } from "date-fns";
 import "react-calendar/dist/Calendar.css";
 import "./FlightSchedule.css";
 
-const dbFlights = [
-  {
-    id: 1,
-    date: new Date(2025, 11, 12),
-    route: "HAN ➝ NRT",
-    airline: "Vietnam Airlines",
-    startTime: "08:30",
-    endTime: "12:30",
-    status: "confirmed",
-    logo: "https://upload.wikimedia.org/wikipedia/en/thumb/9/9d/Vietnam_Airlines_Logo.svg/1200px-Vietnam_Airlines_Logo.svg.png",
-  },
-  {
-    id: 2,
-    date: new Date(2025, 11, 12),
-    route: "SGN ➝ DAD",
-    airline: "Vietjet Air",
-    startTime: "16:15",
-    endTime: "20:45",
-    status: "delayed",
-    logo: "https://upload.wikimedia.org/wikipedia/en/thumb/9/9d/Vietnam_Airlines_Logo.svg/1200px-Vietnam_Airlines_Logo.svg.png",
-  },
-];
-
-const FlightSchedule = () => {
-  const [selectedDate, setSelectedDate] = useState(new Date(2025, 11, 12));
+const FlightSchedule = ({ passengerID }) => {
   const [localFlights, setLocalFlights] = useState([]);
-  const { t, i18n } = useTranslation();
-  const calendarLocale = i18n.language === "vi" ? "vi-VN" : "en-US";
   // Hàm đổi giờ (HH:mm) thành phút (0 -> 1440)
   const timeToMinutes = (timeStr) => {
     const [h, m] = timeStr.split(":").map(Number);
     return h * 60 + m;
   };
 
+  // New
+  const [flightList, setFlightList] = useState([]);
+  const { t, i18n } = useTranslation();
+  const calendarLocale = i18n.language === "vi" ? "vi-VN" : "en-US";
+  const [selectedDate, setSelectedDate] = useState(new Date());
   useEffect(() => {
-    const flightsOnDate = dbFlights.filter((f) =>
-      isSameDay(f.date, selectedDate)
-    );
+    const flightSchedule = async () => {
+      try {
+        if (!passengerID) return;
+        const response = await fetch(
+          `api/user/dashboard/flightschedule/${passengerID}`
+        );
+        const result = await response.json();
+
+        if (result.success && result.flights) {
+          setFlightList(result.flights);
+        } else {
+          setFlightList([]);
+        }
+      } catch (error) {
+        console.error("Không có danh sách nào phù hợp hết", error);
+      }
+    };
+    flightSchedule();
+  }, [passengerID]);
+
+  // flightNumber
+  // departureDay
+  // departurePoint -> arrivePoint  ➝
+  // departureTime
+  //arriveTime
+  // flightState
+  useEffect(() => {
+    if (!flightList.length) return;
+    const flightsOnDate = flightList.filter((flight) => {
+      const flightDate = new Date(flight.departureDay);
+      return isSameDay(flightDate, selectedDate);
+    });
 
     const formattedFlights = flightsOnDate.map((flight) => {
-      const startMinutes = timeToMinutes(flight.startTime);
-      const endMinutes = timeToMinutes(flight.endTime);
+      const startMinutes = timeToMinutes(flight.departureTime);
+      const endMinutes = timeToMinutes(flight.arriveTime);
       let duration = endMinutes - startMinutes;
       if (duration < 0) duration += 1440;
-
       return {
         ...flight,
+        startTime: flight.departureTime,
+        endTime: flight.arriveTime,
+        route: `${flight.departurePoint} ➝ ${flight.arrivePoint}`,
+        status: flight.flightState,
+
         leftPos: (startMinutes / 1440) * 100,
         widthPos: (duration / 1440) * 100,
       };
     });
     setLocalFlights(formattedFlights);
-  }, [selectedDate]);
+  }, [selectedDate, flightList]);
 
   const tileContent = ({ date, view }) => {
     if (view === "month") {
-      const hasFlight = dbFlights.some((f) => isSameDay(f.date, date));
+      const hasFlight = flightList.some((flight) =>
+        isSameDay(new Date(flight.departureDay), date)
+      );
       if (hasFlight) return <div className="dot-marker"></div>;
     }
     return null;
@@ -107,7 +121,7 @@ const FlightSchedule = () => {
             {localFlights.length > 0 ? (
               localFlights.map((flight, index) => (
                 <div
-                  key={index}
+                  key={flight.flightNumber}
                   className={`flight-bar-item ${flight.status}`}
                   style={{
                     left: `${flight.leftPos}%`,
@@ -122,7 +136,7 @@ const FlightSchedule = () => {
                   <div className="flight-tooltip">
                     <div className="tooltip-header">
                       <img src={flight.logo} alt="logo" />
-                      <span className="airline-name">{flight.airline}</span>
+                      <span className="airline-name">{"Airline"}</span>
                     </div>
                     <div className="tooltip-body">
                       <div className="tooltip-route">{flight.route}</div>

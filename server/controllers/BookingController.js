@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 const { request, response, raw } = require("express");
 const db = require("../models");
 const { DATEONLY } = require("sequelize");
@@ -7,6 +9,7 @@ const Payment = db.Payment;
 const Seat = db.Seat;
 const Ticket = db.Ticket;
 const { Op } = require("sequelize");
+const nodemailer = require("nodemailer");
 // Quy chuẩn giá tiền theo thời gian bay
 const priceStandard = async (req, res) => {
   const { flightNumber } = req.body;
@@ -327,6 +330,7 @@ const finalizeBooking = async (req, res) => {
         paymentID: paymentID,
         tickets: createdTickets,
         totalSeats: createdTickets.length,
+        seats: seatsPayload,
       },
     });
   } catch (error) {
@@ -361,6 +365,27 @@ const getOccupiedSeats = async (req, res) => {
     console.error("Lỗi lấy ghế:", error);
     return res.status(500).json({ success: false, message: "Lỗi server" });
   }
+};
+
+// Format và gửi email đi cho người dùng
+const formatEmail = async (req, res) => {
+  /*
+   flight: flight,
+            passenger: passenger,
+            totalPrice: totalPrice,
+            ticketInfo: ticketInfo,
+            selectedSeats: selectedSeats
+  */
+  const { flight, passenger, totalPrice, selectedSeats } = req.body;
+
+  // Config cho account gmail
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS,
+    },
+  });
 };
 module.exports = {
   SearchFlights,
