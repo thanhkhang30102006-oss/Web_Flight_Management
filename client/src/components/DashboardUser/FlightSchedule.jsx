@@ -57,7 +57,6 @@ const FlightSchedule = ({ passengerID }) => {
       const endMinutes = timeToMinutes(flight.arriveTime);
       let duration = endMinutes - startMinutes;
       if (duration < 0) duration += 1440;
-
       return {
         ...flight,
         startTime: flight.departureTime,

@@ -111,7 +111,12 @@ const PaymentPage = () => {
         setIsPressButton(false);
         localStorage.removeItem("pendingBooking");
         navigate("/user/booking-success", {
-          state: { flight, passenger, totalPrice, ticketInfo: result.data },
+          state: {
+            flight,
+            passenger,
+            totalPrice,
+            ticketInfo: result.data,
+          },
         });
       } else {
         alert("Lỗi server: " + result.message);

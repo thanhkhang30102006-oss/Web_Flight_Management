@@ -19,6 +19,7 @@ import {
   MapPin,
   Armchair,
   QrCode,
+  Loader2,
 } from "lucide-react";
 import "./BookingSuccess.css";
 // Import video background nếu muốn dùng chung background với booking
@@ -35,7 +36,9 @@ const BookSuccess = () => {
   // 1. Lấy dữ liệu từ State
   const { flight, passenger, totalPrice, ticketInfo, selectedSeats } =
     location.state || {};
-
+  const tickets = ticketInfo.tickets;
+  const ticketIds = tickets.map((ticket) => ticket.ticketID);
+  const allTicketIds = ticketIds;
   // 2. Redirect nếu không có dữ liệu (User truy cập trực tiếp link)
   useEffect(() => {
     if (!location.state) {
@@ -44,7 +47,38 @@ const BookSuccess = () => {
   }, [location.state, navigate]);
 
   if (!location.state) return null;
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    if (!token) {
+      alert("Bạn cần đăng nhập để thanh toán!");
+      return;
+    }
+    const sendEmailInfo = async () => {
+      const response = await fetch(
+        `http://localhost:3001/api/user/booking/send-email`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            flight: flight,
+            passenger: passenger,
+            totalPrice: totalPrice,
+            ticketInfo: ticketInfo,
+            selectedSeats: selectedSeats,
+          }),
 
+          credentials: "include",
+        }
+      );
+      if (response.success) {
+        alert("Hệ thống đã gửi email cho bạn. Hãy kiểm tra nhé");
+      }
+    };
+    sendEmailInfo();
+  }, []);
   // Format tiền tệ
   const formatCurrency = (amount) =>
     new Intl.NumberFormat("vi-VN", {
@@ -78,14 +112,13 @@ const BookSuccess = () => {
       setIsProcessing(false);
     }
   };
-  // CÁCH B: Tải dạng PDF (Chuyên nghiệp hơn nhưng có thể mất hiệu ứng Glass)
   const handleDownloadPDF = async () => {
     if (!ticketRef.current) return;
     setIsProcessing(true);
     try {
       const canvas = await html2canvas(ticketRef.current, {
         scale: 2,
-        backgroundColor: "#1a202c", // Màu nền PDF
+        backgroundColor: "#1a202c",
       });
       const imgData = canvas.toDataURL("image/png");
 
@@ -166,7 +199,7 @@ const BookSuccess = () => {
           <div className="booking-ref">
             <span>Mã Vé:</span>
             <span className="ref-code">
-              {ticketInfo?.bookingCode || "VN-X8892"}{" "}
+              {allTicketIds[0]}
               {/* Skibidi -----------------Dữ liệu */}
             </span>
           </div>
@@ -219,8 +252,14 @@ const BookSuccess = () => {
                     Ghế:{" "}
                     {/* =-=-=-=----------------------------------=-=-=-==-= */}
                     <b>
-                      {selectedSeats?.map((s) => s.id).join(", ") ||
-                        ticketInfo?.seats?.join(", ")}
+                      {ticketInfo.seats.map((seat, index) => (
+                        <span key={index}>
+                          {seat.seatNumber.replace(
+                            flight.flightNumber,
+                            ""
+                          )}{" "}
+                        </span>
+                      ))}
                     </b>
                   </span>
                 </div>
