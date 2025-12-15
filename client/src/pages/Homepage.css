@@ -28,7 +28,7 @@ body,
   z-index: -2;
 }
 
-.video-overlay {
+.homepage-video-overlay {
   position: fixed;
   top: 0;
   left: 0;

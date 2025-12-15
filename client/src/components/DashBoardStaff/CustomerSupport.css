@@ -122,7 +122,10 @@
 
 .user-info .time {
   font-size: 11px;
-  color: #64748b;
+  color: #e4eaf3;
+  background: transparent;
+  border: none;
+  outline: none;
 }
 
 .user-info .last-msg {

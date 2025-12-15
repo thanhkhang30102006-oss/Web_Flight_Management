@@ -27,7 +27,7 @@ function LeftSide({ currentTab, onTabChange }) {
       icon: <Plane size={20} />,
     },
     {
-      id: "my-trips",
+      id: "mytrips",
       name: t("sidebar.my_trips"),
       icon: <Luggage size={20} />,
     },

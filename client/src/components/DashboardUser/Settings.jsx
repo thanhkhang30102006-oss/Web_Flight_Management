@@ -431,7 +431,7 @@ const Settings = () => {
                   value={passwords.newPassword}
                   onChange={handlePasswordChange}
                   required
-                  placeholder="Tối thiểu 6 ký tự"
+                  placeholder="Tối thiểu 8 ký tự"
                 />
               </div>
 

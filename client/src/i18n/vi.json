@@ -26,7 +26,7 @@
     "oneWay": "Một chiều",
     "from": "Từ",
     "fromdesc": "Sân bay khởi hành",
-    "to": "To",
+    "to": "Đến",
     "todesc": "Sân bay đến",
     "depart": "Ngày đi",
     "passengers": "Hành khách",
@@ -221,7 +221,6 @@
         "economy": "Phổ thông",
         "business": "Thương gia",
         "occupied": "Đã bán",
-
         "selected": {
           "another": "Đang chọn của khách hàng khác",
           "personal": "Đang chọn bởi mình"

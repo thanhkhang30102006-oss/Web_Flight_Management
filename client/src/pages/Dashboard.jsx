@@ -5,6 +5,8 @@ import { NextFlightCard } from "../components/DashboardUser/NextFlight";
 import FlightSchedule from "../components/DashboardUser/FlightSchedule";
 import PassengerChat from "../components/DashboardUser/PassengerChat";
 import Settings from "../components/DashboardUser/Settings";
+import MyTrips from "../components/DashboardUser/MyTrips";
+
 import "./DashboardLayout.css";
 import videoWallpaper from "../assets//videos/background-wallpaper-user1.mp4";
 import Booking from "./BookingFlow";
@@ -55,6 +57,12 @@ function DashBoard() {
               <div className="booking-container">
                 <Booking />
               </div>
+            </div>
+          )}
+
+          {activeTab === "mytrips" && (
+            <div className="animate-fade-in">
+              <MyTrips />
             </div>
           )}
 
