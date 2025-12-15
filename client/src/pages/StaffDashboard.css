@@ -279,9 +279,9 @@
 
 /* 1. Wrapper chính: Định vị và Z-index */
 .recharts-tooltip-wrapper {
-  z-index: 1000 !important; /* Đảm bảo luôn nổi lên trên cùng */
-  outline: none !important; /* Xóa đường viền xanh khi focus/click */
-  transition: transform 0.2s ease-out; /* Làm mượt chuyển động đi theo chuột */
+  z-index: 1000 !important;
+  outline: none !important; 
+  transition: transform 0.2s ease-out; 
 }
 
 /* 2. Định dạng nội dung bên trong Tooltip */
