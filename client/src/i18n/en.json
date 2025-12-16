@@ -151,9 +151,33 @@
   },
   "next_flight": {
     "no_ticket": {
-      "title": "No upcoming trips yet?",
-      "desc": "Book today to get <1>20%</1> off domestic flights this summer.",
-      "btn": "Book now"
+      "title": "No upcoming flights",
+      "desc": "Book today to get <1>20%</1> discount for domestic flights this summer.",
+      "btn": "Book Now"
+    },
+    "ticket": {
+      "title": "Upcoming Flight",
+      "status_active": "On Time",
+      "status_delayed": "Delayed",
+      "direct": "Direct Flight",
+      "seat_label": "Seat",
+      "not_selected": "Unselected",
+      "class_economy": "Economy",
+      "class_business": "Business"
+    },
+    "weather": {
+      "title": "Destination Info",
+      "forecast_title": "Forecast for flight day",
+      "loading": "Loading weather...",
+      "desc": {
+        "sunny": "Sunny",
+        "cloudy": "Cloudy",
+        "fog": "Foggy",
+        "rain": "Rainy",
+        "showers": "Showers",
+        "thunderstorm": "Thunderstorm",
+        "overcast": "Overcast"
+      }
     }
   },
   "flight_schedule": {
@@ -167,7 +191,7 @@
       "cancelled": "Cancelled"
     }
   },
-  "booking": {
+  "bookingFLow": {
     "pageTitle": "Book a Flight",
     "pageSubtitle": "Find the best flight prices for your journey",
     "from": "From",
@@ -216,6 +240,22 @@
       "cockpit": "Cockpit",
       "businessClass": "Business Class",
       "economyClass": "Economy Class",
+      "tooltip": {
+        "classLabel": "Class:",
+        "statusLabel": "Status:",
+        "priceLabel": "Price: "
+      },
+      "status": {
+        "available": " Available",
+        "selectedByMe": " Selected (Me)",
+        "selectedByOther": " Selected (Others)",
+        "pending": " Pending",
+        "sold": " Sold"
+      },
+      "seatType": {
+        "business": "Business",
+        "economy": "Economy"
+      },
       "screenDirection": "Screen this way",
       "legend": {
         "economy": "Economy",
@@ -227,6 +267,10 @@
         },
         "pending": "Pending"
       }
+    },
+    "paymentcheck": {
+      "verifying": "Verifying transaction...",
+      "success": "Payment successful"
     }
   },
   "paymentPage": {
@@ -258,6 +302,47 @@
       "end": "after successful payment."
     }
   },
+  "booking": {
+    "success": {
+      "title": "Booking Successful!",
+      "subtitle": "Thank you for trusting our service.",
+      "refCode": "Booking Ref:",
+      "alerts": {
+        "loginRequired": "You need to login to proceed!",
+        "emailSent": "Confirmation email sent. Please check your inbox.",
+        "downloadError": "Could not download ticket. Please try again.",
+        "shareCancelled": "Share cancelled",
+        "clipboardSuccess": "Ticket info copied to clipboard!"
+      },
+      "ticket": {
+        "header": "E-Ticket",
+        "status": "Confirmed",
+        "directFlight": "Direct Flight",
+        "seatLabel": "Seat:",
+        "footerNote": "E-Ticket - Please present at check-in counter",
+        "totalPaid": "Total Paid"
+      },
+      "info": {
+        "header": "Passenger Info",
+        "name": "Full Name",
+        "email": "Email",
+        "phone": "Phone Number",
+        "passport": "Passport",
+        "date": "Booking Date"
+      },
+      "buttons": {
+        "downloading": "Creating...",
+        "downloadImage": "Download (Image)",
+        "share": "Share",
+        "home": "Back to Home"
+      },
+      "shareContent": {
+        "title": "Electronic Flight Ticket",
+        "text": "I just booked a flight to {{destination}}! Booking Code: {{code}}",
+        "clipboard": "Flight: {{flightNo}}\nFrom: {{from}} - To: {{to}}\nBooking Code: {{code}}\nSeats: {{seats}}"
+      }
+    }
+  },
   "report": {
     "fileExport": {
       "title": "FLIGHTHK REVENUE REPORT",
@@ -270,7 +355,7 @@
       "colTime": "Time",
       "colRevenue": "Revenue (M.VND)",
       "colTickets": "Tickets",
-      "currency": "Million VND",
+      "currency": " Million VND",
       "ticketUnit": "Tickets"
     },
     "subTitle": "Track key financial indicators in real time.",

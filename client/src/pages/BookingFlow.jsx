@@ -18,9 +18,11 @@ function Booking() {
     <div className="booking-container">
       {/* Header tiêu đề */}
       <div style={{ marginBottom: 10 }}>
-        <h2 style={{ color: "white", margin: 0 }}> {t("booking.pageTitle")}</h2>
+        <h2 style={{ color: "white", margin: 0 }}>
+          {t("bookingFlow.pageTitle")}
+        </h2>
         <p style={{ color: "rgba(255,255,255,0.6)", margin: 0, fontSize: 14 }}>
-          {t("booking.pageSubtitle")}
+          {t("bookingFlow.pageSubtitle")}
         </p>
       </div>
 

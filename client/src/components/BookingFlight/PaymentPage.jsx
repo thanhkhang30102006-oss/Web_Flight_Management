@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { CheckCircle, Home, Copy, Download, Share2 } from "lucide-react";
 import CountdownTimer from "../Timer/CountdownTimer";
+import toast, { Toaster } from "react-hot-toast";
 import "./PaymentPage.css"; // File CSS ở bước 2
 import videoWallpaper from "../../assets/videos/background-wallpaper-bookingpage.mp4";
 import { useSocket } from "../../context/SocketContext";
@@ -107,7 +108,9 @@ const PaymentPage = () => {
       if (result.success) {
         setIsPaymentSuccess(true);
         disconnectSocket();
-        alert(t("paymentPage.alerts.success", "Thanh toán thành công!"));
+        toast.success(
+          t("paymentPage.alerts.success", "Thanh toán thành công!")
+        );
         setIsPressButton(false);
         localStorage.removeItem("pendingBooking");
         navigate("/user/booking-success", {
@@ -123,7 +126,7 @@ const PaymentPage = () => {
       }
     } catch (error) {
       console.error("Lỗi:", error);
-      alert("Có lỗi xảy ra khi xử lý đặt vé.");
+      toast.error("Có lỗi xảy ra khi xử lý đặt vé.");
     } finally {
       setIsProcessing(false);
     }
@@ -166,7 +169,7 @@ const PaymentPage = () => {
   };
   const handleExpired = () => {
     // Hiện thông báo
-    alert(
+    toast.error(
       t(
         "paymentPage.expiredMessage",
         "Thời gian giữ ghế đã hết! Vui lòng đặt lại."
@@ -261,6 +264,7 @@ const PaymentPage = () => {
         )}
       </div>
       <div className="payment-layout">
+        <Toaster position="top-center" reverseOrder={false} />
         {/* Background Video */}
         <video className="payment-video-bg" autoPlay muted loop playsInline>
           <source src={videoWallpaper} type="video/webm" />
@@ -350,7 +354,9 @@ const PaymentPage = () => {
             zIndex: 999999,
           }}
         >
-          {isPressButton ? `Đang xác thực giao dịch...` : "Đã thanh toán"}
+          {isPressButton
+            ? t("bookingPage.paymentcheck.verifying")
+            : t("bookingPage.paymentcheck.success")}
         </button>
       </div>
     </>

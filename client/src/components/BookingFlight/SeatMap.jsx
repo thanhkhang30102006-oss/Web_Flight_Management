@@ -75,23 +75,26 @@ const SeatMap = ({
           // 2. Logic xác định class màu sắc
           let additionalClass = "";
           // Logic xác định trạng thái hiển thị (text)
-          let statusText = "Trống"; // Mặc định
+          let statusText = t("bookingPage.seatMap.status.available"); // Mặc định
           let statusColorClass = "text-green";
 
           if (holderSocketId && holderSocketId === mySocketID) {
-            statusText = " Đang chọn (Tôi)";
+            statusText = t("bookingPage.seatMap.status.selectedByMe");
             statusColorClass = "text-green";
           } else if (holderSocketId) {
-            statusText = " Đang được chọn (Khách khác)";
+            statusText = t("bookingPage.seatMap.status.selectedByOther");
             statusColorClass = "text-orange";
           } else if (isPending) {
-            statusText = " Đang bị giữ";
+            statusText = t("bookingPage.seatMap.status.pending");
             statusColorClass = "text-red";
           } else if (isSold) {
-            statusText = " Đã bán";
+            statusText = t("bookingPage.seatMap.status.sold");
             statusColorClass = "text-gray";
           }
-          const typeText = type === "business" ? "Thương gia" : "Phổ thông";
+          const typeText =
+            type === "business"
+              ? t("bookingPage.seatMap.seatType.business")
+              : t("bookingPage.seatMap.seatType.economy");
           const currentPrice =
             type === "business" ? priceBusiness : priceEconomy;
 
@@ -119,19 +122,25 @@ const SeatMap = ({
 
                 <div className="tooltip-body">
                   <div className="tooltip-row">
-                    <span className="label">Hạng:</span>
+                    <span className="label">
+                      {t("bookingPage.seatMap.tooltip.classLabel")}
+                    </span>{" "}
                     <span className="value">{typeText}</span>
                   </div>
 
                   <div className="tooltip-row">
-                    <span className="label">Trạng thái:</span>
+                    <span className="label">
+                      {t("bookingPage.seatMap.tooltip.statusLabel")}
+                    </span>{" "}
                     <span className={`value status ${statusColorClass}`}>
                       {statusText}
                     </span>
                   </div>
 
                   <div className="tooltip-row price-row">
-                    <span className="label">Giá:</span>
+                    <span className="label">
+                      {t("bookingPage.seatMap.tooltip.priceLabel")}
+                    </span>{" "}
                     <span className="value price">
                       {currentPrice.toLocaleString()} VND
                     </span>

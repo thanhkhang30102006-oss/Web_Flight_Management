@@ -1,0 +1,231 @@
+.news-widget-container {
+  margin-top: 20px;
+  width: 100%;
+  margin-bottom: 75px;
+}
+
+.section-header {
+  color: white;
+  font-size: 18px;
+  margin-bottom: 15px;
+  padding-left: 10px;
+  border-left: 4px solid #3b82f6;
+}
+
+/* --- GRID LAYOUT --- */
+.news-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+.news-card {
+  border-radius: 16px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border: 2px solid rgba(255, 255, 255, 0.6); /* Viền mờ */
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.45);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.card-image {
+  height: 160px;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s;
+}
+
+.news-card:hover .card-image img {
+  transform: scale(1.1);
+}
+
+.category-badge {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  backdrop-filter: blur(4px);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+/* Màu sắc theo category */
+.category-badge.weather { background: rgba(59, 130, 246, 0.8); } /* Blue */
+.category-badge.aviation { background: rgba(16, 185, 129, 0.8); } /* Green */
+.category-badge.world { background: rgba(245, 158, 11, 0.8); } /* Orange */
+
+.card-content {
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.card-date {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 8px;
+}
+
+.card-title {
+  color: white;
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.card-summary {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 13px;
+  margin-bottom: 15px;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  flex: 1; /* Đẩy read more xuống đáy */
+}
+
+.read-more {
+  font-size: 13px;
+  color: #60a5fa;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+}
+.news-card:hover .read-more { opacity: 1; gap: 8px; }
+
+/* --- MODAL POPUP --- */
+.news-modal-overlay {
+  position: fixed;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.news-modal {
+  width: 800px;
+  max-width: 100%;
+  height: 900px;
+  max-height: 90vh;
+  background: rgba(20, 20, 30, 0.95);
+  border-radius: 20px;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+
+.modal-header-image {
+  height: 400px;
+  width: 100%;
+  position: relative;
+}
+
+.modal-header-image img {
+  width: 100%; height: 100%; object-fit: cover;
+}
+
+.modal-overlay-gradient {
+  position: absolute;
+  bottom: 0; left: 0; width: 100%; height: 100%;
+  background: linear-gradient(to top, rgba(20,20,30, 1) 0%, transparent 100%);
+}
+
+.modal-title-block {
+  position: absolute;
+  bottom: 10px;
+  left: 25px;
+  right: 25px;
+}
+
+.modal-title-block h2 {
+  color: white;
+  font-size: 22px;
+  margin: 20px 0;
+  line-height: 1.3;
+}
+
+.modal-meta {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
+  display: flex; gap: 15px; align-items: center;
+}
+
+.modal-body {
+  padding: 25px;
+  overflow-y: auto;
+  color: #e2e8f0;
+  line-height: 1.8;
+  font-size: 16px;
+}
+
+.modal-intro {
+  font-weight: 600;
+  font-size: 18px;
+  color: white;
+}
+
+.modal-divider {
+  border: 0;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.1);
+  margin: 20px 0;
+}
+
+.btn-read-source {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 30px;
+    padding: 10px 20px;
+    background: rgba(59, 130, 246, 0.2);
+    border: 1px solid rgba(59, 130, 246, 0.5);
+    border-radius: 8px;
+    color: #60a5fa;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.btn-read-source:hover {
+    background: rgba(59, 130, 246, 0.4);
+    transform: translateX(5px);
+}

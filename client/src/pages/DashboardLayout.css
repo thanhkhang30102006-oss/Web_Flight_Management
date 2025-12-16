@@ -27,13 +27,13 @@
 
 /* --- LỚP PHỦ MỜ (OVERLAY) --- */
 
-.video-overlay {
+.dashboard-video-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(255, 255, 255, 0.1); /* Màu trắng mờ 30% */
+  background: rgba(0, 0, 0, 0.275); /* Màu trắng mờ 30% */
   /* Hoặc dùng màu tối nếu muốn giao diện dark mode: background: rgba(0,0,0,0.4); */
   z-index: -1;
   pointer-events: none; 

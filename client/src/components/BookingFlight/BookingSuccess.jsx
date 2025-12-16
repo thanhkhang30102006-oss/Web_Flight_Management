@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import { motion } from "framer-motion";
+import toast, { Toaster } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import {
   CheckCircle,
@@ -22,11 +23,10 @@ import {
   Loader2,
 } from "lucide-react";
 import "./BookingSuccess.css";
-// Import video background nếu muốn dùng chung background với booking
 import videoWallpaper from "../../assets/videos/background-wallpaper-bookingpage.mp4";
 
 const BookSuccess = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -50,9 +50,11 @@ const BookSuccess = () => {
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
     if (!token) {
-      alert("Bạn cần đăng nhập để thanh toán!");
+      toast.error(t("booking.success.alerts.loginRequired"));
       return;
     }
+    const currentLanguage = i18n.language;
+
     const sendEmailInfo = async () => {
       const response = await fetch(
         `http://localhost:3001/api/user/booking/send-email`,
@@ -68,13 +70,14 @@ const BookSuccess = () => {
             totalPrice: totalPrice,
             ticketInfo: ticketInfo,
             selectedSeats: selectedSeats,
+            language: i18n.language,
           }),
 
           credentials: "include",
         }
       );
       if (response.success) {
-        alert("Hệ thống đã gửi email cho bạn. Hãy kiểm tra nhé");
+        toast.success(t("booking.success.alerts.emailSent"));
       }
     };
     sendEmailInfo();
@@ -94,9 +97,9 @@ const BookSuccess = () => {
     try {
       // Chụp phần ticketRef
       const canvas = await html2canvas(ticketRef.current, {
-        useCORS: true, // Cho phép tải ảnh từ nguồn khác (nếu có logo online)
-        backgroundColor: "#1f2937", // Đặt nền tối giả lập vì ảnh trong suốt ra ngoài sẽ khó đọc
-        scale: 2, // Tăng độ nét
+        useCORS: true,
+        backgroundColor: "#1f2937",
+        scale: 2,
       });
 
       // Tạo link tải
@@ -107,7 +110,7 @@ const BookSuccess = () => {
       link.click();
     } catch (err) {
       console.error("Lỗi tải vé:", err);
-      alert("Không thể tải vé. Vui lòng thử lại.");
+      toast.error(t("booking.success.alerts.downloadError"));
     } finally {
       setIsProcessing(false);
     }
@@ -139,9 +142,12 @@ const BookSuccess = () => {
   // --- CHỨC NĂNG 2: CHIA SẺ ---
   const handleShare = async () => {
     const shareData = {
-      title: "Vé máy bay điện tử",
-      text: `Tôi vừa đặt vé máy bay đi ${flight?.arrivePoint}! Mã đặt chỗ: ${ticketInfo?.bookingCode}`,
-      url: window.location.href, // Hoặc link website của bạn
+      title: t("booking.success.shareContent.title"),
+      text: t("booking.success.shareContent.text", {
+        destination: flight?.arrivePoint,
+        code: ticketInfo?.bookingCode,
+      }),
+      url: window.location.href,
     };
 
     // Kiểm tra trình duyệt có hỗ trợ Web Share API không (Hoạt động tốt trên Mobile)
@@ -150,16 +156,19 @@ const BookSuccess = () => {
         await navigator.share(shareData);
       } catch (err) {
         console.log("Đã hủy chia sẻ");
+        toast.success(t("booking.success.alerts.shareCancelled"));
       }
     } else {
       // Fallback cho PC: Copy nội dung vào clipboard
-      const textToCopy = `Chuyến bay: ${flight?.flightNumber}\nTừ: ${
-        flight?.departurePoint
-      } - Đến: ${flight?.arrivePoint}\nMã vé: ${
-        ticketInfo?.bookingCode
-      }\nGhế: ${selectedSeats?.map((s) => s.id).join(", ")}`;
+      const textToCopy = t("booking.success.shareContent.clipboard", {
+        flightNo: flight?.flightNumber,
+        from: flight?.departurePoint,
+        to: flight?.arrivePoint,
+        code: ticketInfo?.bookingCode,
+        seats: selectedSeats?.map((s) => s.id).join(", "),
+      });
       navigator.clipboard.writeText(textToCopy);
-      alert("Đã sao chép thông tin vé vào bộ nhớ tạm!");
+      toast.success(t("booking.success.alerts.clipboardSuccess"));
     }
   };
 
@@ -173,6 +182,7 @@ const BookSuccess = () => {
         <source src={videoWallpaper.replace("webm", "mp4")} type="video/mp4" />
       </video>
       <div className="success-overlay"></div>
+      <Toaster position="top-center" reverseOrder={false} />
 
       <motion.div
         className="success-container"
@@ -197,7 +207,7 @@ const BookSuccess = () => {
             )}
           </p>
           <div className="booking-ref">
-            <span>Mã Vé:</span>
+            <span>{t("booking.success.refCode")}</span>{" "}
             <span className="ref-code">
               {allTicketIds[0]}
               {/* Skibidi -----------------Dữ liệu */}
@@ -209,7 +219,7 @@ const BookSuccess = () => {
           {/* --- PHẦN 2: CHI TIẾT VÉ (Giao diện vé máy bay) --- */}
           <div className="glass-panel ticket-section" ref={ticketRef}>
             <div className="panel-header">
-              <Plane size={18} /> Vé điện tử
+              <Plane size={18} /> {t("booking.success.ticket.header")}{" "}
             </div>
             {/* Ticket Visual - Tái sử dụng style của bạn */}
             <div className="ticket-visual success-mode">
@@ -218,7 +228,9 @@ const BookSuccess = () => {
                   <Plane className="airline-logo-placeholder" size={24} />
                   <span className="flight-no">{flight.flightNumber}</span>
                 </div>
-                <span className="flight-status confirmed">Đã xác nhận</span>
+                <span className="flight-status confirmed">
+                  {t("booking.success.ticket.status")}
+                </span>
               </div>
 
               <div className="ticket-body">
@@ -229,7 +241,9 @@ const BookSuccess = () => {
                 </div>
 
                 <div className="flight-path">
-                  <span className="duration">Bay thẳng</span>
+                  <span className="duration">
+                    {t("booking.success.ticket.directFlight")}
+                  </span>{" "}
                   <div className="path-line">
                     <div className="dot start"></div>
                     <Plane className="plane-icon-center" size={20} />
@@ -249,8 +263,7 @@ const BookSuccess = () => {
                 <div className="tf-item">
                   <Armchair size={16} />
                   <span>
-                    Ghế:{" "}
-                    {/* =-=-=-=----------------------------------=-=-=-==-= */}
+                    {t("booking.success.ticket.seatLabel")}{" "}
                     <b>
                       {ticketInfo.seats.map((seat, index) => (
                         <span key={index}>
@@ -275,7 +288,7 @@ const BookSuccess = () => {
             </div>
             {/* Total Price Box */}
             <div className="total-paid-box">
-              <span>Tổng thanh toán</span>
+              <span>{t("booking.success.ticket.totalPaid")}</span>{" "}
               <span className="amount">{formatCurrency(totalPrice)}</span>
             </div>
             <div
@@ -286,45 +299,46 @@ const BookSuccess = () => {
                 opacity: 0.6,
               }}
             >
-              Vé điện tử - Vui lòng xuất trình tại quầy check-in
+              {t("booking.success.ticket.footerNote")}{" "}
             </div>
           </div>
 
           {/* --- PHẦN 3: THÔNG TIN KHÁCH HÀNG & LIÊN HỆ --- */}
           <div className="glass-panel info-section">
             <div className="panel-header">
-              <User size={18} /> Thông tin khách hàng
+              <User size={18} /> {t("booking.success.info.header")}{" "}
             </div>
 
             <div className="info-list">
               <div className="info-row">
                 <div className="label">
-                  <User size={14} /> Họ và tên
+                  <User size={14} /> {t("booking.success.info.name")}{" "}
                 </div>
                 <div className="value">{passenger.name}</div>
               </div>
               <div className="info-row">
                 <div className="label">
-                  <Mail size={14} /> Email
+                  <Mail size={14} /> {t("booking.success.info.email")}{" "}
                 </div>
                 <div className="value">{passenger.email}</div>
               </div>
               <div className="info-row">
                 <div className="label">
-                  <Phone size={14} /> Số điện thoại
+                  <Phone size={14} /> {t("booking.success.info.phone")}{" "}
                 </div>
                 <div className="value">{passenger.phone}</div>
               </div>
               <div className="info-row">
                 <div className="label">
-                  <CreditCard size={14} /> Hộ chiếu/CCCD
+                  <CreditCard size={14} />{" "}
+                  {t("booking.success.info.passport")}{" "}
                 </div>
                 <div className="value">{passenger.passport}</div>
               </div>
               <div className="divider-line"></div>
               <div className="info-row">
                 <div className="label">
-                  <Calendar size={14} /> Ngày đặt
+                  <Calendar size={14} /> {t("booking.success.info.date")}{" "}
                 </div>
                 <div className="value">
                   {new Date().toLocaleDateString("vi-VN")}
@@ -335,7 +349,7 @@ const BookSuccess = () => {
             <div className="action-buttons">
               <button
                 className="btn-secondary-glass"
-                onClick={handleDownloadPDF} // Hoặc đổi thành handleDownloadPDF
+                onClick={handleDownloadPDF}
                 disabled={isProcessing}
               >
                 {isProcessing ? (
@@ -343,12 +357,14 @@ const BookSuccess = () => {
                 ) : (
                   <Download size={18} />
                 )}
-                {isProcessing ? "Đang tạo..." : "Tải vé (Ảnh)"}
+                {isProcessing
+                  ? t("booking.success.buttons.downloading")
+                  : t("booking.success.buttons.downloadImage")}{" "}
               </button>
 
               {/* NÚT CHIA SẺ */}
               <button className="btn-secondary-glass" onClick={handleShare}>
-                <Share2 size={18} /> Chia sẻ
+                <Share2 size={18} /> {t("booking.success.buttons.share")}{" "}
               </button>
             </div>
           </div>
@@ -357,7 +373,7 @@ const BookSuccess = () => {
         {/* --- PHẦN 4: NÚT ĐIỀU HƯỚNG --- */}
         <div className="footer-actions">
           <button className="btn-home" onClick={() => navigate("/user")}>
-            <Home size={20} /> Về trang chủ
+            <Home size={20} /> {t("booking.success.buttons.home")}{" "}
           </button>
         </div>
       </motion.div>

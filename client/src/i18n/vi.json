@@ -30,7 +30,12 @@
     "todesc": "Sân bay đến",
     "depart": "Ngày đi",
     "passengers": "Hành khách",
-    "passengerOptions": ["1 người", "2 người", "3 người", "4+ người"],
+    "passengerOptions": [
+      "1 người",
+      "2 người",
+      "3 người",
+      "4+ người"
+    ],
     "search": "Tìm chuyến bay"
   },
   "topRating": "Điểm Đến Được Yêu Thích Nhất",
@@ -146,9 +151,33 @@
   },
   "next_flight": {
     "no_ticket": {
-      "title": "Bạn chưa có chuyến đi nào sắp tới?",
+      "title": "Bạn chưa có vé sắp bay",
       "desc": "Đặt vé ngay hôm nay để nhận ưu đãi <1>20%</1> cho các chặng bay nội địa hè này.",
       "btn": "Đặt vé ngay"
+    },
+    "ticket": {
+      "title": "Chuyến bay sắp tới",
+      "status_active": "Đúng giờ",
+      "status_delayed": "Bị hoãn",
+      "direct": "Bay thẳng",
+      "seat_label": "Ghế",
+      "not_selected": "Chưa chọn",
+      "class_economy": "Phổ thông",
+      "class_business": "Thương gia"
+    },
+    "weather": {
+      "title": "Thông tin điểm đến",
+      "forecast_title": "Dự báo ngày bay",
+      "loading": "Đang tải thời tiết...",
+      "desc": {
+        "sunny": "Nắng đẹp",
+        "cloudy": "Có mây",
+        "fog": "Sương mù",
+        "rain": "Có mưa",
+        "showers": "Mưa rào",
+        "thunderstorm": "Mưa dông",
+        "overcast": "Nhiều mây"
+      }
     }
   },
   "flight_schedule": {
@@ -162,7 +191,7 @@
       "cancel": "Đã hủy"
     }
   },
-  "booking": {
+  "bookingFlow": {
     "pageTitle": "Đặt vé máy bay",
     "pageSubtitle": "Tìm kiếm chuyến bay giá tốt nhất cho hành trình của bạn",
     "from": "Điểm đi",
@@ -211,6 +240,22 @@
       "cockpit": "Đầu máy bay",
       "businessClass": "Hạng Thương Gia",
       "economyClass": "Hạng Phổ Thông",
+      "tooltip": {
+        "classLabel": "Hạng:",
+        "statusLabel": "Trạng thái:",
+        "priceLabel": "Giá: "
+      },
+      "status": {
+        "available": "Trống",
+        "selectedByMe": " Đang chọn (Tôi)",
+        "selectedByOther": " Đang được chọn (Khách khác)",
+        "pending": " Đang bị giữ",
+        "sold": " Đã bán"
+      },
+      "seatType": {
+        "business": "Thương gia",
+        "economy": "Phổ thông"
+      },
       "screenDirection": "Màn hình phía này",
       "legend": {
         "economy": "Phổ thông",
@@ -222,6 +267,10 @@
         },
         "pending": "Đang giữ"
       }
+    },
+    "paymentcheck": {
+      "verifying": "Đang xác thực giao dịch...",
+      "success": "Đã thanh toán"
     }
   },
   "paymentPage": {
@@ -251,6 +300,47 @@
     "note": {
       "start": "*Vé điện tử sẽ được gửi về email",
       "end": "sau khi thanh toán thành công."
+    }
+  },
+  "booking": {
+    "success": {
+      "title": "Đặt vé thành công!",
+      "subtitle": "Cảm ơn bạn đã tin tưởng dịch vụ của chúng tôi.",
+      "refCode": "Mã Vé:",
+      "alerts": {
+        "loginRequired": "Bạn cần đăng nhập để thanh toán!",
+        "emailSent": "Hệ thống đã gửi email cho bạn. Hãy kiểm tra nhé",
+        "downloadError": "Không thể tải vé. Vui lòng thử lại.",
+        "shareCancelled": "Đã hủy chia sẻ",
+        "clipboardSuccess": "Đã sao chép thông tin vé vào bộ nhớ tạm!"
+      },
+      "ticket": {
+        "header": "Vé điện tử",
+        "status": "Đã xác nhận",
+        "directFlight": "Bay thẳng",
+        "seatLabel": "Ghế:",
+        "footerNote": "Vé điện tử - Vui lòng xuất trình tại quầy check-in",
+        "totalPaid": "Tổng thanh toán"
+      },
+      "info": {
+        "header": "Thông tin khách hàng",
+        "name": "Họ và tên",
+        "email": "Email",
+        "phone": "Số điện thoại",
+        "passport": "Hộ chiếu",
+        "date": "Ngày đặt"
+      },
+      "buttons": {
+        "downloading": "Đang tạo...",
+        "downloadImage": "Tải vé (Ảnh)",
+        "share": "Chia sẻ",
+        "home": "Về trang chủ"
+      },
+      "shareContent": {
+        "title": "Vé máy bay điện tử",
+        "text": "Tôi vừa đặt vé máy bay đi {{destination}}! Mã đặt chỗ: {{code}}",
+        "clipboard": "Chuyến bay: {{flightNo}}\nTừ: {{from}} - Đến: {{to}}\nMã vé: {{code}}\nGhế: {{seats}}"
+      }
     }
   },
   "report": {

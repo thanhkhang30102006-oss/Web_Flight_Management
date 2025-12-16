@@ -126,11 +126,12 @@ const FlightSchedule = ({ passengerID }) => {
                   style={{
                     left: `${flight.leftPos}%`,
                     width: `${flight.widthPos}%`,
-                    top: `${index * 60 + 100}px`, // Xếp chồng theo chiều dọc
+                    top: `${index * 80 + 140}px`,
                   }}
                 >
                   <span className="bar-label">
-                    {flight.startTime} - {flight.endTime}
+                    {flight.startTime.slice(0, 5)} -{" "}
+                    {flight.endTime.slice(0, 5)}
                   </span>
                   {/* POPUP TOOLTIP (Ẩn mặc định, hiện khi Hover) */}
                   <div className="flight-tooltip">

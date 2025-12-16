@@ -9,82 +9,107 @@ import { FlightList, FlightMap } from "./FlightIndex.jsx";
 
 // Hardcode airport coords (mở rộng nếu cần)
 const airportCoords = {
-  HAN: { lat: 21.2187, lng: 105.8042 }, // Hà Nội
-  SGN: { lat: 10.8231, lng: 106.6297 }, // TP.HCM
-  DAD: { lat: 16.0544, lng: 108.1022 }, // Đà Nẵng
-  PQC: { lat: 10.2272, lng: 103.9675 }, // Phú Quốc
-  CXR: { lat: 12.2273, lng: 109.1968 }, // Nha Trang
-  VCA: { lat: 10.0851, lng: 105.7117 }, // Cần Thơ
-  // Thêm sân bay khác nếu cần
+  // --- Miền Bắc (6 sân bay) ---
+  HAN: { lat: 21.2187, lng: 105.8042, name: "Nội Bài (Hà Nội)" },
+  HPH: { lat: 20.8193, lng: 106.7333, name: "Cát Bi (Hải Phòng)" },
+  VDO: { lat: 21.1167, lng: 107.4167, name: "Vân Đồn (Quảng Ninh)" },
+  THD: { lat: 19.9017, lng: 105.4678, name: "Thọ Xuân (Thanh Hóa)" },
+  VII: { lat: 18.73, lng: 105.67, name: "Vinh (Nghệ An)" },
+  DIN: { lat: 21.3972, lng: 103.0078, name: "Điện Biên Phủ (Điện Biên)" },
+
+  // --- Miền Trung (7 sân bay) ---
+  DAD: { lat: 16.0544, lng: 108.2022, name: "Đà Nẵng" },
+  CXR: { lat: 12.0, lng: 109.2167, name: "Cam Ranh (Khánh Hòa)" },
+  HUI: { lat: 16.4, lng: 107.7, name: "Phú Bài (Huế)" },
+  UIH: { lat: 13.955, lng: 109.0422, name: "Phù Cát (Bình Định)" },
+  VCL: { lat: 15.4061, lng: 108.7056, name: "Chu Lai (Quảng Nam)" },
+  VDH: { lat: 17.515, lng: 106.5906, name: "Đồng Hới (Quảng Bình)" },
+  TBB: { lat: 13.0494, lng: 109.3336, name: "Tuy Hòa (Phú Yên)" },
+
+  // --- Tây Nguyên (3 sân bay) ---
+  DLI: { lat: 11.7506, lng: 108.3736, name: "Liên Khương (Đà Lạt)" },
+  BMV: { lat: 12.6681, lng: 108.12, name: "Buôn Ma Thuột (Đắk Lắk)" },
+  PXU: { lat: 14.0044, lng: 108.0172, name: "Pleiku (Gia Lai)" },
+
+  // --- Miền Nam (6 sân bay) ---
+  SGN: { lat: 10.8231, lng: 106.6297, name: "Tân Sơn Nhất (TP.HCM)" },
+  PQC: { lat: 10.2272, lng: 103.9675, name: "Phú Quốc (Kiên Giang)" },
+  VCA: { lat: 10.0851, lng: 105.7117, name: "Cần Thơ" },
+  VCS: { lat: 8.7325, lng: 106.6289, name: "Côn Đảo (Bà Rịa - Vũng Tàu)" },
+  VKG: { lat: 9.9597, lng: 105.1339, name: "Rạch Giá (Kiên Giang)" },
+  CAH: { lat: 9.1756, lng: 105.1794, name: "Cà Mau" },
 };
 
-const getAirportCode = (point) => point.match(/\(([^)]+)\)/)?.[1] || "";
+const MOCK_FLIGHTS = [
+  {
+    flightNumber: "VN002",
+    departurePoint: "HAN",
+    arrivePoint: "SGN",
+    departureDay: "2025-12-29",
+    departureTime: "20:00:00",
+    planeType: "Airbus A350",
+    flightTotalSeat: 300,
+    flightState: "active",
+  },
+  {
+    flightNumber: "QH203",
+    departurePoint: "DAD",
+    arrivePoint: "SGN",
+    departureDay: "2025-12-21",
+    departureTime: "19:15:00",
+    planeType: "Embraer 190",
+    flightTotalSeat: 90,
+    flightState: "delayed", // Thêm trạng thái delayed
+  },
+  {
+    flightNumber: "VJ154",
+    departurePoint: "SGN",
+    arrivePoint: "HAN",
+    departureDay: "2025-12-30",
+    departureTime: "08:30:00",
+    planeType: "Airbus A321",
+    flightTotalSeat: 200,
+    flightState: "boarding",
+  },
+  {
+    flightNumber: "VN123",
+    departurePoint: "HPH",
+    arrivePoint: "PQC",
+    departureDay: "2025-12-25",
+    departureTime: "14:10:00",
+    planeType: "Boeing 787",
+    flightTotalSeat: 280,
+    flightState: "active",
+  },
+];
+
+// const getAirportCode = (point) => point.match(/\(([^)]+)\)/)?.[1] || "";
 
 export default function FlightScript() {
   const { t } = useTranslation();
   const [flights, setFlights] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedFlight, setSelectedFlight] = useState(null);
-  const [flightPaths, setFlightPaths] = useState([]);
-  const [map, setMap] = useState(null);
-  const mapRef = useRef(null);
+  // const [flightPaths, setFlightPaths] = useState([]);
+  // const [map, setMap] = useState(null);
+  // const mapRef = useRef(null);
 
   // Load Google Maps script động (giống file cũ)
   useEffect(() => {
-    const script = document.createElement("script");
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${
-      import.meta.env.VITE_GOOGLE_MAPS_API_KEY
-    }&libraries=geometry`;
-    script.async = true;
-    script.defer = true;
-    document.head.appendChild(script);
-
-    script.onload = () => {
-      const mapInstance = new window.google.maps.Map(mapRef.current, {
-        zoom: 6,
-        center: { lat: 16.0, lng: 106.0 }, // Trung tâm VN
-        mapTypeId: "hybrid",
-      });
-      setMap(mapInstance);
-    };
-
-    fetchFlights();
-  }, []);
-
-  const fetchFlights = async () => {
-    try {
-      const response = await fetch("/api/flights");
-      const data = await response.json();
-
-      // Thêm coordinates
-      const enhancedData = data.map((flight) => ({
+    // Giả lập call API
+    setTimeout(() => {
+      // Map thêm tọa độ vào dữ liệu chuyến bay
+      const enhancedData = MOCK_FLIGHTS.map((flight) => ({
         ...flight,
         coordinates: {
-          departure: airportCoords[getAirportCode(flight.departurePoint)] || {
-            lat: 0,
-            lng: 0,
-          },
-          arrival: airportCoords[getAirportCode(flight.arrivePoint)] || {
-            lat: 0,
-            lng: 0,
-          },
+          departure: airportCoords[flight.departurePoint] || { lat: 0, lng: 0 },
+          arrival: airportCoords[flight.arrivePoint] || { lat: 0, lng: 0 },
         },
       }));
-
-      const today = new Date(2025, 10, 29);
-      const filtered = enhancedData.filter(
-        (f) =>
-          ["active", "boarding"].includes(f.flightState) &&
-          new Date(f.departureDay) >= today
-      );
-
-      setFlights(filtered);
+      setFlights(enhancedData);
       setLoading(false);
-    } catch (error) {
-      console.error("Error fetching flights:", error);
-      setLoading(false);
-    }
-  };
+    }, 800); // Delay nhẹ cho giống thật
+  }, []);
 
   const handleSelectFlight = (flight) => {
     setSelectedFlight(flight);
@@ -95,7 +120,7 @@ export default function FlightScript() {
       <video className="background-video" autoPlay muted loop playsInline>
         <source src={videoWallpaper} type="video/webm" />
       </video>
-      <div className="video-overlay"></div>
+      <div className="flight-video-overlay"></div>
 
       <Header />
 
@@ -120,6 +145,7 @@ export default function FlightScript() {
               flights={flights}
               onSelectFlight={handleSelectFlight}
               loading={loading}
+              selectedId={selectedFlight?.flightNumber}
             />
           </div>
 
@@ -129,10 +155,12 @@ export default function FlightScript() {
               <div className="selected-flight-info">
                 <p>
                   <strong>{t("flight.showing", "Đang hiển thị")}:</strong>{" "}
-                  {selectedFlight.flightNumber}
+                  <span style={{ color: "#3399FF" }}>
+                    {selectedFlight.flightNumber}
+                  </span>{" "}
                 </p>
                 <p>
-                  {selectedFlight.departurePoint} → {selectedFlight.arrivePoint}
+                  {selectedFlight.departurePoint} ➝ {selectedFlight.arrivePoint}
                 </p>
               </div>
             ) : (
@@ -143,33 +171,7 @@ export default function FlightScript() {
                 )}
               </p>
             )}
-            <FlightMap
-              mapRef={mapRef}
-              selectedFlight={selectedFlight}
-              flightPaths={flightPaths}
-              setFlightPaths={setFlightPaths}
-              map={map}
-            />
-
-            {selectedFlight && (
-              <div className="map-legend">
-                <h3>{t("flight.legend", "Chú thích")}:</h3>
-                <div className="legend-items">
-                  <div className="legend-item">
-                    <span className="legend-icon departure">D</span>
-                    <span>{t("flight.departure", "Điểm khởi hành")}</span>
-                  </div>
-                  <div className="legend-item">
-                    <span className="legend-icon arrival">A</span>
-                    <span>{t("flight.arrival", "Điểm đến")}</span>
-                  </div>
-                  <div className="legend-item">
-                    <span className="legend-icon plane">✈️</span>
-                    <span>{t("flight.plane", "Máy bay")}</span>
-                  </div>
-                </div>
-              </div>
-            )}
+            <FlightMap selectedFlight={selectedFlight} />
           </div>
         </div>
       </main>
