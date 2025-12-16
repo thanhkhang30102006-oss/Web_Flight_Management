@@ -140,8 +140,8 @@ const BookingModal = ({ flight, onClose }) => {
                             isOccupied
                               ? "bg-slate-700 text-slate-500 cursor-not-allowed"
                               : isSelected
-                              ? "bg-blue-500 text-white shadow-lg shadow-blue-500/40 border border-blue-400"
-                              : "bg-slate-600 text-slate-300 hover:bg-slate-500 border border-slate-500"
+                                ? "bg-blue-500 text-white shadow-lg shadow-blue-500/40 border border-blue-400"
+                                : "bg-slate-600 text-slate-300 hover:bg-slate-500 border border-slate-500"
                           }
                         `}
                       >

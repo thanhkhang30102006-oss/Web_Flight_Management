@@ -15,6 +15,8 @@ import {
   Circle,
   Edit,
 } from "lucide-react";
+import toast, { Toaster } from "react-hot-toast";
+
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import "./Settings.css";
@@ -156,15 +158,15 @@ const Settings = () => {
 
       const result = await response.json();
       if (response.ok && result.success) {
-        alert("Cập nhật thông tin thành công!");
+        toast.success("Cập nhật thông tin thành công!");
         setPressChange(false);
         // Cập nhật lại state với dữ liệu mới từ server trả về (để đồng bộ)
         setProfile(result.data);
       } else {
-        alert(result.message || "Cập nhật thất bại!");
+        toast.error(result.message || "Cập nhật thất bại!");
       }
     } catch (error) {
-      alert("Lỗi kết nối server!");
+      toast.error("Lỗi kết nối server!");
     } finally {
       setLoading(false);
     }
@@ -174,13 +176,13 @@ const Settings = () => {
   const handleChangePassword = async (e) => {
     e.preventDefault();
     if (!passCriteria.isValid) {
-      alert(
+      toast.error(
         "Mật khẩu mới chưa đủ mạnh (cần 8 ký tự, hoa, thường, số, ký tự đặc biệt)!"
       );
       return;
     }
     if (passwords.newPassword !== passwords.confirmPassword) {
-      alert("Mật khẩu xác nhận không khớp!");
+      toast.error("Mật khẩu xác nhận không khớp!");
       return;
     }
 
@@ -203,7 +205,7 @@ const Settings = () => {
 
       const result = await response.json();
       if (response.ok && result.success) {
-        alert("Đổi mật khẩu thành công! Vui lòng đăng nhập lại.");
+        toast.success("Đổi mật khẩu thành công! Vui lòng đăng nhập lại.");
         setPasswords({
           currentPassword: "",
           newPassword: "",
@@ -220,10 +222,10 @@ const Settings = () => {
         });
         navigate("/loginsignup");
       } else {
-        alert(result.message || "Đổi mật khẩu thất bại!");
+        toast.error(result.message || "Đổi mật khẩu thất bại!");
       }
     } catch (error) {
-      alert("Lỗi hệ thống khi đổi mật khẩu.");
+      toast.error("Lỗi hệ thống khi đổi mật khẩu.");
     }
   };
   if (fetching) {
@@ -442,7 +444,7 @@ const Settings = () => {
                   value={passwords.newPassword}
                   onChange={handlePasswordChange}
                   required
-                  placeholder="Tối thiểu 6 ký tự"
+                  placeholder="Tối thiểu 8 ký tự"
                 />
               </div>
 

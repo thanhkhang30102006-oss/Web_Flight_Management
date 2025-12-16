@@ -17,7 +17,9 @@ import { useSocket } from "../../context/SocketContext";
 import axios from "axios";
 import "./CustomerSupport.css";
 import "../../pages/StaffDashboard.css";
-const API_URL = "http://localhost:3001";
+
+const { socket } = useSocket;
+
 const CustomerSupport = () => {
   const { socket } = useSocket();
 
@@ -116,6 +118,7 @@ const CustomerSupport = () => {
     if (!socket) return;
     const handleReceiveMessage = (data) => {
       if (selectedUser && data.passengerID === selectedUser.id) {
+        if (data.senderType === "staff") return;
         const newMsg = {
           id: data.messageID || Date.now(),
           sender: data.senderType === "staff" ? "staff" : "user",
@@ -134,7 +137,7 @@ const CustomerSupport = () => {
 
     socket.on("receive_message", handleReceiveMessage);
     return () => socket.off("receive_message", handleReceiveMessage);
-  }, [selectedUser, socket]);
+  }, [selectedUser]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -145,6 +148,21 @@ const CustomerSupport = () => {
   const handleSend = async (e) => {
     e.preventDefault();
     if (!inputValue.trim() || !selectedUser) return;
+
+    const newMsg = {
+      id: Date.now(), // ID tạm
+      sender: "staff",
+      text: inputValue,
+      fileUrl: "",
+      type: "text",
+      time: new Date().toLocaleTimeString("vi-VN", {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
+    };
+
+    // 2. Cập nhật State ngay lập tức -> Tin nhắn hiện lên luôn
+    setMessages((prev) => [...prev, newMsg]);
 
     const msgData = {
       passengerID: selectedUser.id,
@@ -175,9 +193,23 @@ const CustomerSupport = () => {
       const { url } = res.data;
       const fileType = file.type.startsWith("image/") ? "image" : "file";
 
+      const newMsg = {
+        id: Date.now(),
+        sender: "staff",
+        text: "",
+        fileUrl: url,
+        fileName: file.name, // Hiển thị tên file thật
+        type: fileType,
+        time: new Date().toLocaleTimeString("vi-VN", {
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
+      };
+      setMessages((prev) => [...prev, newMsg]);
+
       const msgData = {
         passengerID: selectedUser.id,
-        staffID: null,
+        staffID: currentStaff.id,
         content: url,
         senderType: "staff",
         type: fileType,

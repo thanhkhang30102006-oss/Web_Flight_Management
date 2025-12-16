@@ -47,7 +47,7 @@
   transform: translateY(-5px);
 }
 .react-calendar__month-view__weekdays abbr {
-  font-size: 12px;
+  font-size: 11px;
 }
 
 /* Custom Calendar Adjustments */
@@ -69,8 +69,8 @@
   border-radius: 8px;
 }
 .react-calendar__tile--now {
-  background: #fff702da;
-  color: #3b82f6;
+  background: #3cff00f8;
+  color: #ffffff;
 }
 .dot-marker {
   width: 5px;
@@ -147,7 +147,7 @@
 /* --- FLIGHT BAR ITEM (STYLE MỚI) --- */
 .flight-bar-item {
   position: absolute;
-  height: 40px; /* Độ cao thanh bar */
+  height: 60px; /* Độ cao thanh bar */
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -192,6 +192,7 @@
 .flight-tooltip {
   visibility: hidden; /* Ẩn mặc định */
   opacity: 0;
+  z-index: 0;
   position: absolute;
   bottom: 100%; /* Hiện phía trên thanh bar */
   left: 50%;

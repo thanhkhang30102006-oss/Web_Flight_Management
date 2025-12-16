@@ -3,6 +3,7 @@ import Particles from "react-tsparticles";
 import { loadSlim } from "tsparticles-slim";
 import "./LoginRegis.css";
 import { useTranslation } from "react-i18next";
+import toast, { Toaster } from "react-hot-toast";
 import {
   User,
   Mail,
@@ -47,6 +48,7 @@ function validatePassword(password) {
 }
 
 const LoginRegis = () => {
+  const notify = () => toast.success("Lưu thành công!");
   // Background Particles
   const particlesInit = useCallback(async (engine) => {
     await loadSlim(engine);
@@ -193,7 +195,7 @@ const LoginRegis = () => {
       const data = await response.json();
 
       if (!response.ok) {
-        alert(data.message || "Đăng nhập thất bại");
+        toast.error(data.message || "Đăng nhập thất bại");
       } else {
         const staffRole = () =>
           userRole === "staff" || userRole === "admin" ? userRole : null;
@@ -213,12 +215,12 @@ const LoginRegis = () => {
           localStorage.setItem(storageKey, data.user.privateKey);
           console.log(`Đã lưu Private Key cho ${userRole} vào LocalStorage!`);
         }
-        alert(`Đăng nhập thành công!`);
+        toast.success(`Đăng nhập thành công!`);
         navigate(redirectPath);
       }
     } catch (error) {
       console.error("Login error", error);
-      alert("Lỗi kết nối Server");
+      toast.error("Lỗi kết nối Server");
     }
   };
 
@@ -336,6 +338,8 @@ const LoginRegis = () => {
 
   return (
     <div className="auth-body">
+      {/* Các component khác */}
+      <Toaster position="top-center" reverseOrder={false} />
       <Particles
         id="tsparticles"
         init={particlesInit}

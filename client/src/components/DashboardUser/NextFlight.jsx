@@ -62,14 +62,14 @@ const getWeatherIcon = (code) => {
   return <Cloud className="weather-icon-w text-gray-300" />;
 };
 
-const getWeatherDescription = (code) => {
-  if (code <= 1) return "Nắng đẹp";
-  if (code <= 3) return "Có mây";
-  if (code >= 45 && code <= 48) return "Sương mù";
-  if (code >= 51 && code <= 67) return "Có mưa";
-  if (code >= 80 && code <= 82) return "Mưa rào";
-  if (code >= 95) return "Mưa dông";
-  return "Nhiều mây";
+const getWeatherDescription = (code, t) => {
+  if (code <= 1) return t("next_flight.weather.desc.sunny");
+  if (code <= 3) return t("next_flight.weather.desc.cloudy");
+  if (code >= 45 && code <= 48) return t("next_flight.weather.desc.fog");
+  if (code >= 51 && code <= 67) return t("next_flight.weather.desc.rain");
+  if (code >= 80 && code <= 82) return t("next_flight.weather.desc.showers");
+  if (code >= 95) return t("next_flight.weather.desc.thunderstorm");
+  return t("next_flight.weather.desc.overcast");
 };
 let isHasTicket = false;
 
@@ -111,7 +111,19 @@ const NoFlightView = () => {
 
 // Component 2a: Phần Vé máy bay (Left Side)
 const TicketView = ({ flight, seat, passengerName }) => {
+  const { t } = useTranslation();
   const realSeatNumber = seat.seatNumber.replace(flight.flightNumber, "");
+  const statusText =
+    flight.flightState === "active"
+      ? t("next_flight.ticket.status_active")
+      : t("next_flight.ticket.status_delayed");
+
+  // Xử lý translate hạng ghế
+  const seatClassText =
+    seat.seatType === "economy"
+      ? t("next_flight.ticket.class_economy")
+      : t("next_flight.ticket.class_business");
+
   return (
     <>
       <div className="ticket-visual">
@@ -122,7 +134,7 @@ const TicketView = ({ flight, seat, passengerName }) => {
             <span className="flight-no">{flight.flightNumber}</span>
           </div>
           <span className={`flight-status ${flight.flightState}`}>
-            {flight.flightState === "active" ? "Đúng giờ" : "Bị hoãn"}
+            {statusText}{" "}
           </span>
         </div>
 
@@ -135,7 +147,7 @@ const TicketView = ({ flight, seat, passengerName }) => {
           </div>
 
           <div className="flight-path">
-            <span className="duration">Bay thẳng</span>
+            <span className="duration">{t("next_flight.ticket.direct")}</span>
             <div className="path-line">
               <div className="dot start"></div>
               <Plane className="plane-icon-center" size={24} />
@@ -154,16 +166,15 @@ const TicketView = ({ flight, seat, passengerName }) => {
         <div className="ticket-footer">
           <div className="info-item">
             <Armchair size={20} />{" "}
-            <span className="value">{realSeatNumber || "Chưa chọn"}</span>
+            <span className="value">
+              {realSeatNumber || t("next_flight.ticket.not_selected")}
+            </span>
           </div>
           <div className="info-item">
             <User size={20} /> <span className="value">{passengerName}</span>
           </div>
           <div className="info-item">
-            <Ticket size={20} />{" "}
-            <span className="value">
-              {seat.seatType === "economy" ? "Phổ thông" : "Thương gia"}
-            </span>
+            <Ticket size={20} /> <span className="value">{seatClassText}</span>
           </div>
         </div>
         <div className="ticket-notch left"></div>
@@ -175,10 +186,11 @@ const TicketView = ({ flight, seat, passengerName }) => {
 
 // Component 2b: Phần Thời tiết (Right Side)
 const WeatherWidget = ({ depCode, arrCode, weatherData, loading }) => {
+  const { t } = useTranslation();
   if (loading)
     return (
       <div className="weather-loading">
-        <Loader2 className="animate-spin" /> Đang tải thời tiết...
+        <Loader2 className="animate-spin" /> {t("next_flight.weather.loading")}
       </div>
     );
   if (!weatherData) return null;
@@ -189,7 +201,7 @@ const WeatherWidget = ({ depCode, arrCode, weatherData, loading }) => {
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
-        padding: "10px 0",
+        padding: "10px 20px",
       }}
     >
       <div
@@ -197,30 +209,30 @@ const WeatherWidget = ({ depCode, arrCode, weatherData, loading }) => {
         style={{
           display: "flex",
           alignItems: "center",
-          gap: "8px",
+          gap: "16px",
           width: "30%",
         }}
       >
         <MapPin size={20} className={color} />
-        <span style={{ fontWeight: "bold" }}>{code}</span>
+        <span style={{ fontSize: "1.6rem", fontWeight: "bold" }}>{code}</span>
       </div>
       <div
         className="stat"
         style={{
           display: "flex",
           alignItems: "center",
-          gap: "12px",
+          gap: "20px",
           flex: 1,
           justifyContent: "flex-end",
         }}
       >
         {getWeatherIcon(data.code)}
         <div style={{ textAlign: "right" }}>
-          <div style={{ fontSize: "1.2rem", fontWeight: "bold" }}>
+          <div style={{ fontSize: "1.6rem", fontWeight: "bold" }}>
             {data.temp}°C
           </div>
-          <div style={{ fontSize: "0.85rem", color: "#555" }}>
-            {getWeatherDescription(data.code)}
+          <div style={{ fontSize: "0.85rem", color: "#fafafaff" }}>
+            {getWeatherDescription(data.code, t)}
           </div>
         </div>
       </div>
@@ -228,7 +240,9 @@ const WeatherWidget = ({ depCode, arrCode, weatherData, loading }) => {
   );
   return (
     <div className="weather-widget">
-      <h4 className="widget-title">Dự báo ngày bay</h4>
+      <h4 className="widget-title">
+        {t("next_flight.weather.forecast_title")}
+      </h4>
       <SimpleRow code={depCode} data={weatherData.dep} color="text-blue-500" />
       <div className="divider-dashed"></div>
       <SimpleRow code={arrCode} data={weatherData.arr} color="text-red-500" />
@@ -238,6 +252,7 @@ const WeatherWidget = ({ depCode, arrCode, weatherData, loading }) => {
 
 // --- COMPONENT CHÍNH ---
 function NextFlightCard({ passengerID, passengerName }) {
+  const { t } = useTranslation();
   const [weather, setWeather] = useState(null);
   const [loading, setLoading] = useState(false);
   const [flightPoint, setFlightPoint] = useState(null);
@@ -336,12 +351,14 @@ function NextFlightCard({ passengerID, passengerName }) {
       transition={{ duration: 0.4 }}
     >
       <div className="col-ticket">
-        <div className="glass-panel-title">Chuyến bay sắp tới</div>
+        <div className="glass-panel-title">{t("next_flight.ticket.title")}</div>
         <TicketView flight={flight} seat={seat} passengerName={passengerName} />
       </div>
 
       <div className="col-weather">
-        <div className="glass-panel-title">Thông tin điểm đến</div>
+        <div className="glass-panel-title">
+          {t("next_flight.weather.title")}
+        </div>
         <div className="glass-card weather-container">
           <WeatherWidget
             depCode={flight.departurePoint}

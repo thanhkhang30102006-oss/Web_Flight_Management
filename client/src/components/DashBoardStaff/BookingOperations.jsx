@@ -56,7 +56,7 @@ const BookingOperations = () => {
           <h2 className="panel-title">Quản lý vé & Đặt chỗ (Booking Ops)</h2>
           <p
             className="sub-text"
-            style={{ fontSize: "13px", color: "#94a3b8" }}
+            style={{ fontSize: "13px", color: "#e9eef6ff" }}
           >
             Tổng số vé trong hệ thống:{" "}
             <strong style={{ color: "#fff" }}>{DB_TICKETS.length}</strong>
@@ -145,11 +145,11 @@ const BookingOperations = () => {
                   <td>
                     <span className="seat-badge">{ticket.seatNumber}</span>
                   </td>
-                  <td style={{ fontSize: "13px", color: "#cbd5e1" }}>
+                  <td style={{ fontSize: "13px", color: "#ffffffff" }}>
                     {new Date(ticket.ticketBookTime).toLocaleDateString(
                       "vi-VN"
                     )}
-                    <div style={{ fontSize: "11px", color: "#64748b" }}>
+                    <div style={{ fontSize: "11px", color: "#ffffffff" }}>
                       {new Date(ticket.ticketBookTime).toLocaleTimeString(
                         "vi-VN",
                         { hour: "2-digit", minute: "2-digit" }

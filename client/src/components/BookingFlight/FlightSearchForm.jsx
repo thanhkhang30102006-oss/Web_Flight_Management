@@ -1,6 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import Select from "react-select";
+import toast, { Toaster } from "react-hot-toast";
+
 import {
   PlaneTakeoff,
   PlaneLanding,
@@ -10,60 +12,44 @@ import {
 } from "lucide-react";
 
 const internationalAirports = [
-  // --- Việt Nam ---
+  // Mien Bac
   { code: "HAN", name: "Hà Nội (Nội Bài)" },
-  { code: "SGN", name: "TP.HCM (Tân Sơn Nhất)" },
-  { code: "DAD", name: "Đà Nẵng" },
-  { code: "CXR", name: "Nha Trang (Cam Ranh)" },
-  { code: "PQC", name: "Phú Quốc" },
   { code: "HPH", name: "Hải Phòng (Cát Bi)" },
-  // --- Đông Nam Á (Phổ biến nhất) ---
-  { code: "BKK", name: "Bangkok (Suvarnabhumi) - Thái Lan" },
-  { code: "DMK", name: "Bangkok (Don Mueang) - Thái Lan" },
-  { code: "SIN", name: "Singapore (Changi) - Singapore" },
-  { code: "KUL", name: "Kuala Lumpur - Malaysia" },
-  { code: "DPS", name: "Bali (Ngurah Rai) - Indonesia" },
-  { code: "MNL", name: "Manila (Ninoy Aquino) - Philippines" },
-  { code: "PNH", name: "Phnom Penh - Campuchia" },
-  { code: "REP", name: "Siem Reap - Campuchia" },
-  { code: "VTE", name: "Vientiane (Wattay) - Lào" },
-  { code: "RGN", name: "Yangon - Myanmar" },
-
-  // --- Đông Bắc Á (Hàn, Nhật, Đài, Trung) ---
-  { code: "ICN", name: "Seoul (Incheon) - Hàn Quốc" },
-  { code: "PUS", name: "Busan (Gimhae) - Hàn Quốc" },
-  { code: "NRT", name: "Tokyo (Narita) - Nhật Bản" },
-  { code: "HND", name: "Tokyo (Haneda) - Nhật Bản" },
-  { code: "KIX", name: "Osaka (Kansai) - Nhật Bản" },
-  { code: "TPE", name: "Đài Bắc (Taoyuan) - Đài Loan" },
-  { code: "KHH", name: "Cao Hùng - Đài Loan" },
-  { code: "HKG", name: "Hồng Kông" },
-  { code: "PVG", name: "Thượng Hải (Phố Đông) - TQ" },
-  { code: "CAN", name: "Quảng Châu (Bạch Vân) - TQ" },
-
-  // --- Châu Úc, Âu, Mỹ (Đường dài) ---
-  { code: "SYD", name: "Sydney (Kingsford Smith) - Úc" },
-  { code: "MEL", name: "Melbourne - Úc" },
-  { code: "CDG", name: "Paris (Charles de Gaulle) - Pháp" },
-  { code: "LHR", name: "London (Heathrow) - Anh" },
-  { code: "FRA", name: "Frankfurt - Đức" },
-  { code: "SFO", name: "San Francisco - Mỹ" },
-  { code: "LAX", name: "Los Angeles - Mỹ" },
-  { code: "JFK", name: "New York (John F. Kennedy) - Mỹ" },
-  { code: "DXB", name: "Dubai - UAE" },
-  { code: "DOH", name: "Doha (Hamad) - Qatar" },
+  { code: "VDO", name: "Vân Đồn (Quảng Ninh)" },
+  { code: "THD", name: "Thanh Hóa (Thọ Xuân)" },
+  { code: "VII", name: "Vinh (Nghệ An)" },
+  { code: "DIN", name: "Điện Biên Phủ" },
+  // Mien Trung
+  { code: "DAD", name: "Đà Nẵng" },
+  { code: "HUI", name: "Huế (Phú Bài)" },
+  { code: "CXR", name: "Nha Trang (Cam Ranh)" },
+  { code: "UIH", name: "Quy Nhơn (Phù Cát)" },
+  { code: "VCL", name: "Quảng Nam (Chu Lai)" },
+  { code: "VDH", name: "Đồng Hới (Quảng Bình)" },
+  { code: "TBB", name: "Tuy Hòa (Phú Yên)" },
+  // Tay NGuyen
+  { code: "DLI", name: "Đà Lạt (Liên Khương)" },
+  { code: "BMV", name: "Buôn Ma Thuột" },
+  { code: "PXU", name: "Pleiku (Gia Lai)" },
+  //  Miền Nam
+  { code: "SGN", name: "TP.HCM (Tân Sơn Nhất)" },
+  { code: "PQC", name: "Phú Quốc" },
+  { code: "VCA", name: "Cần Thơ" },
+  { code: "VCS", name: "Côn Đảo" },
+  { code: "VKG", name: "Rạch Giá (Kiên Giang)" },
+  { code: "CAH", name: "Cà Mau" },
 ];
 const airportOptions = internationalAirports.map((airport) => ({
   value: airport.code,
-  label: `${airport.name} (${airport.code})`, // Hiển thị tên kèm mã
+  label: `${airport.name} (${airport.code})`,
 }));
 
 const glassSelectStyles = {
   control: (base, state) => ({
     ...base,
-    background: "transparent", // Nền trong suốt
-    border: "none", // Bỏ viền mặc định
-    boxShadow: "none", // Bỏ bóng
+    background: "transparent",
+    border: "none",
+    boxShadow: "none",
     minHeight: "auto",
     cursor: "pointer",
     color: "white",
@@ -133,7 +119,7 @@ const FlightSearchForm = ({ onSearch }) => {
     e.preventDefault();
     const token = localStorage.getItem("accessToken");
     if (!token) {
-      alert("Bạn cần đăng nhập để tìm kiếm!");
+      toast.error("Bạn cần đăng nhập để tìm kiếm!");
       return;
     }
 
@@ -157,10 +143,10 @@ const FlightSearchForm = ({ onSearch }) => {
     const data = await searchResponse.json();
 
     if (!searchResponse.ok) {
-      alert(data.message);
+      toast.error(data.message);
       const errorText = await searchResponse.text();
       console.error("Lỗi từ Server:", errorText);
-      alert(
+      toast.error(
         `Lỗi tìm kiếm (${searchResponse.status}): Vui lòng kiểm tra lại thông tin.`
       );
       return;
@@ -175,7 +161,9 @@ const FlightSearchForm = ({ onSearch }) => {
       <form onSubmit={handleSubmit} className="form-grid">
         {/* Điểm đi */}
         <div className="input-group">
-          <span className="input-label">{t("booking.from", "Điểm đi")}</span>
+          <span className="input-label">
+            {t("bookingFlow.from", "Điểm đi")}
+          </span>
           <div className="glass-input-wrapper flex items-center pr-2 overflow-hidden">
             <div className="pl-3 shrink-0">
               <PlaneTakeoff size={18} className="text-gray-400" />
@@ -187,7 +175,10 @@ const FlightSearchForm = ({ onSearch }) => {
                 // 3. Dùng helper để convert Code -> Object cho component hiển thị
                 value={getValueObject(params.from)}
                 onChange={(option) => handleSelectChange("from", option)}
-                placeholder={t("booking.placeholders.from", "Chọn điểm đi...")}
+                placeholder={t(
+                  "bookingFlow.placeholders.from",
+                  "Chọn điểm đi..."
+                )}
                 styles={glassSelectStyles}
                 classNamePrefix="react-select"
                 isClearable
@@ -202,7 +193,7 @@ const FlightSearchForm = ({ onSearch }) => {
 
         {/* Điểm đến */}
         <div className="input-group">
-          <span className="input-label">{t("booking.to", "Điểm đến")}</span>
+          <span className="input-label">{t("bookingFlow.to", "Điểm đến")}</span>
           <div className="glass-input-wrapper flex items-center pr-2 overflow-hidden">
             <div className="pl-3 shrink-0">
               <PlaneLanding size={18} className="text-gray-400" />
@@ -213,7 +204,10 @@ const FlightSearchForm = ({ onSearch }) => {
                 // Dùng helper để convert Code -> Object
                 value={getValueObject(params.to)}
                 onChange={(option) => handleSelectChange("to", option)}
-                placeholder={t("booking.placeholders.to", "Chọn điểm đến...")}
+                placeholder={t(
+                  "bookingFlow.placeholders.to",
+                  "Chọn điểm đến..."
+                )}
                 styles={glassSelectStyles}
                 components={{
                   IndicatorSeparator: () => null,
@@ -227,7 +221,9 @@ const FlightSearchForm = ({ onSearch }) => {
 
         {/* Ngày đi */}
         <div className="input-group">
-          <span className="input-label">{t("booking.date", "Ngày đi")}</span>
+          <span className="input-label">
+            {t("bookingFlow.date", "Ngày đi")}
+          </span>
           <div className="glass-input-wrapper">
             <Calendar size={18} className="text-gray-400" />
             <input
@@ -241,7 +237,7 @@ const FlightSearchForm = ({ onSearch }) => {
 
         <div className="input-group">
           <span className="input-label">
-            {t("booking.departureTime", "Giờ đi")}
+            {t("bookingFlow.departureTime", "Giờ đi")}
           </span>
           <div className="glass-input-wrapper">
             <Clock size={18} className="text-gray-400" />
@@ -255,7 +251,7 @@ const FlightSearchForm = ({ onSearch }) => {
         </div>
 
         <button type="submit" className="search-submit-btn">
-          <Search size={18} /> {t("booking.search", "Tìm")}
+          <Search size={18} /> {t("bookingFlow.search", "Tìm")}
         </button>
       </form>
     </div>

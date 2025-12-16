@@ -1,5 +1,4 @@
 /* src/components/HomePage/main/Flight.css */
-/* CHỈ COPY-PASTE TOÀN BỘ ĐOẠN NÀY THAY THẾ FILE CŨ */
 
 *,
 *::before,
@@ -19,7 +18,7 @@
   z-index: -2;
 }
 
-.video-overlay {
+.flight-video-overlay {
   position: fixed;
   top: 0; left: 0;
   width: 100vw;
@@ -37,7 +36,8 @@
   text-align: center;
   padding-top: 0px;
   margin-bottom: 100px;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 /* Copy nguyên kiểu hero + simple-info từ Homepage.css */
@@ -58,7 +58,7 @@
 .flight-page .simple-info-title {
   font-size: 4.2rem;
   font-weight: 800;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
   text-shadow: 4px 4px 15px rgba(83, 181, 226, 0.407);
   color: #3399FF;
 }
@@ -76,7 +76,7 @@
   z-index: 10;
   width: 90%;
   max-width: 1400px;
-  margin: -50px auto 0; /* Kéo lên chồng nhẹ với tiêu đề cho đẹp */
+  margin: -150px auto 0; /* Kéo lên chồng nhẹ với tiêu đề cho đẹp */
   display: flex;
   gap: 30px;
   flex-wrap: wrap;
@@ -118,4 +118,163 @@
   .flight-page .simple-info-text { font-size: 1.3rem; }
   .flight-content { margin-top: -50px; }
   .flights-panel, .map-panel { padding: 30px 20px; }
+}
+
+.flights-list {
+  max-height: 600px; /* Giới hạn chiều cao danh sách */
+  overflow-y: auto;  /* Hiện thanh cuộn nếu danh sách dài */
+  padding-right: 10px; /* Khoảng cách cho thanh cuộn */
+}
+
+/* Tùy chỉnh thanh cuộn cho đẹp (Chrome/Safari/Edge) */
+.flights-list::-webkit-scrollbar {
+  width: 6px;
+}
+.flights-list::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+.flights-list::-webkit-scrollbar-thumb {
+  background: rgba(51, 153, 255, 0.5);
+  border-radius: 10px;
+}
+.flights-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(51, 153, 255, 0.8);
+}
+
+.flight-map-container {
+  width: 100%;
+  height: 600px; /* Chiều cao cố định cho bản đồ */
+  background: transparent;
+  border-radius: 15px;
+  overflow: hidden;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  z-index: 1; /* Quan trọng để không đè lên menu */
+}
+
+.flight-card {
+  background-color: rgba(255, 255, 255, 0.833);
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  margin-bottom: 15px;
+  padding: 15px;
+  min-width: 550px;
+  cursor: pointer;
+  transition: all 0.4s ease;
+  border: 2px solid transparent;
+  color: #333;
+  text-align: left;
+}
+
+.flights-list:hover .flight-card {
+  transform: scale(0.95);
+  filter: blur(2px); /* Làm mờ nhẹ */
+  opacity: 0.8;
+}
+
+.flights-list .flight-card:hover {
+  transform: scale(1.02) translateX(10px);
+  filter: blur(0); 
+  opacity: 1;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+  z-index: 2;
+}
+
+
+.flight-card.active-card {
+  border-color: #3399FF;
+  background-color: #f0f9ff;
+  transform: translateX(8px);
+  scale: 1.015;
+}
+/* Header bên trong thẻ chuyến bay */
+.flight-header-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px dashed #ccc;
+}
+
+.flight-number strong {
+  font-size: 1.2rem;
+  color: #0056b3;
+  display: block;
+}
+
+.plane-type {
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.flight-status {
+  font-size: 0.8rem;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-weight: bold;
+}
+
+/* Route info trong thẻ */
+.flight-route {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.departure, .arrival {
+  flex: 1;
+}
+
+.arrival {
+  text-align: right;
+}
+
+.airport-code {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #333;
+}
+
+.time-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.time-info .time {
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.time-info .date {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.route-line {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 10px;
+}
+
+.airplane-icon {
+  font-size: 1.2rem;
+  color: #3399FF;
+  margin-bottom: -12px; 
+  z-index: 1;
+}
+
+.line {
+  width: 100%;
+  height: 2px;
+  background: #ccc;
+  position: relative;
+}
+
+.seat-info {
+  font-size: 0.9rem;
+  color: #555;
+  margin-top: 5px;
 }

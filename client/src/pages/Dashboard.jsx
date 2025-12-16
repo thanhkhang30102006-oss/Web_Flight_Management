@@ -5,6 +5,10 @@ import { NextFlightCard } from "../components/DashboardUser/NextFlight";
 import FlightSchedule from "../components/DashboardUser/FlightSchedule";
 import PassengerChat from "../components/DashboardUser/PassengerChat";
 import Settings from "../components/DashboardUser/Settings";
+import MyTrips from "../components/DashboardUser/MyTrips";
+import NewsWidget from "../components/DashboardUser/NewsWidget";
+import toast, { Toaster } from "react-hot-toast";
+
 import "./DashboardLayout.css";
 import videoWallpaper from "../assets//videos/background-wallpaper-user1.mp4";
 import Booking from "./BookingFlow";
@@ -25,7 +29,8 @@ function DashBoard() {
       </video>
 
       {/* Lớp phủ mờ (Overlay) để video không làm rối mắt */}
-      <div className="video-overlay"></div>
+      <div className="dashboard-video-overlay"></div>
+      <Toaster position="top-center" reverseOrder={false} />
       {/* Sidebar cố định bên trái */}
       <LeftSide currentTab={activeTab} onTabChange={setActiveTab} />
       <Snowfall color="white" />
@@ -37,12 +42,12 @@ function DashBoard() {
         <div className="content-container">
           {activeTab === "home" && (
             <div className="animate-fade-in">
+              <NewsWidget />
               <div className="widgets-row">
                 <NextFlightCard
                   passengerID={passengerID}
                   passengerName={passengerName}
                 />
-                {/* <StatsComponents /> có thể để ở đây nếu muốn chia cột */}
               </div>
               <FlightSchedule passengerID={passengerID} />
             </div>
@@ -55,6 +60,12 @@ function DashBoard() {
               <div className="booking-container">
                 <Booking />
               </div>
+            </div>
+          )}
+
+          {activeTab === "mytrips" && (
+            <div className="animate-fade-in">
+              <MyTrips />
             </div>
           )}
 
