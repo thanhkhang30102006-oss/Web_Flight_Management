@@ -103,11 +103,18 @@ function Header() {
   const notiRef = useRef(null);
 
   useEffect(() => {
-    const data = localStorage.getItem("userData");
-    if (data) {
-      setUser(JSON.parse(data));
+    const userRole = localStorage.getItem("userRole");
+    const staffRole = localStorage.getItem("staffRole");
+    let roleToDisplay = null;
+    let userData = null;
+    if (staffRole === "staff" || staffRole === "admin") {
+      roleToDisplay = staffRole;
+      userData = JSON.parse(localStorage.getItem("staffData"));
+    } else if (userRole === "passenger") {
+      roleToDisplay = userRole;
+      userData = JSON.parse(localStorage.getItem("userData"));
     }
-
+    setUser(userData);
     function handleClickOutside(event) {
       if (notiRef.current && !notiRef.current.contains(event.target)) {
         setShowNoti(false);

@@ -197,10 +197,16 @@ const LoginRegis = () => {
       if (!response.ok) {
         toast.error(data.message || "Đăng nhập thất bại");
       } else {
+        const staffRole = () =>
+          userRole === "staff" || userRole === "admin" ? userRole : null;
         localStorage.setItem("accessToken", data.accessToken);
-        localStorage.setItem("userRole", userRole);
-        localStorage.setItem("userData", JSON.stringify(data.user));
-
+        if (userRole === "passenger") {
+          localStorage.setItem("userRole", userRole);
+          localStorage.setItem("userData", JSON.stringify(data.user));
+        } else {
+          localStorage.setItem("staffRole", staffRole());
+          localStorage.setItem("staffData", JSON.stringify(data.user));
+        }
         if (data.user && data.user.privateKey) {
           const storageKey =
             userRole === "staff"
@@ -377,8 +383,8 @@ const LoginRegis = () => {
               isAnimating
                 ? "role-switching"
                 : !isLoginView
-                ? "show-register"
-                : ""
+                  ? "show-register"
+                  : ""
             }`}
           >
             {/* --- MẶT TRƯỚC: LOGIN --- */}

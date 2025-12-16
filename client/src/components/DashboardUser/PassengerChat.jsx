@@ -12,12 +12,10 @@ import {
   FileText,
   Download,
 } from "lucide-react";
-import io from "socket.io-client";
 import axios from "axios";
 import "./PassengerChat.css"; // CSS riêng cho chat
-
+import { useSocket } from "../../context/SocketContext";
 const API_URL = "http://localhost:3001";
-const socket = io.connect(API_URL);
 
 // Lấy tên người dùng thôi
 const getCurrentUser = () => {
@@ -51,6 +49,7 @@ const TOPICS = [
 
 const PassengerChat = () => {
   const currentUser = getCurrentUser();
+  const { socket } = useSocket();
   const [chatStarted, setChatStarted] = useState(false);
   const [selectedTopic, setSelectedTopic] = useState(TOPICS[0].id);
   const [messages, setMessages] = useState([]);
@@ -70,7 +69,7 @@ const PassengerChat = () => {
   }
   // Auto scroll xuống cuối khi có tin nhắn mới
   useEffect(() => {
-    if (chatStarted) {
+    if (chatStarted && socket) {
       // A. Join phòng chat (Room = UserID)
 
       socket.emit("join_room", { passengerID: currentUser.id });
@@ -103,9 +102,9 @@ const PassengerChat = () => {
       };
       loadHistory();
 
-      // C. Lắng nghe tin nhắn mới (Realtime)
+      // Cập nhật tin nhắn mới tới
       const handleReceiveMessage = (data) => {
-        console.log("📩 Passenger nhận tin nhắn Socket:", data);
+        console.log(" Passenger nhận tin nhắn Socket:", data);
         if (data.passengerID !== currentUser.id) return;
         const newMsg = {
           id: data.messageID || Date.now(),
@@ -131,7 +130,7 @@ const PassengerChat = () => {
         socket.off("receive_message", handleReceiveMessage);
       };
     }
-  }, [chatStarted, currentUser.id]);
+  }, [chatStarted, currentUser.id, socket]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -283,8 +282,8 @@ const PassengerChat = () => {
                     msg.type === "image"
                       ? "bubble-image"
                       : msg.type === "file"
-                      ? "bubble-file"
-                      : ""
+                        ? "bubble-file"
+                        : ""
                   }`}
                 >
                   {/* TRƯỜNG HỢP 1: ẢNH */}

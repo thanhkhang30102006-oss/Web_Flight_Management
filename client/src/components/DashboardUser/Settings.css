@@ -3,7 +3,6 @@
   gap: 20px;
   height: 100%;
   width: 100%;
-  
 }
 
 /* Sidebar bên trái của settings */
@@ -13,12 +12,11 @@
   flex-direction: column;
   gap: 10px;
   padding: 20px;
-  
 }
-.settings-sidebar.glass-panel{
-  background:#3b83f64e;
-  border: 2px solid rgba(255, 255, 255, 0.6); 
-  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.45); 
+.settings-sidebar.glass-panel {
+  background: #3b83f64e;
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.45);
 }
 .settings-sidebar h3 {
   color: white;
@@ -60,14 +58,14 @@
   padding: 30px;
   overflow-y: auto;
 }
-.settings-content.glass-panel{
+.settings-content.glass-panel {
   background: #153569d9;
-  border: 2px solid rgba(255, 255, 255, 0.6); 
-  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.45); 
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.45);
 }
 .section-title {
   color: white;
-  border-bottom: 1px solid rgba(255,255,255,0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   padding-bottom: 10px;
   margin-bottom: 25px;
 }
@@ -91,7 +89,7 @@
   height: 100%;
   border-radius: 50%;
   object-fit: cover;
-  border: 3px solid rgba(255,255,255,0.2);
+  border: 3px solid rgba(255, 255, 255, 0.2);
 }
 
 .avatar-edit-btn {
@@ -107,20 +105,22 @@
   cursor: pointer;
   transition: 0.2s;
 }
-.avatar-edit-btn:hover { transform: scale(1.1); }
+.avatar-edit-btn:hover {
+  transform: scale(1.1);
+}
 
 .avatar-info .user-id {
-    color: rgba(255,255,255,0.5);
-    font-size: 13px;
-    margin-bottom: 5px;
+  color: rgba(255, 255, 255, 0.703);
+  font-size: 16px;
+  margin-bottom: 5px;
 }
 
 .role-badge {
-    background: rgba(16, 185, 129, 0.2);
-    color: #34d399;
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-size: 12px;
+  background: rgba(16, 185, 129, 0.2);
+  color: #34d399;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 14px;
 }
 
 /* Form Styles */
@@ -138,9 +138,11 @@
 }
 
 .input-group label {
-  color: rgba(255,255,255,0.8);
+  color: rgba(255, 255, 255, 0.8);
   font-size: 14px;
-  display: flex; align-items: center; gap: 5px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
 
 .glass-input {
@@ -160,7 +162,7 @@
 .glass-input.disabled {
   opacity: 0.6;
   cursor: not-allowed;
-  background: rgba(0,0,0,0.1);
+  background: rgba(0, 0, 0, 0.1);
 }
 
 .save-btn {
@@ -170,38 +172,52 @@
   padding: 12px 24px;
   border-radius: 8px;
   cursor: pointer;
-  display: flex; align-items: center; gap: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-weight: 600;
   transition: 0.3s;
 }
-.save-btn:hover { background: #2563eb; }
-.save-btn.warning { background: #f59e0b; }
-.save-btn.warning:hover { background: #d97706; }
+.save-btn:hover {
+  background: #2563eb;
+}
+.save-btn.warning {
+  background: #f59e0b;
+}
+.save-btn.warning:hover {
+  background: #d97706;
+}
 
 /* About Section */
 .about-section {
-    text-align: center;
-    padding: 40px;
+  text-align: center;
+  padding: 40px;
 }
-.app-logo-large { font-size: 60px; margin-bottom: 10px; }
+.app-logo-large {
+  font-size: 60px;
+  margin-bottom: 10px;
+}
 .github-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    background: #24292e;
-    color: white;
-    padding: 10px 20px;
-    border-radius: 50px;
-    text-decoration: none;
-    margin-top: 20px;
-    transition: 0.3s;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: #24292e;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 50px;
+  text-decoration: none;
+  margin-top: 20px;
+  transition: 0.3s;
 }
-.github-link:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+.github-link:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
 
 .credits {
-    margin-top: 40px;
-    color: rgba(255,255,255,0.4);
-    font-size: 13px;
+  margin-top: 40px;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 13px;
 }
 /* Validate Password Criteria Styles */
 .password-criteria {

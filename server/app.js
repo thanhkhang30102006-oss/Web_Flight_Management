@@ -6,7 +6,7 @@ var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 var cors = require("cors");
 const { Op } = require("sequelize");
-
+const CryptoJS = require("crypto-js");
 const db = require("./models");
 
 var app = express();
@@ -36,15 +36,15 @@ async function getAvailableStaff(passengerID) {
   try {
     // 1. Kiểm tra xem khách này từng chat với ai chưa?
     const lastMessage = await db.Message.findOne({
-      where: { 
+      where: {
         passengerID: passengerID,
-        staffID: { [Op.ne]: null } 
+        staffID: { [Op.ne]: null },
       },
-      order: [['createdAt', 'DESC']],
+      order: [["createdAt", "DESC"]],
     });
 
     if (lastMessage && lastMessage.staffID) {
-      return lastMessage.staffID; 
+      return lastMessage.staffID;
     }
     return null;
   } catch (error) {
@@ -52,9 +52,24 @@ async function getAvailableStaff(passengerID) {
     return null;
   }
 }
+const secretkey = process.env.CHAT_SECRET_KEY; // Khai báo secret key
+// Mã hóa tin nhắn
+const encryptMessage = (text) => {
+  if (!text) return "";
+  return CryptoJS.AES.encrypt(text, secretkey).toString();
+};
 
-
-
+// Giải mã tin nhắn bị mã hóa
+const decryptMessage = (cipherText) => {
+  if (!cipherText) return "";
+  try {
+    const bytes = CryptoJS.AES.decrypt(cipherText, secretkey);
+    const originalText = bytes.toString(CryptoJS.enc.Utf8);
+    return originalText || cipherText;
+  } catch (e) {
+    return cipherText;
+  }
+};
 io.on("connection", (socket) => {
   console.log("User connected:", socket.id);
 
@@ -148,48 +163,52 @@ io.on("connection", (socket) => {
     });
   });
   // ----------------- Tin Nhắn -----------------
+
+  // Khi khách hnagf thực hiện bấm option đưa khách hàng vào luồng -> socket
+  // Đối với nhân viên đều thấy tin nhắn của khách hàng và kết nối socket khi bấm vào đoạn hội thoại
   socket.on("join_room", (data) => {
-    if(data.passengerID) {
-        socket.join(data.passengerID);
-       
+    if (data.passengerID) {
+      socket.join(data.passengerID);
     }
   });
 
   socket.on("send_message", async (data) => {
-    console.log("📩 Server nhận tin nhắn:", data); // Log để debug
+    console.log("Server nhận tin nhắn:", data); // Log để debug
     try {
       let targetStaffID = data.staffID;
 
-      if (data.senderType === 'passenger') {
-          if (!targetStaffID) {
-             targetStaffID = await getAvailableStaff(data.passengerID);
-         }
-         if (!targetStaffID) {
-             console.log("⚠️ Không tìm thấy Staff cũ, gán mặc định: 25STF062");
-             targetStaffID = "25STF062"; 
-         }
+      if (data.senderType === "passenger") {
+        if (!targetStaffID) {
+          targetStaffID = await getAvailableStaff(data.passengerID);
+        }
+        if (!targetStaffID) {
+          console.log("⚠️ Không tìm thấy Staff cũ, gán mặc định: 25STF062");
+          targetStaffID = "25STF062";
+        }
       }
-      // Lưu vào Database (Sử dụng Model Message đã tạo ở bước trước)
+      // Lưu vào Database
+      const encryptedContent = encryptMessage(data.content);
       const savedMessage = await db.Message.create({
         passengerID: data.passengerID,
-        staffID: targetStaffID, 
-        contentMessage: data.content,
+        staffID: targetStaffID,
+        contentMessage: encryptedContent,
         senderType: data.senderType, // 'passenger' hoặc 'staff'
-        messageType: data.type || 'text',
-        isBeenChecked: 'no',
+        messageType: data.type || "text",
+        isBeenChecked: "no",
         messageTime: new Date(),
       });
 
-      console.log("✅ Đã lưu DB ID:", savedMessage.messageID);
+      const messageToEmit = {
+        ...savedMessage.dataValues,
+        contentMessage: data.content,
+      };
+      console.log("Đã lưu DB ID:", savedMessage.messageID);
       // Gửi realtime cho những người trong phòng (Passenger & Staff đang xem)
-      io.in(data.passengerID).emit("receive_message", savedMessage);
-      
+      io.in(data.passengerID).emit("receive_message", messageToEmit);
     } catch (err) {
       console.error("Lỗi lưu tin nhắn Socket:", err);
     }
   });
-  
-
 });
 
 const PORT = 3001;
@@ -224,14 +243,14 @@ const dashBoardRouter = require("./routes/dashboardRoutes");
 app.use("/api/user/dashboard", dashBoardRouter);
 
 // Xử lý liên quan tới quản lý chuyến bay
-const flightmanagement=require("./routes/flightManagementRoutes");
+const flightmanagement = require("./routes/flightManagementRoutes");
 app.use("/api/staff/flightmanagement", flightmanagement);
 // Pending seats
 if (!global.lockedSeats) {
   global.lockedSeats = {};
 }
 
-const messageRouter = require("./routes/messageRoutes"); 
+const messageRouter = require("./routes/messageRoutes");
 app.use("/api/messages", messageRouter);
 
 module.exports = app;

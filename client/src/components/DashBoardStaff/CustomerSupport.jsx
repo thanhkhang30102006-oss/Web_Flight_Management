@@ -14,20 +14,19 @@ import {
 } from "lucide-react";
 import { useSocket } from "../../context/SocketContext";
 
-import io from "socket.io-client";
 import axios from "axios";
 import "./CustomerSupport.css";
 import "../../pages/StaffDashboard.css";
 
-const API_URL = "http://localhost:3001";
-
-const socket = io.connect(API_URL);
+const { socket } = useSocket;
 
 const CustomerSupport = () => {
+  const { socket } = useSocket();
+
   const [currentStaff, setCurrentStaff] = useState(null);
   useEffect(() => {
-    const staffStr = localStorage.getItem("userData");
-    console.log("🛠️ Checking localStorage 'userData':", staffStr); // DEBUG LOG
+    const staffStr = localStorage.getItem("staffData");
+    console.log("Checking localStorage 'userData':", staffStr); // DEBUG LOG
     if (staffStr) {
       try {
         const staff = JSON.parse(staffStr);
@@ -49,14 +48,14 @@ const CustomerSupport = () => {
 
   useEffect(() => {
     if (!currentStaff) {
-      console.log("⏳ Chờ thông tin Staff...");
+      console.log(" Chờ thông tin Staff...");
       return;
     }
     const fetchConversations = async () => {
-      console.log("🚀 Bắt đầu gọi API lấy danh sách hội thoại...");
+      console.log(" Bắt đầu gọi API lấy danh sách hội thoại...");
       try {
         const res = await axios.get(`${API_URL}/api/messages/conversations`);
-        console.log("✅ API Conversations Data:", res.data); // DEBUG LOG
+        console.log(" API Conversations Data:", res.data); // DEBUG LOG
         if (Array.isArray(res.data)) {
           const formattedUsers = res.data.map((conv) => ({
             id: conv.passengerID,
@@ -136,13 +135,10 @@ const CustomerSupport = () => {
       }
     };
 
-    return () => {
-      // 3. Kiểm tra socket trước khi off (đề phòng socket bị mất kết nối giữa chừng)
-      if (socket) {
-        socket.off("receive_message", handleReceiveMessage);
-      }
-    };
+    socket.on("receive_message", handleReceiveMessage);
+    return () => socket.off("receive_message", handleReceiveMessage);
   }, [selectedUser]);
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
