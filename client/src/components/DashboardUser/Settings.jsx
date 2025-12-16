@@ -18,9 +18,11 @@ import {
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import "./Settings.css";
-
+import airplaneIcon from "../../assets/Image/airplane-plane-flight-white.svg";
 const API_BASE_URL = "http://localhost:3001/api/user/";
-
+const userData = localStorage.getItem("userData");
+const loggedInUser = userData ? JSON.parse(userData) : null;
+const passengerID = loggedInUser.id;
 // Hàm validate (Copy từ LoginRegis)
 function validatePassword(password) {
   const minLength = /.{8,}/;
@@ -60,7 +62,7 @@ const Settings = () => {
     passengerImage: "",
     passengerID: "",
   });
-
+  useEffect(() => {});
   // State cho Password
   const [passwords, setPasswords] = useState({
     currentPassword: "",
@@ -139,6 +141,7 @@ const Settings = () => {
     if (file) {
       try {
         const base64 = await convertFileToBase64(file);
+
         // Cập nhật state để hiển thị preview ngay lập tức
         setProfile({ ...profile, passengerImage: base64 });
       } catch (error) {
@@ -288,28 +291,8 @@ const Settings = () => {
             <form onSubmit={handleSaveProfile} className="profile-form">
               {/* Avatar Upload */}
               <div className="avatar-section">
-                <div className="avatar-wrapper">
-                  <img
-                    src={
-                      profile.passengerImage ||
-                      "https://via.placeholder.com/150"
-                    }
-                    alt="Avatar"
-                    className="avatar-img"
-                  />
-                  <label htmlFor="avatar-upload" className="avatar-edit-btn">
-                    <Camera size={20} />
-                  </label>
-                  <input
-                    type="file"
-                    id="avatar-upload"
-                    hidden
-                    accept="image/*"
-                    onChange={handleAvatarChange}
-                  />
-                </div>
                 <div className="avatar-info">
-                  <p className="user-id">ID: {profile.passengerID}</p>
+                  <p className="user-id">ID: {passengerID}</p>
                   <span className="role-badge">Hành khách</span>
                 </div>
               </div>
@@ -522,7 +505,13 @@ const Settings = () => {
             animate={{ opacity: 1, x: 0 }}
             className="about-section"
           >
-            <div className="app-logo-large">✈️</div>
+            <div className="app-logo-large">
+              <img
+                src={airplaneIcon}
+                alt="FlightHK Logo"
+                className="sidebar-logo-img"
+              ></img>
+            </div>
             <h2>Flight Management System</h2>
             <p className="version">Version 1.0.0 (Beta)</p>
             <p className="description">

@@ -159,7 +159,7 @@ const DashboardOverview = () => {
 
   return (
     <div className="glass-panel fade-in overview-panel">
-      <h2 className="welcome-text">Xin chào, Staff Manager! 👋</h2>
+      <h2 className="welcome-text">Xin chào, Staff Manager!</h2>
       <p className="sub-text">
         Cập nhật tình hình vận hành dựa trên cơ sở dữ liệu mới nhất.
       </p>

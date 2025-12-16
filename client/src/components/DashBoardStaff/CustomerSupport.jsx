@@ -14,18 +14,17 @@ import {
 } from "lucide-react";
 import { useSocket } from "../../context/SocketContext";
 
-import io from "socket.io-client";
 import axios from "axios";
 import "./CustomerSupport.css";
 import "../../pages/StaffDashboard.css";
-
-const { socket } = useSocket;
-
+const API_URL = "http://localhost:3001";
 const CustomerSupport = () => {
+  const { socket } = useSocket();
+
   const [currentStaff, setCurrentStaff] = useState(null);
   useEffect(() => {
-    const staffStr = localStorage.getItem("userData");
-    console.log("🛠️ Checking localStorage 'userData':", staffStr); // DEBUG LOG
+    const staffStr = localStorage.getItem("staffData");
+    console.log("Checking localStorage 'userData':", staffStr); // DEBUG LOG
     if (staffStr) {
       try {
         const staff = JSON.parse(staffStr);
@@ -47,14 +46,14 @@ const CustomerSupport = () => {
 
   useEffect(() => {
     if (!currentStaff) {
-      console.log("⏳ Chờ thông tin Staff...");
+      console.log(" Chờ thông tin Staff...");
       return;
     }
     const fetchConversations = async () => {
-      console.log("🚀 Bắt đầu gọi API lấy danh sách hội thoại...");
+      console.log(" Bắt đầu gọi API lấy danh sách hội thoại...");
       try {
         const res = await axios.get(`${API_URL}/api/messages/conversations`);
-        console.log("✅ API Conversations Data:", res.data); // DEBUG LOG
+        console.log(" API Conversations Data:", res.data); // DEBUG LOG
         if (Array.isArray(res.data)) {
           const formattedUsers = res.data.map((conv) => ({
             id: conv.passengerID,
@@ -114,6 +113,7 @@ const CustomerSupport = () => {
 
   // --- 3. LẮNG NGHE TIN NHẮN MỚI ---
   useEffect(() => {
+    if (!socket) return;
     const handleReceiveMessage = (data) => {
       if (selectedUser && data.passengerID === selectedUser.id) {
         const newMsg = {
@@ -134,7 +134,7 @@ const CustomerSupport = () => {
 
     socket.on("receive_message", handleReceiveMessage);
     return () => socket.off("receive_message", handleReceiveMessage);
-  }, [selectedUser]);
+  }, [selectedUser, socket]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
