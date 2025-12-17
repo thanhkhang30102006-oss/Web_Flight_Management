@@ -3,7 +3,6 @@ import {
   User,
   Lock,
   Info,
-  Camera,
   Save,
   Github,
   Mail,
@@ -14,14 +13,16 @@ import {
   Loader2,
   Check,
   Circle,
+  Edit,
 } from "lucide-react";
 import toast, { Toaster } from "react-hot-toast";
 
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import "./Settings.css";
+import { useNavigate } from "react-router-dom";
 import airplaneIcon from "../../assets/Image/airplane-plane-flight-white.svg";
-const API_BASE_URL = "http://localhost:3001/api/user/";
+const API_BASE_URL = "http://localhost:3001/api/user/setting";
 const userData = localStorage.getItem("userData");
 const loggedInUser = userData ? JSON.parse(userData) : null;
 const passengerID = loggedInUser.id;
@@ -49,9 +50,11 @@ function validatePassword(password) {
 }
 
 const Settings = () => {
+  const navigate = useNavigate();
   const { t } = useTranslation();
   const [activeSection, setActiveSection] = useState("profile");
   const [loading, setLoading] = useState(false);
+  const [isPressChange, setPressChange] = useState(false);
   const [fetching, setFetching] = useState(true);
   // State cho Profile
   const [profile, setProfile] = useState({
@@ -61,7 +64,6 @@ const Settings = () => {
     passengerPassport: "",
     passengerNationality: "",
     passengerGender: true,
-    passengerImage: "",
     passengerID: "",
   });
   useEffect(() => {});
@@ -86,7 +88,7 @@ const Settings = () => {
         const token = localStorage.getItem("accessToken");
         if (!token) return;
 
-        const response = await fetch(`${API_BASE_URL}/profile`, {
+        const response = await fetch(`${API_BASE_URL}/profile/${passengerID}`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -129,55 +131,35 @@ const Settings = () => {
     }
   };
 
-  // Helper chuyển file sang Base64 để gửi lên server (Vì Controller nhận String)
-  const convertFileToBase64 = (file) => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = (error) => reject(error);
-    });
-  };
-  const handleAvatarChange = async (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      try {
-        const base64 = await convertFileToBase64(file);
-
-        // Cập nhật state để hiển thị preview ngay lập tức
-        setProfile({ ...profile, passengerImage: base64 });
-      } catch (error) {
-        alert("Lỗi khi đọc file ảnh");
-      }
-    }
-  };
-
   const handleSaveProfile = async (e) => {
     e.preventDefault();
     setLoading(true);
     const token = localStorage.getItem("accessToken");
 
     try {
-      const response = await fetch(`${API_BASE_URL}/update-profile`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          passengerName: profile.passengerName,
-          passengerGender: profile.passengerGender,
-          passengerNationality: profile.passengerNationality,
-          passengerEmail: profile.passengerEmail,
-          passengerPassport: profile.passengerPassport,
-          passengerMobile: profile.passengerMobile,
-          passengerImage: profile.passengerImage, // Gửi chuỗi Base64
-        }),
-      });
+      const response = await fetch(
+        `${API_BASE_URL}/update-profile/${passengerID}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            passengerName: profile.passengerName,
+            passengerGender: profile.passengerGender,
+            passengerNationality: profile.passengerNationality,
+            passengerEmail: profile.passengerEmail,
+            passengerPassport: profile.passengerPassport,
+            passengerMobile: profile.passengerMobile,
+          }),
+        }
+      );
 
       const result = await response.json();
       if (response.ok && result.success) {
         toast.success("Cập nhật thông tin thành công!");
+        setPressChange(false);
         // Cập nhật lại state với dữ liệu mới từ server trả về (để đồng bộ)
         setProfile(result.data);
       } else {
@@ -206,17 +188,20 @@ const Settings = () => {
 
     const token = localStorage.getItem("accessToken");
     try {
-      const response = await fetch(`${API_BASE_URL}/change-password`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          currentPassword: passwords.currentPassword,
-          newPassword: passwords.newPassword,
-        }),
-      });
+      const response = await fetch(
+        `${API_BASE_URL}/change-password/${passengerID}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            currentPassword: passwords.currentPassword,
+            newPassword: passwords.newPassword,
+          }),
+        }
+      );
 
       const result = await response.json();
       if (response.ok && result.success) {
@@ -235,6 +220,7 @@ const Settings = () => {
           special: false,
           isValid: false,
         });
+        navigate("/loginsignup");
       } else {
         toast.error(result.message || "Đổi mật khẩu thất bại!");
       }
@@ -310,6 +296,7 @@ const Settings = () => {
                     value={profile.passengerName || ""}
                     onChange={handleProfileChange}
                     required
+                    disabled={!isPressChange}
                   />
                 </div>
                 <div className="input-group">
@@ -322,6 +309,7 @@ const Settings = () => {
                     value={profile.passengerEmail || ""}
                     onChange={handleProfileChange}
                     required
+                    disabled={!isPressChange}
                   />
                 </div>
                 <div className="input-group">
@@ -334,6 +322,7 @@ const Settings = () => {
                     value={profile.passengerMobile || ""}
                     onChange={handleProfileChange}
                     required
+                    disabled={!isPressChange}
                   />
                 </div>
                 <div className="input-group">
@@ -346,6 +335,7 @@ const Settings = () => {
                     value={profile.passengerPassport || ""}
                     onChange={handleProfileChange}
                     required
+                    disabled={!isPressChange}
                   />
                 </div>
                 <div className="input-group">
@@ -358,6 +348,7 @@ const Settings = () => {
                     value={profile.passengerNationality || ""}
                     onChange={handleProfileChange}
                     required
+                    disabled={!isPressChange}
                   />
                 </div>
                 <div className="input-group">
@@ -367,6 +358,7 @@ const Settings = () => {
                     name="passengerGender"
                     value={profile.passengerGender ? "true" : "false"}
                     onChange={handleProfileChange}
+                    disabled={!isPressChange}
                   >
                     <option value="true">Nam</option>
                     <option value="false">Nữ</option>
@@ -374,14 +366,50 @@ const Settings = () => {
                 </div>
               </div>
 
-              <button type="submit" className="save-btn" disabled={loading}>
-                {loading ? (
-                  <Loader2 className="animate-spin" size={18} />
+              <div className="form-actions" style={{ marginTop: "20px" }}>
+                {!isPressChange ? (
+                  <button
+                    type="button"
+                    className="save-btn"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setPressChange(true);
+                    }}
+                  >
+                    <Edit size={18} /> Thay đổi thông tin
+                  </button>
                 ) : (
-                  <Save size={18} />
+                  <div style={{ display: "flex", gap: "10px" }}>
+                    <button
+                      type="submit"
+                      className="save-btn"
+                      disabled={loading}
+                    >
+                      {loading ? (
+                        <Loader2 className="animate-spin" size={18} />
+                      ) : (
+                        <Save size={18} />
+                      )}
+                      {loading ? " Đang lưu..." : " Lưu thay đổi"}
+                    </button>
+
+                    {/** Nút Hủy không thay đổi thông tin nữa */}
+                    <button
+                      type="button"
+                      className="save-btn"
+                      style={{
+                        background: "rgba(255,255,255,0.1)",
+                        border: "1px solid rgba(255,255,255,0.2)",
+                      }}
+                      onClick={() => {
+                        setPressChange(false);
+                      }}
+                    >
+                      Hủy
+                    </button>
+                  </div>
                 )}
-                {loading ? " Đang lưu..." : " Lưu thay đổi"}
-              </button>
+              </div>
             </form>
           </motion.div>
         )}

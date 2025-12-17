@@ -1,14 +1,25 @@
 const express = require("express");
 const router = express.Router();
-const passengerController = require("../controllers/PassengerController"); 
-
+const passengerController = require("../controllers/PassengerController");
+const authMiddleware = require("../middleware");
 // API Lấy thông tin
-router.get("/profile", authMiddleware.verifyToken, passengerController.getPassengerProfile);
+router.get(
+  "/profile/:passengerID",
+  authMiddleware,
+  passengerController.getPassengerProfile
+);
 
-// API Cập nhật thông tin (bao gồm cả Avatar dạng base64/url)
-router.put("/update-profile", authMiddleware.verifyToken, passengerController.updatePassengerProfile);
+router.put(
+  "/update-profile/:passengerID",
+  authMiddleware,
+  passengerController.updatePassengerProfile
+);
 
 // API Đổi mật khẩu
-router.put("/change-password", authMiddleware.verifyToken, passengerController.changePassengerPassword);
+router.put(
+  "/change-password/:passengerID",
+  authMiddleware,
+  passengerController.changePassengerPassword
+);
 
 module.exports = router;

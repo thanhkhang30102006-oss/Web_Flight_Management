@@ -15,89 +15,131 @@ import {
   AlertCircle,
 } from "lucide-react";
 import "./MyTrips.css";
-
-// --- MOCK DATA (Dữ liệu giả lập để test giao diện) ---
-const MOCK_MY_TRIPS = [
-  {
-    ticketID: "TKT-VN123456",
-    flightNumber: "VN-192",
-    departurePoint: "SGN",
-    arrivePoint: "HAN",
-    departureDate: "2025-12-20",
-    departureTime: "08:30",
-    arriveDate: "2025-12-21",
-    arriveTime: "00:30",
-    seatNumber: "12A",
-    class: "Phổ thông",
-    price: 2500000,
-    status: "valid", // valid, cancelled, completed
-    passengerName: "Phan Thanh Khang",
-  },
-  {
-    ticketID: "TKT-VN123496",
-    flightNumber: "VN-192",
-    departurePoint: "SGN",
-    arrivePoint: "HAN",
-    departureDate: "2025-12-20",
-    departureTime: "08:30",
-    arriveDate: "2025-12-21",
-    arriveTime: "00:30",
-    seatNumber: "12A",
-    class: "Phổ thông",
-    price: 2500000,
-    status: "valid", // valid, cancelled, completed
-    passengerName: "Phan Thanh Khang",
-  },
-  {
-    ticketID: "TKT-VN153456",
-    flightNumber: "VN-192",
-    departurePoint: "SGN",
-    arrivePoint: "HAN",
-    departureDate: "2025-12-20",
-    departureTime: "08:30",
-    arriveDate: "2025-12-21",
-    arriveTime: "00:30",
-    seatNumber: "12A",
-    class: "Phổ thông",
-    price: 2500000,
-    status: "valid", // valid, cancelled, completed
-    passengerName: "Phan Thanh Khang",
-  },
-  {
-    ticketID: "TKT-VN123756",
-    flightNumber: "VN-192",
-    departurePoint: "SGN",
-    arrivePoint: "HAN",
-    departureDate: "2025-12-20",
-    departureTime: "08:30",
-    arriveDate: "2025-12-21",
-    arriveTime: "00:30",
-    seatNumber: "12A",
-    class: "Phổ thông",
-    price: 2500000,
-    status: "valid",
-    passengerName: "Phan Thanh Khang",
-  },
-];
+import { useNavigate } from "react-router-dom";
+const userData = localStorage.getItem("userData");
+const loggedInUser = userData ? JSON.parse(userData) : null;
+const passengerID = loggedInUser.id;
 
 const MyTrips = () => {
   const [searchTerm, setSearchTerm] = useState("");
+  const [filterStatus, setFilterStatus] = useState("all");
   const [selectedTrip, setSelectedTrip] = useState(null);
-  const [trips, setTrips] = useState(MOCK_MY_TRIPS);
+  const [flight, setFlight] = useState([]);
+  const [trips, setTrips] = useState([]);
+  const navigate = useNavigate();
+  useEffect(() => {
+    const getInfoFromPassenger = async () => {
+      try {
+        const token = localStorage.getItem("accessToken");
+        if (!token) return;
 
+        const response = await fetch(
+          `api/user/mytrip/getflight/${passengerID}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        const result = await response.json();
+        if (result.success) {
+          const groups = {};
+
+          result.tickets.forEach((ticket) => {
+            const pID = ticket.paymentID;
+
+            if (!groups[pID]) {
+              const paymentInfo = result.payments.find(
+                (p) => p.paymentID === pID
+              );
+              groups[pID] = {
+                paymentID: pID,
+                totalPrice: paymentInfo ? paymentInfo.paymentPrice : 0,
+                status: paymentInfo.paymentState,
+                tickets: [],
+              };
+            }
+
+            const flightInfo = result.flights.find(
+              (f) => f.flightNumber === ticket.flightNumber
+            );
+            const seatInfo = result.seats.find(
+              (s) => s.seatNumber === ticket.seatNumber
+            );
+
+            const ticketDetail = {
+              ticketID: ticket.ticketID,
+              flightNumber: ticket.flightNumber,
+              departurePoint: flightInfo?.departurePoint,
+              arrivePoint: flightInfo?.arrivePoint,
+              departureDay: flightInfo?.departureDay,
+              departureTime: flightInfo?.departureTime,
+              seatNumber: ticket.seatNumber.replace(ticket.flightNumber, ""),
+              class: seatInfo?.seatType,
+              passengerName: result.passenger?.passengerName || "Khách",
+              status: ticket.ticketState,
+              arriveDay: flightInfo?.arriveDay,
+              arriveTime: flightInfo?.arriveTime,
+              state: seatInfo?.seatState,
+            };
+
+            // Đẩy vé vào nhóm
+            groups[pID].tickets.push(ticketDetail);
+          });
+
+          const groupedArray = Object.values(groups).sort(
+            (a, b) => b.paymentID - a.paymentID
+          );
+
+          setTrips(groupedArray);
+        } else {
+          setTrips([]);
+          console.error("Lỗi lấy thông tin:", result.message);
+        }
+      } catch (error) {
+        console.error("Lỗi kết nối server:", error);
+      } finally {
+      }
+    };
+    getInfoFromPassenger();
+  }, []);
   // Filter logic
-  const filteredTrips = trips.filter(
-    (trip) =>
-      trip.flightNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      trip.departurePoint.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      trip.arrivePoint.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      trip.departureDate.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  console.log(flight);
+  const filteredTrips = trips.filter((trip) => {
+    if (!trip.tickets || trip.tickets.length === 0) return false;
 
+    const term = searchTerm.toLowerCase();
+
+    return trip.tickets.some((ticket) => {
+      return (
+        (ticket.flightNumber?.toLowerCase() || "").includes(term) ||
+        (ticket.departurePoint?.toLowerCase() || "").includes(term) ||
+        (ticket.arrivePoint?.toLowerCase() || "").includes(term) ||
+        (ticket.departureDay?.toLowerCase() || "").includes(term) ||
+        (ticket.departureTime?.toLowerCase() || "").includes(term)
+      );
+    });
+  });
   // --- ACTIONS HANDLERS (Logic điều hướng) ---
   const handleChangeSeat = (trip) => {
     if (trip.status !== "valid") return alert("Vé này không thể đổi ghế!");
     // Logic: Navigate to SeatMap with ticketID
+    navigate("/seat-change", {
+      state: {
+        ticket: {
+          ticketID: trip.ticketID,
+          flightNumber: trip.flightNumber,
+          seatNumber: trip.seatNumber,
+          class: trip.class,
+          departurePoint: trip.departurePoint,
+          arrivePoint: trip.arrivePoint,
+          state: trip.state,
+        },
+      },
+    });
     console.log("Điều hướng đến trang đổi ghế cho:", trip.ticketID);
     alert(
       `Đang chuyển đến sơ đồ ghế chuyến ${trip.flightNumber} để đổi ghế...`
@@ -148,41 +190,95 @@ const MyTrips = () => {
       </div>
 
       {/* 2. TRIP LIST (GRID) */}
-      <div className="trips-grid animate-fade-in">
+
+      <div className="trips-container">
         {filteredTrips.length > 0 ? (
-          filteredTrips.map((trip) => (
-            <motion.div
-              key={trip.ticketID}
-              className={`trip-card glass-panel ${trip.status}`}
-              whileHover={{ scale: 1.01, y: -5 }}
-              onClick={() => setSelectedTrip(trip)}
+          filteredTrips.map((group) => (
+            <div
+              key={group.paymentID}
+              className="payment-group-section"
+              style={{ marginBottom: "30px" }}
             >
-              <div className="card-top">
-                <div className="route">
-                  <span className="code">{trip.departurePoint}</span>
-                  <Plane className="plane-icon" size={16} />
-                  <span className="code">{trip.arrivePoint}</span>
+              <div
+                className="payment-header"
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  background: "rgba(255, 255, 255, 0.9)",
+                  padding: "12px 20px",
+                  borderRadius: "12px",
+                  marginBottom: "15px",
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+                  borderLeft: "4px solid #007bff",
+                }}
+              >
+                <div style={{ display: "flex", flexDirection: "column" }}>
+                  <span
+                    style={{
+                      fontSize: "14px",
+                      fontWeight: "bold",
+                      color: "#333",
+                    }}
+                  >
+                    Đơn hàng #{group.paymentID}
+                  </span>
+                  <span style={{ fontSize: "12px", color: "#666" }}>
+                    {group.tickets.length} vé •{" "}
+                    {group.status === "valid" ? "Đã thanh toán" : group.status}
+                  </span>
                 </div>
-                <span className={`status-badge ${trip.status}`}>
-                  {trip.status === "valid"
-                    ? "Sắp khởi hành"
-                    : trip.status === "completed"
-                    ? "Đã hoàn thành"
-                    : "Đã hủy"}
-                </span>
+
+                <div style={{ textAlign: "right" }}>
+                  <span
+                    style={{
+                      fontSize: "12px",
+                      color: "#888",
+                      display: "block",
+                    }}
+                  >
+                    Tổng cộng
+                  </span>
+                  {/* Thêm check an toàn cho tổng tiền */}
+                  <strong style={{ fontSize: "18px", color: "#d32f2f" }}>
+                    {(group.totalPrice || 0).toLocaleString()} VND
+                  </strong>
+                </div>
               </div>
-              <div className="card-body">
-                <div className="info-row">
-                  <Calendar size={14} /> {trip.departureDate}
-                </div>
-                <div className="info-row">
-                  <Clock size={14} /> {trip.departureTime}
-                </div>
-                <div className="info-row flight-num">
-                  <Ticket size={14} /> {trip.flightNumber}
-                </div>
+
+              <div className="trips-grid animate-fade-in">
+                {group.tickets.map((trip) => (
+                  <motion.div
+                    key={trip.ticketID}
+                    className={`trip-card glass-panel ${trip.status}`}
+                    whileHover={{ scale: 1.01, y: -5 }}
+                    onClick={() => setSelectedTrip(trip)}
+                  >
+                    <div className="card-top">
+                      <div className="route">
+                        <span className="code">{trip.departurePoint}</span>
+                        <Plane className="plane-icon" size={16} />
+                        <span className="code">{trip.arrivePoint}</span>
+                      </div>
+                      <span className={`status-badge ${trip.status}`}>
+                        {trip.status === "valid" ? "Sắp khởi hành" : "Đã hủy"}
+                      </span>
+                    </div>
+                    <div className="card-body">
+                      <div className="info-row">
+                        <Calendar size={14} /> {trip.departureDay}
+                      </div>
+                      <div className="info-row">
+                        <Clock size={14} /> {trip.departureTime}
+                      </div>
+                      <div className="info-row flight-num">
+                        <Ticket size={14} /> {trip.flightNumber}
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
               </div>
-            </motion.div>
+            </div>
           ))
         ) : (
           <div className="empty-state">
@@ -190,182 +286,165 @@ const MyTrips = () => {
             <p>Không tìm thấy chuyến bay nào.</p>
           </div>
         )}
-      </div>
-
-      {/* 3. DETAIL MODAL (Overlay) */}
-      <AnimatePresence>
-        {selectedTrip && (
-          <motion.div
-            className="trip-detail-overlay"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setSelectedTrip(null)}
-          >
+        {/* 3. DETAIL MODAL (Overlay) */}
+        <AnimatePresence>
+          {selectedTrip && (
             <motion.div
-              className="trip-detail-modal glass-panel"
-              initial={{ y: 50, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: 50, opacity: 0 }}
-              onClick={(e) => e.stopPropagation()} // Prevent close when clicking content
+              className="trip-detail-overlay"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setSelectedTrip(null)}
             >
-              <button
-                className="close-btn"
-                onClick={() => setSelectedTrip(null)}
+              <motion.div
+                className="trip-detail-modal glass-panel"
+                initial={{ y: 50, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: 50, opacity: 0 }}
+                onClick={(e) => e.stopPropagation()} // Prevent close when clicking content
               >
-                <XCircle size={24} />
-              </button>
+                <button
+                  className="close-btn"
+                  onClick={() => setSelectedTrip(null)}
+                >
+                  <XCircle size={24} />
+                </button>
 
-              <div className="modal-content-flex">
-                {/* LEFT: TICKET VISUAL (Giống BookSuccess) */}
-                <div className="mytrip-ticket-visual-wrapper">
-                  <h3>Chi tiết vé điện tử</h3>
-                  <div
-                    className={`mytrip-ticket-visual ${selectedTrip.status}`}
-                  >
-                    <div className="mytrip-ticket-header">
-                      <div className="brand">FlightHK</div>
-                      <div className="flight-id">
-                        {selectedTrip.flightNumber}
+                <div className="modal-content-flex">
+                  {/* LEFT: TICKET VISUAL (Giống BookSuccess) */}
+                  <div className="mytrip-ticket-visual-wrapper">
+                    <h3>Chi tiết vé điện tử</h3>
+                    <div
+                      className={`mytrip-ticket-visual ${selectedTrip.status}`}
+                    >
+                      <div className="mytrip-ticket-header">
+                        <div className="brand">FlightHK</div>
+                        <div className="flight-id">
+                          {selectedTrip.flightNumber}
+                        </div>
                       </div>
+                      <div className="mytrip-ticket-body">
+                        <div className="point">
+                          <span className="city">
+                            {selectedTrip.departurePoint}
+                          </span>
+                          <span className="time">
+                            {selectedTrip.departureTime}
+                          </span>
+                          <span className="date">
+                            {selectedTrip.departureDay}
+                          </span>
+                        </div>
+                        <div className="path">
+                          <div className="line"></div>
+                        </div>
+                        <div className="point right">
+                          <span className="city">
+                            {selectedTrip.arrivePoint}
+                          </span>
+                          <span className="time">
+                            {selectedTrip.arriveTime}
+                          </span>
+                          <span className="date">{selectedTrip.arriveDay}</span>
+                        </div>
+                      </div>
+                      <div className="mytrip-ticket-footer">
+                        <div className="item">
+                          <span className="label">Hành khách</span>
+                          <span className="value">
+                            {selectedTrip.passengerName}
+                          </span>
+                        </div>
+                        <div className="item">
+                          <span className="label">Ghế</span>
+                          <span className="value">
+                            {selectedTrip.seatNumber}
+                          </span>
+                        </div>
+                        <div className="item">
+                          <span className="label">Hạng</span>
+                          <span className="value">{selectedTrip.class}</span>
+                        </div>
+                      </div>
+                      {/* Notches */}
+                      <div className="mytrip-notch left"></div>
+                      <div className="mytrip-notch right"></div>
+                      {/* Watermark nếu đã hủy */}
+                      {selectedTrip.status === "cancelled" && (
+                        <div className="watermark">ĐÃ HỦY</div>
+                      )}
                     </div>
-                    <div className="mytrip-ticket-body">
-                      <div className="point">
-                        <span className="city">
-                          {selectedTrip.departurePoint}
-                        </span>
-                        <span className="time">
-                          {selectedTrip.departureTime}
-                        </span>
-                        <span className="date">
-                          {selectedTrip.departureDate}
-                        </span>
-                      </div>
-                      <div className="path">
-                        <div className="line"></div>
-                      </div>
-                      <div className="point right">
-                        <span className="city">{selectedTrip.arrivePoint}</span>
-                        <span className="time">{selectedTrip.arriveTime}</span>
-                        <span className="date">{selectedTrip.arriveDate}</span>
-                      </div>
-                    </div>
-                    <div className="mytrip-ticket-footer">
-                      <div className="item">
-                        <span className="label">Hành khách</span>
-                        <span className="value">
-                          {selectedTrip.passengerName}
-                        </span>
-                      </div>
-                      <div className="item">
-                        <span className="label">Ghế</span>
-                        <span className="value">{selectedTrip.seatNumber}</span>
-                      </div>
-                      <div className="item">
-                        <span className="label">Hạng</span>
-                        <span className="value">{selectedTrip.class}</span>
-                      </div>
-                    </div>
-                    {/* Notches */}
-                    <div className="mytrip-notch left"></div>
-                    <div className="mytrip-notch right"></div>
-                    {/* Watermark nếu đã hủy */}
-                    {selectedTrip.status === "cancelled" && (
-                      <div className="watermark">ĐÃ HỦY</div>
-                    )}
-                  </div>
-                </div>
-
-                {/* RIGHT: MANAGE ACTIONS */}
-                <div className="manage-actions-wrapper">
-                  <h3>Quản lý đặt chỗ</h3>
-                  <div className="actions-list">
-                    {/* Chỉ hiển thị nút thao tác nếu vé còn Valid */}
-                    {selectedTrip.status === "valid" ? (
-                      <>
-                        <button
-                          className="action-btn glass-btn"
-                          onClick={() => handleChangeSeat(selectedTrip)}
-                        >
-                          <div className="icon-box blue">
-                            <Armchair size={20} />
-                          </div>
-                          <div className="text-box">
-                            <span className="title">Đổi chỗ ngồi</span>
-                            <span className="desc">
-                              Chọn lại ghế trống khác
-                            </span>
-                          </div>
-                          <ArrowRight size={16} className="arrow" />
-                        </button>
-
-                        <button
-                          className="action-btn glass-btn"
-                          onClick={() => handleChangeFlight(selectedTrip)}
-                        >
-                          <div className="icon-box purple">
-                            <RefreshCw size={20} />
-                          </div>
-                          <div className="text-box">
-                            <span className="title">Đổi chuyến bay</span>
-                            <span className="desc">
-                              Thay đổi ngày hoặc giờ bay
-                            </span>
-                          </div>
-                          <ArrowRight size={16} className="arrow" />
-                        </button>
-
-                        <div className="divider"></div>
-
-                        <button
-                          className="action-btn glass-btn danger"
-                          onClick={() => handleCancelTicket(selectedTrip)}
-                        >
-                          <div className="icon-box red">
-                            <XCircle size={20} />
-                          </div>
-                          <div className="text-box">
-                            <span className="title">Hủy vé & Hoàn tiền</span>
-                            <span className="desc">
-                              Áp dụng theo chính sách vé
-                            </span>
-                          </div>
-                        </button>
-                      </>
-                    ) : (
-                      <div className="status-message">
-                        <AlertCircle size={32} />
-                        <p>
-                          Vé này đã{" "}
-                          {selectedTrip.status === "completed"
-                            ? "hoàn thành"
-                            : "bị hủy"}
-                          .<br />
-                          Không thể thực hiện thay đổi.
-                        </p>
-                      </div>
-                    )}
                   </div>
 
-                  {/* Summary Info */}
-                  <div className="trip-summary-box">
-                    <div className="row">
-                      <span>Mã đặt chỗ:</span>{" "}
-                      <strong>{selectedTrip.ticketID}</strong>
+                  {/* RIGHT: MANAGE ACTIONS */}
+                  <div className="manage-actions-wrapper">
+                    <h3>Quản lý đặt chỗ</h3>
+                    <div className="actions-list">
+                      {/* Chỉ hiển thị nút thao tác nếu vé còn Valid */}
+                      {selectedTrip.status === "valid" ? (
+                        <>
+                          <button
+                            className="action-btn glass-btn"
+                            onClick={() => handleChangeSeat(selectedTrip)}
+                          >
+                            <div className="icon-box blue">
+                              <Armchair size={20} />
+                            </div>
+                            <div className="text-box">
+                              <span className="title">Đổi chỗ ngồi</span>
+                              <span className="desc">
+                                Chọn lại ghế trống khác
+                              </span>
+                            </div>
+                            <ArrowRight size={16} className="arrow" />
+                          </button>
+
+                          <div className="divider"></div>
+
+                          <button
+                            className="action-btn glass-btn danger"
+                            onClick={() => handleCancelTicket(selectedTrip)}
+                          >
+                            <div className="icon-box red">
+                              <XCircle size={20} />
+                            </div>
+                            <div className="text-box">
+                              <span className="title">Hủy vé & Hoàn tiền</span>
+                              <span className="desc">
+                                Áp dụng theo chính sách vé
+                              </span>
+                            </div>
+                          </button>
+                        </>
+                      ) : (
+                        <div className="status-message">
+                          <AlertCircle size={32} />
+                          <p>
+                            Vé này đã{" "}
+                            {selectedTrip.status === "completed"
+                              ? "hoàn thành"
+                              : "bị hủy"}
+                            .<br />
+                            Không thể thực hiện thay đổi.
+                          </p>
+                        </div>
+                      )}
                     </div>
-                    <div className="row">
-                      <span>Tổng tiền:</span>
-                      <strong className="price">
-                        {selectedTrip.price.toLocaleString()} VND
-                      </strong>
+
+                    {/* Summary Info */}
+                    <div className="trip-summary-box">
+                      <div className="row">
+                        <span>Mã đặt chỗ:</span>{" "}
+                        <strong>{selectedTrip.ticketID}</strong>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          )}
+        </AnimatePresence>
+      </div>
     </div>
   );
 };

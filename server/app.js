@@ -253,4 +253,9 @@ if (!global.lockedSeats) {
 const messageRouter = require("./routes/messageRoutes");
 app.use("/api/messages", messageRouter);
 
+const passengerRouter = require("./routes/passenger");
+app.use("/api/user/setting", passengerRouter);
+
+const tripRouter = require("./routes/tripRoutes");
+app.use("/api/user/mytrip", tripRouter);
 module.exports = app;

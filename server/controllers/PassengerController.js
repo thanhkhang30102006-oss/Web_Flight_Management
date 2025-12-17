@@ -138,18 +138,19 @@ const loginUser = async (req, res) => {
   }
 };
 
-
 // Setting update thong tin
 const getPassengerProfile = async (req, res) => {
   try {
     // req.user lấy từ middleware xác thực token (bạn cần đảm bảo đã có middleware này)
-    const userId = req.user.id; 
-    const passenger = await Passenger.findByPk(userId, {
-      attributes: { exclude: ['passengerPassword'] } // Không trả về password
+    const { passengerID } = req.params;
+    const passenger = await Passenger.findByPk(passengerID, {
+      attributes: { exclude: ["passengerPassword"] },
     });
 
     if (!passenger) {
-      return res.status(404).json({ success: false, message: "Không tìm thấy người dùng" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Không tìm thấy người dùng" });
     }
 
     res.status(200).json({ success: true, data: passenger });
@@ -161,33 +162,45 @@ const getPassengerProfile = async (req, res) => {
 // 2. Cập nhật thông tin & Avatar (Update Profile)
 const updatePassengerProfile = async (req, res) => {
   try {
-    const userId = req.user.id;
-    const { 
-      passengerName, 
-      passengerGender, 
-      passengerNationality, 
-      passengerPassport, 
+    const { passengerID } = req.params;
+    const {
+      passengerName,
+      passengerGender,
+      passengerNationality,
+      passengerPassport,
       passengerMobile,
-      passengerImage 
+      passengerImage,
     } = req.body;
 
-    const passenger = await Passenger.findByPk(userId);
-    if (!passenger) return res.status(404).json({ success: false, message: "Lỗi người dùng" });
+    const passenger = await Passenger.findByPk(passengerID);
+    if (!passenger)
+      return res
+        .status(404)
+        .json({ success: false, message: "Lỗi người dùng" });
 
     // Cập nhật các trường
     passenger.passengerName = passengerName || passenger.passengerName;
-    passenger.passengerGender = passengerGender !== undefined ? passengerGender : passenger.passengerGender;
-    passenger.passengerNationality = passengerNationality || passenger.passengerNationality;
-    passenger.passengerPassport = passengerPassport || passenger.passengerPassport;
+    passenger.passengerGender =
+      passengerGender !== undefined
+        ? passengerGender
+        : passenger.passengerGender;
+    passenger.passengerNationality =
+      passengerNationality || passenger.passengerNationality;
+    passenger.passengerPassport =
+      passengerPassport || passenger.passengerPassport;
     passenger.passengerMobile = passengerMobile || passenger.passengerMobile;
-    
+
     if (passengerImage) {
-        passenger.passengerImage = passengerImage;
+      passenger.passengerImage = passengerImage;
     }
 
     await passenger.save();
 
-    res.status(200).json({ success: true, message: "Cập nhật thông tin thành công", data: passenger });
+    res.status(200).json({
+      success: true,
+      message: "Cập nhật thông tin thành công",
+      data: passenger,
+    });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -196,16 +209,22 @@ const updatePassengerProfile = async (req, res) => {
 // 3. Đổi mật khẩu (Change Password)
 const changePassengerPassword = async (req, res) => {
   try {
-    const userId = req.user.id;
+    const { passengerID } = req.params;
     const { currentPassword, newPassword } = req.body;
 
-    const passenger = await Passenger.findByPk(userId);
-    if (!passenger) return res.status(404).json({ success: false, message: "Lỗi xác thực" });
+    const passenger = await Passenger.findByPk(passengerID);
+    if (!passenger)
+      return res.status(404).json({ success: false, message: "Lỗi xác thực" });
 
     // Kiểm tra mật khẩu cũ
-    const isMatch = await bcrypt.compare(currentPassword, passenger.passengerPassword);
+    const isMatch = await bcrypt.compare(
+      currentPassword,
+      passenger.passengerPassword
+    );
     if (!isMatch) {
-      return res.status(400).json({ success: false, message: "Mật khẩu hiện tại không đúng" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Mật khẩu hiện tại không đúng" });
     }
 
     // Mã hóa mật khẩu mới
@@ -218,6 +237,25 @@ const changePassengerPassword = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+const logout = (req, res) => {
+  try {
+    res.clearCookie("refreshToken", {
+      httpOnly: true,
+      secure: false,
+      sameSite: "strict",
+      path: "/",
+    });
 
-
-module.exports = { registerInformation, loginUser, getPassengerProfile, updatePassengerProfile, changePassengerPassword };
+    res.status(200).json({ success: true, message: "Đăng xuất thành công" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+module.exports = {
+  registerInformation,
+  loginUser,
+  getPassengerProfile,
+  updatePassengerProfile,
+  changePassengerPassword,
+  logout,
+};
