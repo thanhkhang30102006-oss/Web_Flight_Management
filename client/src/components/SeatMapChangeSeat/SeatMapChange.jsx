@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
 import SeatMap from "../BookingFlight/SeatMap";
@@ -28,13 +28,12 @@ const SeatMapChange = () => {
   const [dbOccupiedSeats, setDbOccupiedSeats] = useState([]);
   const { socket, connectSocket, disconnectSocket } = useSocket();
   const socketRef = useRef(socket);
+  const displaySelections = liveSelections;
   // Lấy thông tin cụ thể của chuyến bay và những ghế đã bán
   useEffect(() => {
     const fetchFlightDetail = async () => {
       if (!ticket?.flightNumber) return;
       try {
-        // Giả sử bạn có API lấy chi tiết chuyến bay theo số hiệu
-        // Nếu không có, bạn cần chỉnh sửa để nhận full object từ MyTrips
         const response = await fetch(
           `http://localhost:3001/api/staff/flightmanagement/hasflight/${ticket.flightNumber}`
         );
@@ -114,14 +113,12 @@ const SeatMapChange = () => {
       }
       disconnectSocket();
     };
-  }, [newSelectedSeat, ticket]);
+  }, []);
 
   const handleSeatClick = (seatId, type) => {
     if (!socket) return;
 
-    // --- LOGIC 1: CHẶN ĐỔI HẠNG ---
-    // So sánh type của ghế mới với class của vé hiện tại
-    // Lưu ý: Cần chuẩn hóa string (ví dụ DB trả về "Economy" nhưng Map trả về "economy")
+    // xác định hạng vé
     const currentClass = ticket.class.toLowerCase();
     const targetClass = type.toLowerCase();
 
@@ -132,7 +129,7 @@ const SeatMapChange = () => {
       return;
     }
 
-    // --- LOGIC 2: KIỂM TRA TRẠNG THÁI ---
+    // Check trạng thái ghế
     const holderId = liveSelections[seatId];
     const myCurrentId = socket.id;
 
@@ -141,18 +138,13 @@ const SeatMapChange = () => {
       return;
     }
 
-    // --- LOGIC 3: TOGGLE (CHỌN/BỎ CHỌN) ---
-    // Nếu click lại ghế đang chọn -> Bỏ chọn
     if (newSelectedSeat?.id === seatId) {
-      socket.emit("selectSeat", { flightId: ticket.flightNumber, seatId }); // Server xử lý logic unlock khi click lại
+      socket.emit("selectSeat", { flightId: ticket.flightNumber, seatId });
       setNewSelectedSeat(null);
       return;
     }
 
-    // Nếu chọn ghế mới -> Unlock ghế cũ (nếu có) trước khi Lock ghế mới
     if (newSelectedSeat) {
-      // Unlock ghế trước đó trên giao diện client (Server socket thường xử lý việc 1 ID chỉ giữ 1 ghế hoặc nhiều ghế tùy logic backend của bạn)
-      // Để an toàn, gửi unlock ghế cũ thủ công hoặc để socket handle việc switch
       socket.emit("unlockSeats", {
         flightId: ticket.flightNumber,
         seats: [newSelectedSeat.id],
@@ -160,12 +152,15 @@ const SeatMapChange = () => {
     }
 
     // Lock ghế mới
-    socket.emit("selectSeat", {
-      flightId: ticket.flightNumber,
-      seatId: seatId,
-    });
 
     setNewSelectedSeat({ id: seatId, type, price: 0 });
+
+    setTimeout(() => {
+      socket.emit("selectSeat", {
+        flightId: ticket.flightNumber,
+        seatId: seatId,
+      });
+    }, 100);
   };
 
   const handleConfirmChange = async () => {
@@ -179,7 +174,7 @@ const SeatMapChange = () => {
     try {
       const token = localStorage.getItem("accessToken");
       const response = await fetch(
-        `http://localhost:3001/api/user/ticket/seat-change`,
+        `http://localhost:3001/api/user/mytrip/ticket/change-seat`,
         {
           method: "POST",
           headers: {
@@ -188,16 +183,17 @@ const SeatMapChange = () => {
           },
           body: JSON.stringify({
             ticketID: ticket.ticketID,
-            newSeatNumber: newSelectedSeat.id, // ID ghế (ví dụ: "12A")
+            newSeatNumber: newSelectedSeat.id,
             flightNumber: ticket.flightNumber,
+            oldseatNumber: ticket.seatNumber,
           }),
         }
       );
 
       const res = await response.json();
-      if (res.success) {
+      if (res.success === "success") {
         alert("Đổi ghế thành công!");
-        navigate("/user/mytrip"); // Quay về trang danh sách
+        navigate("/user");
       } else {
         alert(res.message || "Đổi ghế thất bại");
       }
@@ -210,7 +206,7 @@ const SeatMapChange = () => {
   if (loading || !flightFullInfo)
     return <div className="loading-screen">Đang tải sơ đồ ghế...</div>;
 
-  // Adapter để SeatMap hiển thị đúng (SeatMap nhận mảng selectedSeats)
+  //SeatMap hiển thị đúng
   const selectedSeatsArray = newSelectedSeat ? [newSelectedSeat] : [];
 
   return (

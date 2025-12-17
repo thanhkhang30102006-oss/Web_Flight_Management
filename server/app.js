@@ -96,7 +96,10 @@ io.on("connection", (socket) => {
     }
 
     const currentHolder = seatSelections[flightId][seatId];
-
+    console.log(
+      `[SERVER] SelectSeat | Flight: ${flightId} | Seat: ${seatId} | User: ${socket.id}`
+    );
+    console.log(`[SERVER] Trạng thái trước: ${currentHolder}`);
     if (!currentHolder) {
       seatSelections[flightId][seatId] = socket.id;
     } else if (currentHolder === socket.id) {
@@ -150,7 +153,6 @@ io.on("connection", (socket) => {
       `Yêu cầu mở khóa ghế từ ${socket.id} cho chuyến ${flightId}:`,
       seats
     );
-
     if (!global.lockedSeats) global.lockedSeats = {};
 
     seats.forEach((seatId) => {
@@ -161,6 +163,20 @@ io.on("connection", (socket) => {
         io.to(flightId).emit("seatUnlocked", { seatId });
       }
     });
+
+    if (seatSelections[flightId]) {
+      let hasChange = false;
+      seats.forEach((seatId) => {
+        if (seatSelections[flightId][seatId] === socket.id) {
+          delete seatSelections[flightId][seatId];
+          hasChange = true;
+        }
+      });
+
+      if (hasChange) {
+        io.to(flightId).emit("updateSeatMap", seatSelections[flightId]);
+      }
+    }
   });
   // ----------------- Tin Nhắn -----------------
 
