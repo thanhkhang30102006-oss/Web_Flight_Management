@@ -34,26 +34,47 @@
 }
 .glass-search-bar input::placeholder { color: rgba(255,255,255,0.6); }
 
+
 /* --- TRIP LIST GRID --- */
 .trips-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 20px;
-  overflow-y: auto;
-  padding-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 15px;
 }
 
 .trip-card {
-  padding: 20px;
-  cursor: pointer;
-  transition: all 0.3s;
-  border-left: 4px solid transparent; 
+  padding: 12px 15px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  margin: 0; /* Reset margin */
 }
+.trip-card:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.trip-card .card-top {
+  margin-bottom: 8px;
+  padding-bottom: 8px;
+}
+
+.trip-card .route {
+  font-size: 16px; /* Giảm font xíu cho vừa mắt */
+}
+
+/* Chỉnh lại font giá tiền */
+.price-tag {
+  font-family: "Segoe UI", sans-serif;
+  letter-spacing: 0.5px;
+}
+
 
 
 .trip-card.valid { border-left-color: #4ade80; }
 .trip-card.completed { border-left-color: #9ca3af; opacity: 0.8; }
 .trip-card.cancelled { border-left-color: #ef4444; opacity: 0.6; }
+
 
 .card-top {
   display: flex;
@@ -71,7 +92,7 @@
   font-weight: 700;
   font-size: 18px;
 }
-.plane-icon { color: #60a5fa; transform: rotate(90deg); }
+.plane-icon { color: #ffffff; transform: rotate(0deg);}
 
 .status-badge {
   font-size: 11px;
@@ -80,19 +101,71 @@
   text-transform: uppercase;
   font-weight: 600;
 }
-.status-badge.valid { background: rgba(74, 222, 128, 0.2); color: #4ade80; }
+.status-badge.valid { background: rgba(38, 183, 91, 0.28); color: #4aee86; }
 .status-badge.completed { background: rgba(156, 163, 175, 0.2); color: #d1d5db; }
 .status-badge.cancelled { background: rgba(239, 68, 68, 0.2); color: #fca5a5; }
 
 .card-body .info-row {
-  display: flex;
+  display: inline;
   align-items: center;
   gap: 10px;
   margin-bottom: 8px;
   color: rgba(255,255,255,0.8);
   font-size: 14px;
 }
-.flight-num { font-weight: 600; color: #fbbf24; }
+.info-row.flight-num { display:flex; align-items: center;  margin: 0 auto; justify-content: center;}
+
+
+.trips-container {
+  display: grid;
+  /* Chia thành 3 cột đều nhau */
+  grid-template-columns: repeat(3, 1fr); 
+  gap: 25px;
+  padding-bottom: 40px;
+}
+
+/* Responsive: 2 cột trên tablet, 1 cột trên mobile */
+@media (max-width: 1200px) {
+  .trips-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 768px) {
+  .trips-container {
+    grid-template-columns: 1fr;
+  }
+}
+/* --- PAYMENT GROUP CARD (Gộp Header + List Vé) --- */
+.payment-group-section {
+  background: rgba(255, 255, 255, 0.1); /* Nền kính mờ cho cả khối */
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  border: 2px solid rgb(255, 255, 255, 0.6);
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.45);
+  overflow: hidden; /* Để bo góc hoạt động */
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease-in-out;
+  height: fit-content; /* Ôm theo nội dung */
+}
+
+.payment-group-section:hover {
+  transform: translateY(-5px);
+  scale: 1.02;
+}
+
+/* --- HEADER MỚI (Gọn gàng hơn trong Card) --- */
+.payment-header {
+  background: rgba(255, 255, 255, 0.874); /* Nền trắng nổi bật */
+  padding: 15px 20px;
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0 !important; 
+  border-radius: 0 !important; 
+}
+
 
 /* --- DETAIL MODAL --- */
 .trip-detail-overlay {

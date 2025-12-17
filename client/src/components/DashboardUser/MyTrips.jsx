@@ -224,55 +224,54 @@ const MyTrips = () => {
       <div className="trips-container">
         {filteredTrips.length > 0 ? (
           filteredTrips.map((group) => (
-            <div
-              key={group.paymentID}
-              className="payment-group-section"
-              style={{ marginBottom: "30px" }}
-            >
-              <div
-                className="payment-header"
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  background: "rgba(255, 255, 255, 0.9)",
-                  padding: "12px 20px",
-                  borderRadius: "12px",
-                  marginBottom: "15px",
-                  boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
-                  borderLeft: "4px solid #007bff",
-                }}
-              >
+            <div key={group.paymentID} className="payment-group-section">
+              <div className="payment-header">
                 <div style={{ display: "flex", flexDirection: "column" }}>
                   <span
                     style={{
-                      fontSize: "14px",
-                      fontWeight: "bold",
-                      color: "#333",
+                      fontSize: "15px",
+                      fontWeight: "700",
+                      color: "#1e293b",
                     }}
                   >
-                    Đơn hàng #{group.paymentID}
+                    #{group.paymentID}
                   </span>
-                  <span style={{ fontSize: "12px", color: "#666" }}>
+                  <span
+                    style={{
+                      fontSize: "12px",
+                      color: group.status === "valid" ? "#16a34a" : "#64748b",
+                      fontWeight: "600",
+                      marginTop: "2px",
+                    }}
+                  >
                     {group.tickets.length} vé •{" "}
-                    {group.status === "valid" ? "Đã thanh toán" : group.status}
+                    {group.status === "valid" ? "Thành công" : group.status}
                   </span>
                 </div>
 
                 <div style={{ textAlign: "right" }}>
                   <span
                     style={{
-                      fontSize: "12px",
-                      color: "#888",
-                      display: "block",
+                      fontSize: "11px",
+                      color: "#64748b",
+                      textTransform: "uppercase",
                     }}
                   >
-                    Tổng cộng
+                    Tổng tiền
                   </span>
-                  {/* Thêm check an toàn cho tổng tiền */}
-                  <strong style={{ fontSize: "18px", color: "#d32f2f" }}>
-                    {(group.totalPrice || 0).toLocaleString()} VND
-                  </strong>
+                  <div
+                    className="price-tag"
+                    style={{
+                      fontSize: "16px",
+                      fontWeight: "800",
+                      color: "#dc2626",
+                    }}
+                  >
+                    {new Intl.NumberFormat("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                    }).format(group.totalPrice || 0)}
+                  </div>
                 </div>
               </div>
 
@@ -282,6 +281,7 @@ const MyTrips = () => {
                     key={trip.ticketID}
                     className={`trip-card glass-panel ${trip.status}`}
                     whileHover={{ scale: 1.01, y: -5 }}
+                    whileTap={{ scale: 0.98 }}
                     onClick={() => setSelectedTrip(trip)}
                   >
                     <div className="card-top">
@@ -295,14 +295,39 @@ const MyTrips = () => {
                       </span>
                     </div>
                     <div className="card-body">
-                      <div className="info-row">
-                        <Calendar size={14} /> {trip.departureDay}
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                        }}
+                      >
+                        <div
+                          className="info-row"
+                          style={{ marginBottom: "4px" }}
+                        >
+                          <Calendar size={13} style={{ marginRight: "6px" }} />
+                          <span style={{ fontSize: "13px" }}>
+                            {trip.departureDay}
+                          </span>
+                        </div>
+                        <div
+                          className="info-row"
+                          style={{ marginBottom: "4px" }}
+                        >
+                          <Clock size={13} style={{ marginRight: "6px" }} />
+                          <span style={{ fontSize: "13px" }}>
+                            {trip.departureTime}
+                          </span>
+                        </div>
                       </div>
-                      <div className="info-row">
-                        <Clock size={14} /> {trip.departureTime}
-                      </div>
-                      <div className="info-row flight-num">
-                        <Ticket size={14} /> {trip.flightNumber}
+                      <div
+                        className="info-row flight-num"
+                        style={{ marginTop: "6px" }}
+                      >
+                        <Ticket size={13} />
+                        <span style={{ fontSize: "13px" }}>
+                          {trip.flightNumber} - {trip.seatNumber}
+                        </span>
                       </div>
                     </div>
                   </motion.div>
