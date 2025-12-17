@@ -56,7 +56,7 @@
 }
 
 .flight-page .simple-info-title {
-  font-size: 4.2rem;
+  font-size: 2.4rem;
   font-weight: 800;
   margin-bottom: 20px;
   text-shadow: 4px 4px 15px rgba(83, 181, 226, 0.407);
@@ -64,7 +64,7 @@
 }
 
 .flight-page .simple-info-text {
-  font-size: 1.6rem;
+  font-size: 1.2rem;
   text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.8);
   line-height: 1.7;
   color: #e0f2fe;
@@ -76,9 +76,9 @@
   z-index: 10;
   width: 90%;
   max-width: 1400px;
-  margin: -150px auto 0; /* Kéo lên chồng nhẹ với tiêu đề cho đẹp */
+  margin: -170px auto 0; /* Kéo lên chồng nhẹ với tiêu đề cho đẹp */
   display: flex;
-  gap: 30px;
+  gap: 20px;
   flex-wrap: wrap;
   justify-content: center;
   padding: 60px 0;
@@ -88,19 +88,21 @@
 .flights-panel,
 .map-panel {
   flex: 1;
-  min-width: 300px;
+  min-height: 550px;
+  max-height: 600px;
+  min-width: 150px;
   background: rgba(255, 255, 255, 0.15);
   backdrop-filter: blur(15px);
   border-radius: 30px;
-  padding: 40px;
+  padding: 30px;
   border: 1px solid rgba(255, 255, 255, 0.2);
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
 }
 
 .flights-panel h2,
 .map-panel h2 {
-  font-size: 2.8rem;
-  margin-bottom: 30px;
+  font-size: 1.4rem;
+  margin-bottom: 15px;
   text-shadow: 4px 4px 15px rgba(0, 0, 0, 0.7);
 }
 
@@ -121,11 +123,10 @@
 }
 
 .flights-list {
-  max-height: 600px; /* Giới hạn chiều cao danh sách */
-  overflow-y: auto;  /* Hiện thanh cuộn nếu danh sách dài */
-  padding-right: 10px; /* Khoảng cách cho thanh cuộn */
+  max-height: 460px;
+  overflow-y: auto;  
+  padding-right: 10px; 
 }
-
 /* Tùy chỉnh thanh cuộn cho đẹp (Chrome/Safari/Edge) */
 .flights-list::-webkit-scrollbar {
   width: 6px;
@@ -144,12 +145,13 @@
 
 .flight-map-container {
   width: 100%;
-  height: 600px; /* Chiều cao cố định cho bản đồ */
+  max-height: 450px;
+  height: 450px;
   background: transparent;
   border-radius: 15px;
   overflow: hidden;
   border: 2px solid rgba(255, 255, 255, 0.2);
-  z-index: 1; /* Quan trọng để không đè lên menu */
+  z-index: 1;
 }
 
 .flight-card {
@@ -159,6 +161,8 @@
   margin-bottom: 15px;
   padding: 15px;
   min-width: 550px;
+  min-height: 75px;
+  height: 150px;
   cursor: pointer;
   transition: all 0.4s ease;
   border: 2px solid transparent;
@@ -189,11 +193,12 @@
 }
 /* Header bên trong thẻ chuyến bay */
 .flight-header-info {
+  margin-top: -10px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
-  padding-bottom: 8px;
+  margin-bottom: 0px;
+  padding-bottom: 2px;
   border-bottom: 1px dashed #ccc;
 }
 
@@ -204,7 +209,7 @@
 }
 
 .plane-type {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   color: #666;
 }
 
@@ -231,7 +236,7 @@
 }
 
 .airport-code {
-  font-size: 1.5rem;
+  font-size: 1.0rem;
   font-weight: 800;
   color: #333;
 }
@@ -243,11 +248,11 @@
 
 .time-info .time {
   font-weight: bold;
-  font-size: 1.1rem;
+  font-size: 0.85rem;
 }
 
 .time-info .date {
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   color: #666;
 }
 
@@ -260,9 +265,9 @@
 }
 
 .airplane-icon {
-  font-size: 1.2rem;
+  font-size: 1.0rem;
   color: #3399FF;
-  margin-bottom: -12px; 
+  margin-bottom: -13px; 
   z-index: 1;
 }
 
