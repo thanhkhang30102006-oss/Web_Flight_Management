@@ -225,8 +225,8 @@ const FlightManagement = () => {
                         {flight.flightState === "active"
                           ? "Đúng giờ"
                           : flight.flightState === "delayed"
-                          ? "Delay"
-                          : "Đã hủy"}
+                            ? "Delay"
+                            : "Đã hủy"}
                       </span>
                     </td>
                     <td style={{ textAlign: "center" }}>

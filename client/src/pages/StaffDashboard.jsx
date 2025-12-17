@@ -26,9 +26,7 @@ const StaffDashboard = () => {
       case "flight-create":
       case "flight-schedule":
       case "flight-status":
-      case "flight-load":
-        // Ở đây tạm thời return FlightManagement chung,
-        // sau này bạn có thể tạo component riêng cho Create/Schedule...
+      case "flight-report":
         return <FlightManagement />;
 
       // Nhóm Booking Operations
