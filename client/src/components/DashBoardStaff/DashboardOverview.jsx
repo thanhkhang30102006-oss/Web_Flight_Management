@@ -21,6 +21,8 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
+  Label,
+  LabelList,
 } from "recharts";
 import { AIRPORT_COORDS, getWeatherIcon } from "../../data/weatherHelper";
 
@@ -274,6 +276,8 @@ const DashboardOverview = () => {
                 outerRadius={80}
                 paddingAngle={5}
                 dataKey="value"
+                label={{ fill: "#e2e8f0", fontSize: 12, fontWeight: "bold" }}
+                labelLine={{ stroke: "#e2e8f0" }}
               >
                 {planeData.map((entry, index) => (
                   <Cell
@@ -288,8 +292,17 @@ const DashboardOverview = () => {
                   border: "none",
                   color: "#fff",
                 }}
+                itemStyle={{ color: "#e2e8f0" }}
               />
-              <Legend verticalAlign="bottom" height={36} />
+              <Legend
+                verticalAlign="bottom"
+                height={36}
+                wrapperStyle={{
+                  color: "#e2e8f0",
+                  fontSize: "14px",
+                  paddingTop: "10px",
+                }}
+              />
             </PieChart>
           </ResponsiveContainer>
         </div>
@@ -298,7 +311,11 @@ const DashboardOverview = () => {
         <div className="chart-card">
           <h3 className="chart-title">Chặng bay phổ biến</h3>
           <ResponsiveContainer width="100%" height={250}>
-            <BarChart layout="vertical" data={routeData} margin={{ left: 20 }}>
+            <BarChart
+              layout="vertical"
+              data={routeData}
+              margin={{ left: 20, right: 15 }}
+            >
               <CartesianGrid
                 strokeDasharray="3 3"
                 stroke="#334155"
@@ -309,7 +326,7 @@ const DashboardOverview = () => {
                 dataKey="name"
                 type="category"
                 stroke="#94a3b8"
-                width={80}
+                width={120}
                 tick={{ fontSize: 11 }}
               />
               <Tooltip
@@ -318,6 +335,7 @@ const DashboardOverview = () => {
                   border: "none",
                   color: "#fff",
                 }}
+                cursor={{ fill: "rgba(255, 255, 255, 0.05)" }}
               />
               <Bar
                 dataKey="flights"

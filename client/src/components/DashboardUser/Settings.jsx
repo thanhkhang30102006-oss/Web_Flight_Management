@@ -505,7 +505,7 @@ const Settings = () => {
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="about-section"
+            className="setting-about-section"
           >
             <div className="app-logo-large">
               <img
