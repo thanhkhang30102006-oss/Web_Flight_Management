@@ -11,6 +11,8 @@ import {
   Star,
   CloudSun,
   Sun,
+  Wind,
+  CloudRain,
 } from "lucide-react";
 import videoWallpaper from "../assets/videos/background-wallpaper.webm"; // Import your video
 import { t } from "i18next";
@@ -185,192 +187,89 @@ function FastChecking({ setIsFlying }) {
   );
 }
 
-const DESTINATION_DATA = {
-  // --- Miền Bắc ---
-  "Hà Nội": {
-    desc: "Thủ đô ngàn năm văn hiến, nơi hòa quyện giữa nét cổ kính của 36 phố phường và sự năng động của đô thị hiện đại. Đừng quên thử Phở và Cà phê trứng.",
-    tempRange: [22, 29],
-    weather: "Có mây",
-    region: "Bắc",
-  },
-  "Hải Phòng": {
-    desc: "Thành phố Cảng sầm uất với ẩm thực đường phố trứ danh (bánh đa cua, nem cua bể). Cửa ngõ ra đảo Cát Bà thơ mộng.",
-    tempRange: [24, 30],
-    weather: "Nắng đẹp",
-    region: "Bắc",
-  },
-  "Vân Đồn": {
-    desc: "Huyện đảo xinh đẹp thuộc Quảng Ninh, nổi tiếng với Bãi Dài hoang sơ và hải sản tươi sống. Điểm kết nối trực tiếp tới Vịnh Hạ Long.",
-    tempRange: [23, 28],
-    weather: "Gió nhẹ",
-    region: "Bắc",
-  },
-  "Thanh Hóa": {
-    desc: "Vùng đất địa linh nhân kiệt, nổi tiếng với bãi biển Sầm Sơn sôi động và khu bảo tồn thiên nhiên Pù Luông xanh mát.",
-    tempRange: [25, 31],
-    weather: "Nắng rực rỡ",
-    region: "Bắc",
-  },
-  Vinh: {
-    desc: "Thành phố đỏ anh hùng, quê hương của Bác Hồ. Điểm đến du lịch biển Cửa Lò và khám phá những di tích lịch sử hào hùng.",
-    tempRange: [26, 32],
-    weather: "Nắng nóng",
-    region: "Bắc",
-  },
-  "Điện Biên Phủ": {
-    desc: "Mảnh đất lịch sử với chiến thắng lừng lẫy năm châu. Khám phá đồi A1, hầm Đờ Cát và sắc hoa ban trắng rợp trời Tây Bắc.",
-    tempRange: [20, 26],
-    weather: "Mát mẻ",
-    region: "Bắc",
-  },
-
-  // --- Miền Trung ---
-  "Đà Nẵng": {
-    desc: "Thành phố đáng sống nhất Việt Nam với bãi biển Mỹ Khê, Cầu Rồng phun lửa và Bà Nà Hills đường lên tiên cảnh.",
-    tempRange: [26, 32],
-    weather: "Nắng đẹp",
-    region: "Trung",
-  },
-  Huế: {
-    desc: "Cố đô trầm mặc, mộng mơ bên dòng sông Hương. Nơi lưu giữ nét văn hóa cung đình, nhã nhạc và ẩm thực cay nồng tinh tế.",
-    tempRange: [25, 30],
-    weather: "Mưa phùn",
-    region: "Trung",
-  },
-  "Nha Trang": {
-    desc: "Hòn ngọc viễn đông với những vịnh biển đẹp nhất thế giới. Thiên đường của lặn biển, VinWonders và tắm bùn khoáng nóng.",
-    tempRange: [28, 33],
-    weather: "Nắng vàng",
-    region: "Trung",
-  },
-  "Quy Nhơn": {
-    desc: "Thành phố thi ca bình yên với Eo Gió, Kỳ Co được ví như Maldives phiên bản Việt. Hải sản ngon rẻ bậc nhất miền Trung.",
-    tempRange: [27, 32],
-    weather: "Gió biển",
-    region: "Trung",
-  },
-  "Quảng Nam": {
-    desc: "Vùng đất di sản với Phố cổ Hội An lãng mạn đèn lồng và Thánh địa Mỹ Sơn huyền bí. Nơi giao thoa văn hóa đặc sắc.",
-    tempRange: [26, 31],
-    weather: "Nắng nhẹ",
-    region: "Trung",
-  },
-  "Đồng Hới": {
-    desc: "Vương quốc hang động với Phong Nha - Kẻ Bàng hùng vĩ. Trải nghiệm thám hiểm hang Sơn Đoòng lớn nhất thế giới.",
-    tempRange: [24, 29],
-    weather: "Mát mẻ",
-    region: "Trung",
-  },
-  "Tuy Hòa": {
-    desc: "Xứ sở hoa vàng trên cỏ xanh. Chiêm ngưỡng Gành Đá Đĩa độc đáo và ngọn hải đăng Đại Lãnh - nơi đón bình minh đầu tiên.",
-    tempRange: [26, 31],
-    weather: "Nắng gắt",
-    region: "Trung",
-  },
-
-  // --- Tây Nguyên ---
-  "Đà Lạt": {
-    desc: "Thành phố ngàn hoa trong sương mù. Điểm hẹn hò lãng mạn với khí hậu se lạnh, những đồi thông và biệt thự Pháp cổ.",
-    tempRange: [14, 22],
-    weather: "Se lạnh",
-    region: "Tây Nguyên",
-  },
-  "Buôn Ma Thuột": {
-    desc: "Thủ phủ cà phê của Việt Nam. Cưỡi voi Bản Đôn, ngắm thác Dray Nur hùng vĩ và thưởng thức ly cà phê đậm đà.",
-    tempRange: [22, 29],
-    weather: "Nắng ráo",
-    region: "Tây Nguyên",
-  },
-  Pleiku: {
-    desc: "Đôi mắt Pleiku Biển Hồ đầy thơ mộng. Khám phá vẻ đẹp hoang sơ của đại ngàn và ẩm thực Phở khô Gia Lai độc đáo.",
-    tempRange: [20, 27],
-    weather: "Mát mẻ",
-    region: "Tây Nguyên",
-  },
-
-  // --- Miền Nam ---
-  "TP.HCM": {
-    desc: "Hòn ngọc Viễn Đông sôi động, trung tâm kinh tế lớn nhất cả nước. Nơi hội tụ ẩm thực, mua sắm và giải trí thâu đêm suốt sáng.",
-    tempRange: [30, 35],
-    weather: "Nắng nóng",
-    region: "Nam",
-  },
-  "Phú Quốc": {
-    desc: "Thiên đường nghỉ dưỡng với những resort sang trọng, Bãi Sao cát trắng và cáp treo vượt biển dài nhất thế giới.",
-    tempRange: [27, 31],
-    weather: "Nắng đẹp",
-    region: "Nam",
-  },
-  "Cần Thơ": {
-    desc: "Thủ phủ miền Tây sông nước. Trải nghiệm chợ nổi Cái Răng tấp nập vào sáng sớm và vườn trái cây trĩu quả.",
-    tempRange: [26, 32],
-    weather: "Nắng ấm",
-    region: "Nam",
-  },
-  "Côn Đảo": {
-    desc: "Điểm du lịch tâm linh và nghỉ dưỡng hoang sơ. Khám phá lịch sử hào hùng và lặn ngắm san hô tại vùng biển trong vắt.",
-    tempRange: [26, 30],
-    weather: "Gió mạnh",
-    region: "Nam",
-  },
-  "Rạch Giá": {
-    desc: "Thành phố biển miền Tây yên bình, cửa ngõ ra đảo Nam Du và Phú Quốc. Thưởng thức bún cá Kiên Giang nức tiếng.",
-    tempRange: [27, 32],
-    weather: "Nắng nhẹ",
-    region: "Nam",
-  },
-  "Cà Mau": {
-    desc: "Cực Nam của Tổ quốc. Chinh phục cột mốc tọa độ quốc gia, len lỏi qua những rừng đước bạt ngàn và thưởng thức cua Cà Mau.",
-    tempRange: [26, 31],
-    weather: "Mưa rào",
-    region: "Nam",
-  },
+const DESTINATION_CONFIG = {
+  hanoi: { temp: [22, 29], type: "cloudy", region: "north" },
+  haiphong: { temp: [24, 30], type: "sunny", region: "north" },
+  vandon: { temp: [23, 28], type: "windy", region: "north" },
+  thanhhoa: { temp: [25, 31], type: "hot", region: "north" },
+  vinh: { temp: [26, 32], type: "hot", region: "north" },
+  dienbien: { temp: [20, 26], type: "cool", region: "north" },
+  danang: { temp: [26, 32], type: "sunny", region: "central" },
+  hue: { temp: [25, 30], type: "rainy", region: "central" },
+  nhatrang: { temp: [28, 33], type: "sunny", region: "central" },
+  quynhon: { temp: [27, 32], type: "windy", region: "central" },
+  quangnam: { temp: [26, 31], type: "sunny", region: "central" },
+  donghoi: { temp: [24, 29], type: "cool", region: "central" },
+  tuyhoa: { temp: [26, 31], type: "hot", region: "central" },
+  dalat: { temp: [14, 22], type: "foggy", region: "highlands" },
+  buonmathuot: { temp: [22, 29], type: "sunny", region: "highlands" },
+  pleiku: { temp: [20, 27], type: "cool", region: "highlands" },
+  hcm: { temp: [30, 35], type: "hot", region: "south" },
+  phuquoc: { temp: [27, 31], type: "sunny", region: "south" },
+  cantho: { temp: [26, 32], type: "sunny", region: "south" },
+  condao: { temp: [26, 30], type: "windy", region: "south" },
+  rachgia: { temp: [27, 32], type: "sunny", region: "south" },
+  camau: { temp: [26, 31], type: "rainy", region: "south" },
 };
 
 const getWeatherIcon = (type) => {
-  if (type.includes("Nắng"))
-    return <Sun size={20} className="text-yellow-500" />;
-  if (type.includes("mưa"))
-    return <CloudRain size={20} className="text-blue-500" />;
-  return <CloudSun size={20} className="text-blue-400" />;
+  switch (type) {
+    case "sunny":
+    case "hot":
+      return <Sun size={20} className="text-yellow-500" />;
+    case "rainy":
+      return <CloudRain size={20} className="text-blue-500" />;
+    case "windy":
+      return <Wind size={20} className="text-gray-500" />;
+    case "cool":
+    case "foggy":
+      return <CloudSun size={20} className="text-blue-400" />;
+    default:
+      return <CloudSun size={20} className="text-orange-400" />;
+  }
 };
 
 const DestinationPopup = ({ destination, onClose }) => {
   if (!destination) return null;
+  const destName = t(`home.destinations.${destination.id}.name`);
   const mapUrl = `https://maps.google.com/maps?q=${encodeURIComponent(
-    destination.name + " Vietnam"
+    destName + " Vietnam"
   )}&t=&z=11&ie=UTF8&iwloc=&output=embed`;
 
   const detail = useMemo(() => {
     // 1. Tìm trong DB có sẵn không
-    const staticData = DESTINATION_DATA[destination.name];
+    const config = DESTINATION_CONFIG[destination.id];
 
     // 2. Random Rating (từ 4.5 đến 5.0)
     const randomRating = (Math.random() * (5.0 - 4.5) + 4.5).toFixed(1);
 
     // 3. Xử lý dữ liệu (Nếu không có trong DB thì random generic)
-    if (staticData) {
-      // Random nhiệt độ trong khoảng cho phép của thành phố đó
+    if (config) {
       const currentTemp = Math.floor(
-        Math.random() *
-          (staticData.tempRange[1] - staticData.tempRange[0] + 1) +
-          staticData.tempRange[0]
+        Math.random() * (config.temp[1] - config.temp[0] + 1) + config.temp[0]
       );
 
       return {
-        ...staticData,
+        // Lấy text từ file translation
+        desc: t(`home.destinations.${destination.id}.desc`),
+        weatherText: t(`home.popup.weatherStatus.${config.type}`),
+        regionText: t(`home.popup.regions.${config.region}`),
+
         rating: randomRating,
         temp: currentTemp,
+        type: config.type,
       };
     }
     return {
-      desc: `Khám phá vẻ đẹp tiềm ẩn của ${destination.name}. Một điểm đến mới lạ đang chờ bạn trải nghiệm.`,
-      weather: "Nhiều mây",
-      temp: Math.floor(Math.random() * (32 - 25) + 25), // Random 25-32 độ
-      region: "Việt Nam",
+      desc: "...",
+      weatherText: "...",
+      regionText: "...",
+      temp: 30,
       rating: randomRating,
+      type: "sunny",
     };
-  }, [destination]);
+  }, [destination, t]);
+
   return (
     <motion.div
       className="modal-overlay"
@@ -394,7 +293,7 @@ const DestinationPopup = ({ destination, onClose }) => {
           {/* Cột trái: Thông tin */}
           <div className="modal-info">
             <div className="modal-header">
-              <h2>{destination.name}</h2>
+              <h2>{destName}</h2>
               <div className="rating-badge">
                 <Star size={16} fill="#FFD700" stroke="#FFD700" />
                 <span>{detail.rating}/5</span>
@@ -405,31 +304,30 @@ const DestinationPopup = ({ destination, onClose }) => {
 
             <div className="modal-details">
               <div className="detail-item">
-                {getWeatherIcon(detail.weather)}
+                {getWeatherIcon(detail.type)}
                 <div>
-                  <strong>Thời tiết</strong>
+                  <strong>{t("home.popup.weather")}</strong>
                   <p>
-                    {detail.temp}°C - {detail.weather}
+                    {detail.temp}°C - {detail.weatherText}
                   </p>
                 </div>
               </div>
               <div className="detail-item">
                 <MapPin size={20} className="text-red-500" />
                 <div>
-                  <strong>Vị trí</strong>
-                  <p>Miền {detail.region}</p>
+                  <strong>{t("home.popup.location")}</strong>
+                  <p>{t("home.popup.region", { region: detail.regionText })}</p>
                 </div>
               </div>
             </div>
 
             <button className="btn-book-now">
-              Đặt vé đi {destination.name}
+              {t("home.popup.bookBtn", { name: destName })}{" "}
             </button>
           </div>
 
           {/* Cột phải: Bản đồ (Giả lập Vector Map) */}
           <div className="modal-map">
-            {/* Overlay giả lập hiệu ứng tô màu vùng (Visual trick) */}
             <div className="map-vector-overlay"></div>
             <iframe
               title="map"
@@ -441,130 +339,103 @@ const DestinationPopup = ({ destination, onClose }) => {
               allowFullScreen=""
               loading="lazy"
             ></iframe>
-            <div className="map-label">Bản đồ khu vực</div>
+            <div className="map-label">{t("home.popup.mapLabel")}</div>{" "}
           </div>
         </div>
       </motion.div>
     </motion.div>
   );
 };
-const getRegion = (name) => {
-  const north = [
-    "Hà Nội",
-    "Hải Phòng",
-    "Vân Đồn",
-    "Thanh Hóa",
-    "Vinh",
-    "Điện Biên Phủ",
-  ];
-  const central = [
-    "Đà Nẵng",
-    "Huế",
-    "Nha Trang",
-    "Quy Nhơn",
-    "Quảng Nam",
-    "Đồng Hới",
-    "Tuy Hòa",
-  ];
-  if (north.includes(name)) return "Bắc";
-  if (central.includes(name)) return "Trung";
-  return "Nam";
-};
 
 function TopRating() {
   const [selectedDest, setSelectedDest] = useState(null);
   const destinations = [
     {
-      name: "Hà Nội",
+      id: "hanoi",
       img: "https://plus.unsplash.com/premium_photo-1691960159290-6f4ace6e6c4c?q=80&w=1171&auto=format&fit=crop",
     },
     {
-      name: "Hải Phòng",
+      id: "haiphong",
       img: "https://xdcs.cdnchinhphu.vn/446259493575335936/2023/3/31/dia-diem-chup-anh-dep-o-hai-phong-3-16802347951501757542860.jpg",
     },
     {
-      name: "Vân Đồn",
+      id: "vandon",
       img: "https://cdn.tgdd.vn/Files/2021/07/15/1368384/tong-hop-day-du-kinh-nghiem-du-lich-van-don-quang-ninh-202206070951246909.jpg",
     },
     {
-      name: "Thanh Hóa",
+      id: "thanhhoa",
       img: "https://cdn.nhandan.vn/images/4655dea7deebadd3e7b51fbe3a4f19d5debfb428da2d7886ce9028169019d82bd1a7ea749d6c13f68a7e671e4e0b4d35/thanhhoa.jpg",
     },
     {
-      name: "Vinh",
+      id: "vinh",
       img: "https://statics.vinwonders.com/Vinh-City-01_1704067275.jpg",
     },
     {
-      name: "Điện Biên Phủ",
+      id: "dienbien",
       img: "https://dulichdienbien.vietnaminfo.net/DataFiles/2022/07/Files/20220718-094447-2Bh47TQT.jpg",
     },
-
-    // --- Miền Trung (7 địa điểm) ---
     {
-      name: "Đà Nẵng",
+      id: "danang",
       img: "https://vcdn1-dulich.vnecdn.net/2022/06/03/cauvang-1654247842-9403-1654247849.jpg?w=1200&h=0&q=100&dpr=1&fit=crop&s=Swd6JjpStebEzT6WARcoOA",
     },
     {
-      name: "Huế",
+      id: "hue",
       img: "https://media.vietravel.com/images/Content/dia-diem-du-lich-hue-01.jpg",
     },
     {
-      name: "Nha Trang",
+      id: "nhatrang",
       img: "https://vpt-en.b-cdn.net/wp-content/uploads/n/16/Nha-trang.jpg.webp",
     },
     {
-      name: "Quy Nhơn",
+      id: "quynhon",
       img: "https://static-images.vnncdn.net/files/publish/2022/7/22/280762356-359581132902753-2117815975823559575-n-1225.jpg",
     },
     {
-      name: "Quảng Nam",
+      id: "quangnam",
       img: "https://blisshoian.com/wp-content/uploads/2024/12/quang-nam-province-10.webp",
     },
     {
-      name: "Đồng Hới",
+      id: "donghoi",
       img: "https://upload.wikimedia.org/wikipedia/commons/b/b4/Cổng_thành_cổ_Quảng_Bình_-_panoramio.jpg",
     },
     {
-      name: "Tuy Hòa",
+      id: "tuyhoa",
       img: "https://static.vinwonders.com/production/Nghinh-Phong-Square.jpg",
     },
-
-    // --- Tây Nguyên (3 địa điểm) ---
     {
-      name: "Đà Lạt",
+      id: "dalat",
       img: "https://hitour.vn/storage/images/upload/tour-du-lich-da-lat-2-ngay-1-dem-750.webp",
     },
     {
-      name: "Buôn Ma Thuột",
+      id: "buonmathuot",
       img: "https://longvanlimousine.vn/wp-content/uploads/2024/12/du-lich-buon-ma-thuot.jpg",
     },
     {
-      name: "Pleiku",
+      id: "pleiku",
       img: "https://vj-prod-website-cms.s3.ap-southeast-1.amazonaws.com/shutterstock1572039106-1648118522379.png",
     },
-    // --- Miền Nam (6 địa điểm) ---
     {
-      name: "TP.HCM",
+      id: "hcm",
       img: "https://bcp.cdnchinhphu.vn/334894974524682240/2025/6/30/tphcm-1-1751245519173693919081.jpg",
     },
     {
-      name: "Phú Quốc",
+      id: "phuquoc",
       img: "https://bcp.cdnchinhphu.vn/334894974524682240/2025/6/23/phu-quoc-17506756503251936667562.jpg",
     },
     {
-      name: "Cần Thơ",
+      id: "cantho",
       img: "https://ik.imagekit.io/tvlk/blog/2025/05/canh-dep-can-tho-1-1024x683.png?tr=q-70,c-at_max,w-1000,h-600",
     },
     {
-      name: "Côn Đảo",
+      id: "condao",
       img: "https://cdn11.dienmaycholon.vn/filewebdmclnew/DMCL21/Picture/News/News_expe_14013/14013.png?version=130237",
     },
     {
-      name: "Rạch Giá",
+      id: "rachgia",
       img: "https://saigonrachgiahotel.vn/files/images/news/news00002.png",
     },
     {
-      name: "Cà Mau",
+      id: "camau",
       img: "https://vietnamtouristvn.com/thumbs/670x500x1/upload/product/cantho2-7480.jpg",
     },
   ];
@@ -582,7 +453,7 @@ function TopRating() {
               style={{ cursor: "pointer" }}
             >
               <img src={dest.img} alt={dest.name} />
-              <p>{dest.name}</p>
+              <p>{t(`home.destinations.${dest.id}.name`)}</p>{" "}
             </div>
           ))}
         </div>

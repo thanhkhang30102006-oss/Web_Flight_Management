@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import LanguageSwitcher from "./LanguageSwitcher";
 import airPlane from "../../../assets/Image/airplane-plane-flight-white.svg";
-import "./Header.css"; // Import the CSS file
+import "./Header.css";
 
 function Header() {
   const navigate = useNavigate();
@@ -32,7 +32,7 @@ function Header() {
       setActiveLink("homepage");
     } else if (path === "/flights") {
       setActiveLink("flight");
-    } else if (path === "/about") {
+    } else if (path === "/about-us") {
       setActiveLink("introduction");
     } else {
       setActiveLink(null);
@@ -71,7 +71,7 @@ function Header() {
             className={`list-item ${
               activeLink === "introduction" ? "active" : ""
             }`}
-            onClick={() => handleNavigation("/about", "introduction")}
+            onClick={() => handleNavigation("/about-us", "introduction")}
           >
             {t("header.about", "Giới thiệu")}
           </li>

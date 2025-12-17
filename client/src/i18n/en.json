@@ -51,6 +51,120 @@
     "support": "24/7 Support",
     "supportDesc": "Customer care team always ready to assist"
   },
+  "home": {
+    "popup": {
+      "weather": "Weather",
+      "location": "Location",
+      "region": "{{region}} Region",
+      "bookBtn": "Book flight to {{name}}",
+      "mapLabel": "Area Map",
+      "regions": {
+        "north": "North",
+        "central": "Central",
+        "south": "South",
+        "highlands": "Highlands"
+      },
+      "weatherStatus": {
+        "sunny": "Sunny",
+        "cloudy": "Cloudy",
+        "rainy": "Rainy",
+        "windy": "Windy",
+        "hot": "Hot",
+        "cool": "Cool",
+        "foggy": "Foggy"
+      }
+    },
+    "destinations": {
+      "hanoi": {
+        "name": "Ha Noi",
+        "desc": "The thousand-year-old capital, blending the antiquity of the Old Quarter with the dynamism of a modern metropolis."
+      },
+      "haiphong": {
+        "name": "Hai Phong",
+        "desc": "A bustling port city famous for its street food and as the gateway to the poetic Cat Ba Island."
+      },
+      "vandon": {
+        "name": "Van Don",
+        "desc": "A beautiful island district in Quang Ninh, known for its pristine Bai Dai beach and direct connection to Ha Long Bay."
+      },
+      "thanhhoa": {
+        "name": "Thanh Hoa",
+        "desc": "A land of masterpieces, famous for the vibrant Sam Son beach and Pu Luong nature reserve."
+      },
+      "vinh": {
+        "name": "Vinh",
+        "desc": "The heroic red city, hometown of Uncle Ho. A destination for Cua Lo beach tourism and historical sites."
+      },
+      "dienbien": {
+        "name": "Dien Bien Phu",
+        "desc": "A historic land with a world-famous victory. Explore A1 Hill and the white ban flowers of the Northwest."
+      },
+      "danang": {
+        "name": "Da Nang",
+        "desc": "The most livable city in Vietnam with My Khe beach, Dragon Bridge, and Ba Na Hills."
+      },
+      "hue": {
+        "name": "Hue",
+        "desc": "The quiet, dreamy ancient capital by the Perfume River. Keeping the royal culture and court music."
+      },
+      "nhatrang": {
+        "name": "Nha Trang",
+        "desc": "The pearl of the Far East with the most beautiful bays in the world. Paradise for diving and VinWonders."
+      },
+      "quynhon": {
+        "name": "Quy Nhon",
+        "desc": "A peaceful poetic city with Eo Gio, Ky Co is considered the Vietnamese version of Maldives."
+      },
+      "quangnam": {
+        "name": "Quang Nam",
+        "desc": "Heritage land with romantic Hoi An Ancient Town and mysterious My Son Sanctuary."
+      },
+      "donghoi": {
+        "name": "Dong Hoi",
+        "desc": "The kingdom of caves with majestic Phong Nha - Ke Bang and the world's largest Son Doong cave."
+      },
+      "tuyhoa": {
+        "name": "Tuy Hoa",
+        "desc": "The land of yellow flowers on green grass. Admire the unique Ganh Da Dia and Dai Lanh lighthouse."
+      },
+      "dalat": {
+        "name": "Da Lat",
+        "desc": "City of a thousand flowers in the mist. A romantic destination with a cool climate and pine hills."
+      },
+      "buonmathuot": {
+        "name": "Buon Ma Thuot",
+        "desc": "The coffee capital of Vietnam. Ride elephants in Ban Don, watch Dray Nur waterfall."
+      },
+      "pleiku": {
+        "name": "Pleiku",
+        "desc": "The poetic Eyes of Pleiku Sea Lake. Explore the wild beauty of the great forest."
+      },
+      "hcm": {
+        "name": "Ho Chi Minh City",
+        "desc": "The vibrant Pearl of the Far East, the country's largest economic center. A hub of cuisine and entertainment."
+      },
+      "phuquoc": {
+        "name": "Phu Quoc",
+        "desc": "Resort paradise with luxury resorts, white sand Sao Beach, and the world's longest sea-crossing cable car."
+      },
+      "cantho": {
+        "name": "Can Tho",
+        "desc": "Capital of the river West. Experience the bustling Cai Rang floating market and fruit orchards."
+      },
+      "condao": {
+        "name": "Con Dao",
+        "desc": "Spiritual tourism and pristine resort destination. Explore history and dive to see coral."
+      },
+      "rachgia": {
+        "name": "Rach Gia",
+        "desc": "A peaceful Western coastal city, gateway to Nam Du Island and Phu Quoc."
+      },
+      "camau": {
+        "name": "Ca Mau",
+        "desc": "The southernmost point of the country. Conquer the national coordinate landmark and vast mangrove forests."
+      }
+    }
+  },
   "flight": {
     "title": "Flight Information",
     "desc": "Track active and upcoming flights",

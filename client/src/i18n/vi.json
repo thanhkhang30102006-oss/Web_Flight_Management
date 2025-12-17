@@ -51,6 +51,120 @@
     "support": "Hỗ Trợ 24/7",
     "supportDesc": "Đội ngũ chăm sóc khách hàng luôn sẵn sàng"
   },
+  "home": {
+    "popup": {
+      "weather": "Thời tiết",
+      "location": "Vị trí",
+      "region": "Miền {{region}}",
+      "bookBtn": "Đặt vé đi {{name}}",
+      "mapLabel": "Bản đồ khu vực",
+      "regions": {
+        "north": "Bắc",
+        "central": "Trung",
+        "south": "Nam",
+        "highlands": "Tây Nguyên"
+      },
+      "weatherStatus": {
+        "sunny": "Nắng đẹp",
+        "cloudy": "Có mây",
+        "rainy": "Có mưa",
+        "windy": "Gió nhẹ",
+        "hot": "Nắng nóng",
+        "cool": "Mát mẻ",
+        "foggy": "Sương mù"
+      }
+    },
+    "destinations": {
+      "hanoi": {
+        "name": "Hà Nội",
+        "desc": "Thủ đô ngàn năm văn hiến, nơi hòa quyện giữa nét cổ kính của 36 phố phường và sự năng động của đô thị hiện đại."
+      },
+      "haiphong": {
+        "name": "Hải Phòng",
+        "desc": "Thành phố Cảng sầm uất với ẩm thực đường phố trứ danh và cửa ngõ ra đảo Cát Bà thơ mộng."
+      },
+      "vandon": {
+        "name": "Vân Đồn",
+        "desc": "Huyện đảo xinh đẹp thuộc Quảng Ninh, nổi tiếng với Bãi Dài hoang sơ và kết nối trực tiếp tới Vịnh Hạ Long."
+      },
+      "thanhhoa": {
+        "name": "Thanh Hóa",
+        "desc": "Vùng đất địa linh nhân kiệt, nổi tiếng với bãi biển Sầm Sơn sôi động và khu bảo tồn thiên nhiên Pù Luông."
+      },
+      "vinh": {
+        "name": "Vinh",
+        "desc": "Thành phố đỏ anh hùng, quê hương của Bác Hồ. Điểm đến du lịch biển Cửa Lò và di tích lịch sử."
+      },
+      "dienbien": {
+        "name": "Điện Biên Phủ",
+        "desc": "Mảnh đất lịch sử với chiến thắng lừng lẫy năm châu. Khám phá đồi A1 và sắc hoa ban trắng Tây Bắc."
+      },
+      "danang": {
+        "name": "Đà Nẵng",
+        "desc": "Thành phố đáng sống nhất Việt Nam với bãi biển Mỹ Khê, Cầu Rồng và Bà Nà Hills."
+      },
+      "hue": {
+        "name": "Huế",
+        "desc": "Cố đô trầm mặc, mộng mơ bên dòng sông Hương. Nơi lưu giữ nét văn hóa cung đình và nhã nhạc."
+      },
+      "nhatrang": {
+        "name": "Nha Trang",
+        "desc": "Hòn ngọc viễn đông với những vịnh biển đẹp nhất thế giới. Thiên đường của lặn biển và VinWonders."
+      },
+      "quynhon": {
+        "name": "Quy Nhơn",
+        "desc": "Thành phố thi ca bình yên với Eo Gió, Kỳ Co được ví như Maldives phiên bản Việt."
+      },
+      "quangnam": {
+        "name": "Quảng Nam",
+        "desc": "Vùng đất di sản với Phố cổ Hội An lãng mạn đèn lồng và Thánh địa Mỹ Sơn huyền bí."
+      },
+      "donghoi": {
+        "name": "Đồng Hới",
+        "desc": "Vương quốc hang động với Phong Nha - Kẻ Bàng hùng vĩ và hang Sơn Đoòng lớn nhất thế giới."
+      },
+      "tuyhoa": {
+        "name": "Tuy Hòa",
+        "desc": "Xứ sở hoa vàng trên cỏ xanh. Chiêm ngưỡng Gành Đá Đĩa độc đáo và ngọn hải đăng Đại Lãnh."
+      },
+      "dalat": {
+        "name": "Đà Lạt",
+        "desc": "Thành phố ngàn hoa trong sương mù. Điểm hẹn hò lãng mạn với khí hậu se lạnh và đồi thông."
+      },
+      "buonmathuot": {
+        "name": "Buôn Ma Thuột",
+        "desc": "Thủ phủ cà phê của Việt Nam. Cưỡi voi Bản Đôn, ngắm thác Dray Nur và thưởng thức cà phê."
+      },
+      "pleiku": {
+        "name": "Pleiku",
+        "desc": "Đôi mắt Pleiku Biển Hồ đầy thơ mộng. Khám phá vẻ đẹp hoang sơ của đại ngàn."
+      },
+      "hcm": {
+        "name": "TP.HCM",
+        "desc": "Hòn ngọc Viễn Đông sôi động, trung tâm kinh tế lớn nhất cả nước. Nơi hội tụ ẩm thực và giải trí."
+      },
+      "phuquoc": {
+        "name": "Phú Quốc",
+        "desc": "Thiên đường nghỉ dưỡng với những resort sang trọng, Bãi Sao cát trắng và cáp treo vượt biển."
+      },
+      "cantho": {
+        "name": "Cần Thơ",
+        "desc": "Thủ phủ miền Tây sông nước. Trải nghiệm chợ nổi Cái Răng tấp nập và vườn trái cây."
+      },
+      "condao": {
+        "name": "Côn Đảo",
+        "desc": "Điểm du lịch tâm linh và nghỉ dưỡng hoang sơ. Khám phá lịch sử và lặn ngắm san hô."
+      },
+      "rachgia": {
+        "name": "Rạch Giá",
+        "desc": "Thành phố biển miền Tây yên bình, cửa ngõ ra đảo Nam Du và Phú Quốc."
+      },
+      "camau": {
+        "name": "Cà Mau",
+        "desc": "Cực Nam của Tổ quốc. Chinh phục cột mốc tọa độ quốc gia và rừng đước bạt ngàn."
+      }
+    }
+  },
   "flight": {
     "title": "Thông Tin Chuyến Bay",
     "desc": "Theo dõi các chuyến bay đang hoạt động và sắp khởi hành",

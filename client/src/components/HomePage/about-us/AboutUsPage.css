@@ -1,0 +1,442 @@
+/* src/components/AboutUs/AboutUs.css */
+
+/* Video background giống hệt trang chủ */
+.background-video {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  z-index: -2;
+}
+
+.about-us-video-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.661);
+  z-index: -1;
+}
+
+/* --- Cấu trúc chung (Scroll Snap) --- */
+.about-snap-container {
+  height: 100vh;
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+  scroll-behavior: smooth;
+  background: transparent;
+  color: white;
+  position: relative;
+  z-index: 1;
+}
+
+.about-snap-container::-webkit-scrollbar {
+  display: none; /* Ẩn thanh cuộn cho gọn */
+}
+
+.about-section {
+  height: 100vh;
+  width: 100vw;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  overflow: visible;
+  padding-top: 80px; /* Tránh đè Header */
+}
+
+/* ================= SECTION 1: TEAM (THE DEV DUO) ================= */
+.team-container {
+  display: flex;
+  width: 90%;
+  height: 90%;
+  max-width: 1600px;
+  gap: 20px;
+}
+
+.team-member {
+  flex: 1;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  border-right: none;
+}
+
+.team-member:last-child {
+  border-right: none;
+}
+@keyframes rainbowMove {
+  100% {
+    background-position: 0% 50%;
+  }
+  0% {
+    background-position: 100% 50%; 
+  }
+}
+/* Tên khổng lồ chìm phía sau (Layer 0) */
+.giant-name {
+  position: absolute;
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-15deg); 
+  font-size: 9rem; 
+  font-weight: 950;
+  white-space: nowrap;
+  z-index: 0;
+  text-transform: uppercase;
+  letter-spacing: 5px;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column; /* Xếp chồng chữ hoặc ngang tùy ý */
+  align-items: center;
+  justify-content: center;
+  opacity: 0.6; /* Làm rõ hơn chút vì nền video động */
+  line-height: 2;
+}
+.giant-name.trunghieu span {
+  /* Tạo dải màu 7 sắc cầu vồng (lặp lại màu đỏ ở cuối để loop không bị giật) */
+  background-image: linear-gradient(
+    to right,
+    #73d0ff,
+    #a3dbfb,
+    #057dcd,
+    #124878,
+     #73d0ff,
+    #a3dbfb,
+    #057dcd,
+    #124878,
+    #73d0ff
+
+ );
+    background-size: 200% auto;
+  /* cắt */
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: rainbowMove 3s cubic-bezier(.57,-0.85,.49,1.6) infinite; 
+}
+
+.giant-name.thanhkhang span {
+  /* Tạo dải màu 7 sắc cầu vồng (lặp lại màu đỏ ở cuối để loop không bị giật) */
+  background-image: linear-gradient(
+    to right,
+    #ffa8c6, #d899c3, #b18ac0, #8a7bbd, #636cba, #3c5db7,
+    #ffa8c6, #d899c3, #b18ac0, #8a7bbd, #636cba, #3c5db7, #ffa8c6
+ );
+    background-size: 200% auto;
+  /* cắt */
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: rainbowMove 3s cubic-bezier(.69,-0.1,.44,1.16) infinite; 
+}
+
+.giant-name span:nth-child(1) {
+  transform: translateX(-150px);
+}
+
+.giant-name span:nth-child(2) {
+  transform: translateX(100px);
+
+}
+
+/* Ảnh nhân vật (Layer 1) */
+.member-photo {
+  height: 75%;
+  width: auto;
+  object-fit: contain;
+  z-index: 1;
+  filter: drop-shadow(0 0 20px rgba(0,0,0,0.5));
+  transition: transform 0.5s ease;
+}
+
+.team-member:hover .member-photo {
+  transform: scale(1.05) translateY(-20px);
+}
+
+/* Thông tin chi tiết (Layer 2) */
+.member-info {
+  z-index: 2;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  padding: 20px;
+  border-radius: 20px;
+  width: 80%;
+  margin-bottom: 40px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  transition: all 0.3s;
+}
+.team-member:hover .member-info {
+  border-color: #3399ff;
+  transform: translateY(-10px);
+}
+
+.member-role {
+  color: #3399ff;
+  font-weight: bold;
+  letter-spacing: 2px;
+  margin-bottom: 5px;
+  display: block;
+  font-size: 0.9rem;
+}
+
+
+.member-fullname {
+  font-size: 1.8rem;
+  margin-bottom: 10px;
+  font-weight: bold;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+}
+
+.member-hobbies {
+  font-size: 1rem;
+  color: #cbd5e1;
+  display: flow-root;
+  flex-direction: column;
+  gap: 5px;
+  align-items: center;
+}
+
+/* ================= SECTION 2: JOURNEY (TIMELINE) ================= */
+.journey-section {
+  flex-direction: column;
+   /* Nền tối hơn chút */
+}
+
+
+.journey-section {
+  flex-direction: column;
+  overflow: visible !important; 
+}
+
+.section-title {
+  font-size: 3rem;
+  margin-bottom: 80px;
+  text-transform: uppercase;
+  letter-spacing: 5px;
+  background: linear-gradient(to right, #3399ff, #00ffcc);
+  -webkit-background-clip: text;
+  color: transparent;
+  text-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  text-align: center;
+  z-index: 1;
+}
+
+/* 1. WRAPPER NGOÀI CÙNG (1600px) */
+.timeline-wrapper {
+  width: 95%;
+  max-width: 1600px; /* Theo yêu cầu của bạn */
+  display: flex;
+  margin-top: 100px;
+  justify-content: center;
+  align-items: center;
+  padding: 60px 0; /* Padding trên dưới để tooltip có chỗ hiển thị thoải mái */
+  overflow: visible; /* Đảm bảo không cắt nội dung con */
+  position: relative;
+  z-index: 10;
+}
+
+/* 2. INNER CONTAINER CHỨA DOT/LINE (1400px) */
+.timeline-inner {
+  width: 100%;
+  max-width: 1400px; /* Theo yêu cầu của bạn */
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Đường kẻ ngang */
+.timeline-line {
+  position: absolute;
+  top: 35%;
+  left: 0;
+  width: 105%;
+  height: 9px;
+  background: rgba(255, 255, 255, 0.2);
+  z-index: 1;
+}
+
+.timeline-arrow {
+  position: absolute;
+  top: 50%;
+  right: -6.1%;
+  transform: translateY(-50%);
+  width: 0; 
+  height: 0; 
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  border-left: 15px solid rgba(255, 255, 255, 0.2);
+  z-index: 2;
+}
+
+/* Các điểm chấm (Dots) */
+.timeline-point {
+  position: relative;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #1e293b;
+  border: 4px solid; /* Màu sẽ được set inline */
+  z-index: 4;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.timeline-point:hover {
+  transform: scale(1.5);
+  box-shadow: 0 0 30px currentColor;
+  z-index: 999;
+}
+
+/* Tooltip */
+.point-tooltip {
+  position: absolute;
+  bottom: 40px; /* Hiện bên trên */
+  left: 50%;
+  transform: translateX(-50%) translateY(30px) scale(0.8);
+  width: 250px;
+  background: rgba(255, 255, 255, 0.95);
+  color: #1e293b;
+  padding: 15px;
+  border-radius: 12px;
+  text-align: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+  pointer-events: none;
+  z-index: 1000;
+}
+
+.point-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -8px;
+  border-width: 8px;
+  border-style: solid;
+  border-color: rgba(255, 255, 255, 0.95) transparent transparent transparent;
+}
+
+.timeline-point:hover .point-tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0) scale(1);
+}
+
+.point-date {
+  display: block;
+  font-weight: bold;
+  color: #3399ff;
+  margin-bottom: 5px;
+}
+
+/* ================= SECTION 3: SUPPORT (FRIENDS & VKU) ================= */
+.support-wrapper {
+  flex-direction: column;
+}
+
+.support-container {
+  display: flex;
+  width: 100%;
+  height: 80%; 
+  max-width: 1400px;
+  gap: 5px;
+  padding: 0 40px;
+  padding-bottom: 30px;
+  align-items: stretch;;
+  justify-content: center;
+  position: relative;
+}
+
+.support-card {
+  flex: 1;
+  position: relative;
+  border-radius: 30px;
+  height: auto;
+  overflow: hidden;
+  box-shadow: 0 25px 60px rgba(0,0,0,0.6);
+  transition: all 0.5s ease;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+.support-card:hover {
+  transform: scale(1.02);
+  z-index: 10;
+  border-color: #3399ff;
+}
+.support-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+
+.support-card:hover .support-img {
+  transform: scale(1.1);
+}
+
+.support-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 40px;
+  background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+  text-align: center;
+}
+
+.support-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #fff;
+}
+
+.support-desc {
+  font-size: 1.1rem;
+  color: #cbd5e1;
+}
+
+.support-separator {
+  width: 100px;
+  height: 100px;
+  background: transparent;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  align-self: center;
+  font-size: 3rem;
+  font-weight: 1100;
+  color: #135eaa;
+  z-index: 20;
+  margin: 0 -40px; /* Kéo 2 bên lại gần */
+  animation: pulseX 2s infinite;
+}
+
+@media (max-width: 1024px) {
+  .giant-name { font-size: 6rem; }
+  .support-container { flex-direction: column; gap: 30px; height: auto; padding: 40px 20px; }
+  .support-separator { margin: 0; transform: rotate(90deg); }
+}
+
+@media (max-width: 768px) {
+  .about-section { padding-top: 100px; height: auto; min-height: 100vh; }
+  .team-container { flex-direction: column; height: auto; }
+  .giant-name { font-size: 4rem; transform: translate(-50%, -50%) rotate(0deg); top: 15%; opacity: 0.3; }
+  .member-photo { height: 350px; margin-top: 50px; }
+  .timeline-container { flex-direction: column; width: 4px; height: 600px; background: rgba(255,255,255,0.2); margin: 50px 0; }
+  .timeline-line { display: none; }
+  .timeline-point { margin: 30px 0; }
+  .point-tooltip { left: 50px; bottom: auto; top: -10px; transform: none !important; opacity: 1; visibility: visible; width: 200px; text-align: left; }
+  .point-tooltip::after { top: 20px; left: -20px; border-color: transparent rgba(255, 255, 255, 0.95) transparent transparent; }
+}
