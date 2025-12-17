@@ -367,26 +367,6 @@ const getOccupiedSeats = async (req, res) => {
   }
 };
 
-// Format và gửi email đi cho người dùng
-const formatEmail = async (req, res) => {
-  /*
-   flight: flight,
-            passenger: passenger,
-            totalPrice: totalPrice,
-            ticketInfo: ticketInfo,
-            selectedSeats: selectedSeats
-  */
-  const { flight, passenger, totalPrice, selectedSeats } = req.body;
-
-  // Config cho account gmail
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
-    },
-  });
-};
 module.exports = {
   SearchFlights,
   priceStandard,

@@ -10,6 +10,7 @@ import PaymentPage from "./components/BookingFlight/PaymentPage.jsx";
 import StaffDashboard from "./pages/StaffDashboard.jsx";
 import AdminDashboard from "./pages/AdminDashboard.jsx";
 import BookSuccess from "./components/BookingFlight/BookingSuccess.jsx";
+import SeatMapChange from "./components/SeatMapChangeSeat/SeatMapChange.jsx";
 export default function App() {
   return (
     <Routes>
@@ -25,6 +26,7 @@ export default function App() {
       <Route path="*" element={<HomePage />} />
       <Route path="/staff-dashboard" element={<StaffDashboard />} />
       <Route path="/admin-dashboard" element={<AdminDashboard />} />
+      <Route path="/seat-change" element={<SeatMapChange />} />
     </Routes>
   );
 }

@@ -421,7 +421,8 @@ const FlightResults = ({ searchTriggered, flights = [] }) => {
                 {/**Phải edit lại số chỗ floghtTotalSeat- seatAlreadyBooked */}
                 <div className="fc-seat-info">
                   <Armchair size={14} /> Còn{" "}
-                  {flight.flightTotalSeat - flight.seatCount} chỗ
+                  {flight.flightTotalSeat - flight.seatCount}
+                  chỗ
                 </div>
                 <button
                   className="btn-select"
