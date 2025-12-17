@@ -105,7 +105,7 @@ const MyTrips = () => {
       }
     };
     getInfoFromPassenger();
-  }, []);
+  }, [passengerID]);
   // Filter logic
   console.log(flight);
   const filteredTrips = trips.filter((trip) => {
@@ -123,10 +123,10 @@ const MyTrips = () => {
       );
     });
   });
-  // --- ACTIONS HANDLERS (Logic điều hướng) ---
+  // Đổi chỗ ngồi
   const handleChangeSeat = (trip) => {
     if (trip.status !== "valid") return alert("Vé này không thể đổi ghế!");
-    // Logic: Navigate to SeatMap with ticketID
+    // Logic: Navigate to SeatMap với thông tin vé ticketID
     navigate("/seat-change", {
       state: {
         ticket: {
@@ -146,30 +146,60 @@ const MyTrips = () => {
     );
   };
 
-  const handleChangeFlight = (trip) => {
-    if (trip.status !== "valid") return alert("Vé này không thể đổi chuyến!");
-    // Logic: Navigate to SearchFlight with old ticket info
-    console.log("Điều hướng đến trang tìm chuyến mới cho:", trip.ticketID);
-    alert(
-      `Đang tìm chuyến bay thay thế cho chặng ${trip.departurePoint} - ${trip.arrivePoint}...`
-    );
-  };
-
-  const handleCancelTicket = (trip) => {
+  const handleCancelTicket = async (trip) => {
     if (trip.status !== "valid") return alert("Vé này không thể hủy!");
-    // Logic: Open Confirm Modal -> Call API Refund
     const confirm = window.confirm(
       "Bạn có chắc chắn muốn hủy vé này? Phí hoàn vé sẽ được áp dụng."
     );
     if (confirm) {
       console.log("Gửi yêu cầu hủy vé:", trip.ticketID);
-      // Giả lập cập nhật state
-      setTrips((prev) =>
-        prev.map((t) =>
-          t.ticketID === trip.ticketID ? { ...t, status: "cancelled" } : t
-        )
-      );
-      setSelectedTrip((prev) => ({ ...prev, status: "cancelled" }));
+      const token = localStorage.getItem("accessToken");
+      try {
+        const response = await fetch(
+          `http://localhost:3001/api/user/mytrip/ticket/cancel-ticket/${trip.ticketID}`,
+          {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        const result = await response.json();
+
+        if (response.ok) {
+          setTrips((prev) =>
+            prev.map((group) => ({
+              ...group,
+              tickets: group.tickets.map((t) =>
+                t.ticketID === trip.ticketID ? { ...t, status: "cancelled" } : t
+              ),
+            }))
+          );
+          setSelectedTrip((prev) => ({ ...prev, status: "cancelled" }));
+
+          setTimeout(() => {
+            setSelectedTrip(null);
+
+            setTrips((prevTrips) => {
+              const updatedTrips = prevTrips.map((group) => ({
+                ...group,
+                tickets: group.tickets.filter(
+                  (t) => t.ticketID !== trip.ticketID
+                ),
+              }));
+              return updatedTrips.filter((group) => group.tickets.length > 0);
+            });
+
+            alert("Đã hủy vé thành công");
+          }, 1500);
+        } else {
+          alert("Lỗi: " + (result.message || "Không thể hủy vé"));
+        }
+      } catch (error) {
+        console.error("Lỗi kết nối:", error);
+        alert("Lỗi kết nối server");
+      }
     }
   };
 

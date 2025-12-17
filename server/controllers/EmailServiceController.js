@@ -25,23 +25,32 @@ const TRANSLATIONS = {
     emailSubjectTicket: "Vé Máy Bay Điện Tử Chuyến",
     thankYouHeader: "[ĐSVN] Thông báo mua vé thành công",
     greeting: "Kính gửi Quý khách hàng,",
-    thankYouBody1: "Xin trân trọng cảm ơn quý khách đã lựa chọn sử dụng dịch vụ đặt vé hàng không trực tuyến công ty FlightHK của chúng tôi.",
+    thankYouBody1:
+      "Xin trân trọng cảm ơn quý khách đã lựa chọn sử dụng dịch vụ đặt vé hàng không trực tuyến công ty FlightHK của chúng tôi.",
     printInstruction: "Quý khách có thể thực hiện in vé bằng các cách sau:",
     printMethod: "Tại các điểm in vé tự động của các sân bay",
-    softCopyNote: "Trong trường hợp không in được vé do vấn đề kỹ thuật, quý khách có thể lưu bản mềm trên các thiết bị di động cá nhân như smart phone, máy tính bảng,... khi check-in.",
-    promoHeader: "Ngoài ra, quý khách còn được hưởng chính sách ưu đãi của các đối tác liên kết như:",
-    promoBody: "Voucher giảm giá tới 20% khi sử dụng dịch vụ vé thông qua thanh toán VietQR khi đi và đến tại các sân bay",
+    softCopyNote:
+      "Trong trường hợp không in được vé do vấn đề kỹ thuật, quý khách có thể lưu bản mềm trên các thiết bị di động cá nhân như smart phone, máy tính bảng,... khi check-in.",
+    promoHeader:
+      "Ngoài ra, quý khách còn được hưởng chính sách ưu đãi của các đối tác liên kết như:",
+    promoBody:
+      "Voucher giảm giá tới 20% khi sử dụng dịch vụ vé thông qua thanh toán VietQR khi đi và đến tại các sân bay",
     noteHeader: "Chú ý:",
-    note1: "Khi in vé ở các sân bay, quý khách vui lòng mang theo giấy tờ tùy thân đã được sử dụng để mua vé cùng với mã vé khách hàng nhận được trong email này.",
-    note2: "Để đảm bảo quyền lợi của mình, quý khách vui lòng mang theo vé và giấy tờ tùy thân ghi trên vé trong suốt hành trình và xuất trình cho nhân viên sân bay khi có yêu cầu.",
+    note1:
+      "Khi in vé ở các sân bay, quý khách vui lòng mang theo giấy tờ tùy thân đã được sử dụng để mua vé cùng với mã vé khách hàng nhận được trong email này.",
+    note2:
+      "Để đảm bảo quyền lợi của mình, quý khách vui lòng mang theo vé và giấy tờ tùy thân ghi trên vé trong suốt hành trình và xuất trình cho nhân viên sân bay khi có yêu cầu.",
     note3: "Đây là email gửi tự động. Xin vui lòng không trả lời email này.",
-    contactSupport: "Quý khách có thể liên hệ với trung tâm hỗ trợ khách hàng <strong>0364616619</strong> để được trợ giúp.",
+    contactSupport:
+      "Quý khách có thể liên hệ với trung tâm hỗ trợ khách hàng <strong>0364616619</strong> để được trợ giúp.",
     footerGreeting: "Xin Trân trọng cảm ơn!",
     companyName: "Công ty Dịch vụ FlightHK.",
     // Ticket Email
     ticketHeader: "Vé điện tử của quý khách trong thư này!",
-    envProtection: "Để góp phần bảo vệ môi trường chúng tôi khuyến khích khách hàng sử dụng vé điện tử lên check-in, hạn chế in vé giấy.",
-    bookingConfirmed: "Yêu cầu đặt vé của quý khách đã được xác nhận thành công. Quý khách vui lòng xem vé điện tử trong tập tin đính kèm.",
+    envProtection:
+      "Để góp phần bảo vệ môi trường chúng tôi khuyến khích khách hàng sử dụng vé điện tử lên check-in, hạn chế in vé giấy.",
+    bookingConfirmed:
+      "Yêu cầu đặt vé của quý khách đã được xác nhận thành công. Quý khách vui lòng xem vé điện tử trong tập tin đính kèm.",
     flightInfoTitle: "THÔNG TIN CHUYẾN BAY",
     route: "NƠI ĐI, NƠI ĐẾN",
     bookingCode: "Mã đặt vé",
@@ -50,15 +59,19 @@ const TRANSLATIONS = {
     seat: "Ghế",
     classEconomy: "Phổ thông",
     classBusiness: "Thương gia",
-    ticketValidNote: "- Vé có giá trị khi hành khách có giấy tờ tùy thân trùng khớp thông tin in trên thẻ.",
-    checkinNote: "- Quý khách vui lòng có mặt tại sân bay trước giờ bay 2 tiếng.",
-    refundLink: "- Vui lòng tham khảo quy định hoàn đổi vé online <a href='#'>tại đây</a>",
+    ticketValidNote:
+      "- Vé có giá trị khi hành khách có giấy tờ tùy thân trùng khớp thông tin in trên thẻ.",
+    checkinNote:
+      "- Quý khách vui lòng có mặt tại sân bay trước giờ bay 2 tiếng.",
+    refundLink:
+      "- Vui lòng tham khảo quy định hoàn đổi vé online <a href='#'>tại đây</a>",
     supportNeeded: "Quý khách cần hỗ trợ?",
     hotline: "Tổng đài",
     wish: "Kính chúc Quý khách có một chuyến đi tốt đẹp!",
     // PDF Specific
     pdfTitle: "VÉ ĐIỆN TỬ",
-    pdfGreetingBody: "Xin trân trọng cảm ơn quý khách đã lựa chọn dịch vụ của FlightHK. Thông tin vé như sau:",
+    pdfGreetingBody:
+      "Xin trân trọng cảm ơn quý khách đã lựa chọn dịch vụ của FlightHK. Thông tin vé như sau:",
     pdfJourneyInfo: "Thông tin hành trình:",
     pdfRoute: "ĐIỂM KHỞI HÀNH - ĐIỂM ĐẾN / ROUTE",
     pdfFlightNo: "SỐ HIỆU CHUYẾN BAY / FLIGHT",
@@ -69,31 +82,40 @@ const TRANSLATIONS = {
     pdfName: "HỌ TÊN / FULL NAME",
     pdfPrice: "TỔNG GIÁ VÉ / TOTAL PRICE",
     pdfBookingCodePV: "Mã đặt chỗ PV",
-    pdfFooter1: "- Mã QR này chứa tất cả thông tin quan trọng. Vui lòng xuất trình mã này khi làm thủ tục check-in.",
-    pdfFooter2: "- Đây là vé điện tử. Quý khách không cần in ra giấy."
+    pdfFooter1:
+      "- Mã QR này chứa tất cả thông tin quan trọng. Vui lòng xuất trình mã này khi làm thủ tục check-in.",
+    pdfFooter2: "- Đây là vé điện tử. Quý khách không cần in ra giấy.",
   },
   en: {
     emailSubjectSuccess: "[FLIGHTHK] Booking Success Notification",
     emailSubjectTicket: "Electronic Flight Ticket - Flight",
     thankYouHeader: "[FlightHK] Booking Confirmation",
     greeting: "Dear Valued Customer,",
-    thankYouBody1: "Thank you for choosing FlightHK's online flight booking service.",
+    thankYouBody1:
+      "Thank you for choosing FlightHK's online flight booking service.",
     printInstruction: "You can print your ticket via:",
     printMethod: "Automatic ticket kiosks at airports",
-    softCopyNote: "In case of technical issues preventing printing, please save the soft copy on your mobile devices (smartphone, tablet) for check-in.",
+    softCopyNote:
+      "In case of technical issues preventing printing, please save the soft copy on your mobile devices (smartphone, tablet) for check-in.",
     promoHeader: "Additionally, enjoy exclusive offers from our partners:",
-    promoBody: "Up to 20% discount voucher when paying via VietQR at departure and arrival airports.",
+    promoBody:
+      "Up to 20% discount voucher when paying via VietQR at departure and arrival airports.",
     noteHeader: "Notice:",
-    note1: "When printing tickets at the airport, please bring the ID used for booking along with the ticket code in this email.",
-    note2: "To ensure your rights, please bring the ticket and the ID listed on the ticket throughout the journey and present them to airport staff upon request.",
+    note1:
+      "When printing tickets at the airport, please bring the ID used for booking along with the ticket code in this email.",
+    note2:
+      "To ensure your rights, please bring the ticket and the ID listed on the ticket throughout the journey and present them to airport staff upon request.",
     note3: "This is an automated email. Please do not reply.",
-    contactSupport: "You can contact our customer support center at <strong>0364616619</strong> for assistance.",
+    contactSupport:
+      "You can contact our customer support center at <strong>0364616619</strong> for assistance.",
     footerGreeting: "Sincerely, thank you!",
     companyName: "FlightHK Service Company.",
     // Ticket Email
     ticketHeader: "Your E-Ticket is enclosed!",
-    envProtection: "To protect the environment, we encourage using E-Tickets for check-in instead of printing paper tickets.",
-    bookingConfirmed: "Your booking request has been successfully confirmed. Please find your E-Ticket in the attached file.",
+    envProtection:
+      "To protect the environment, we encourage using E-Tickets for check-in instead of printing paper tickets.",
+    bookingConfirmed:
+      "Your booking request has been successfully confirmed. Please find your E-Ticket in the attached file.",
     flightInfoTitle: "FLIGHT INFORMATION",
     route: "ROUTE",
     bookingCode: "Booking Code",
@@ -102,15 +124,18 @@ const TRANSLATIONS = {
     seat: "Seat",
     classEconomy: "Economy",
     classBusiness: "Business",
-    ticketValidNote: "- Ticket is valid when the passenger holds ID matching the information on the ticket.",
+    ticketValidNote:
+      "- Ticket is valid when the passenger holds ID matching the information on the ticket.",
     checkinNote: "- Please be at the airport 2 hours before departure time.",
-    refundLink: "- Please refer to the online refund/exchange policy <a href='#'>here</a>",
+    refundLink:
+      "- Please refer to the online refund/exchange policy <a href='#'>here</a>",
     supportNeeded: "Need support?",
     hotline: "Hotline",
     wish: "We wish you a pleasant flight!",
     // PDF Specific
     pdfTitle: "E-TICKET",
-    pdfGreetingBody: "Thank you for choosing FlightHK. Your ticket information is as follows:",
+    pdfGreetingBody:
+      "Thank you for choosing FlightHK. Your ticket information is as follows:",
     pdfJourneyInfo: "Journey Information:",
     pdfRoute: "ROUTE",
     pdfFlightNo: "FLIGHT NO",
@@ -121,12 +146,13 @@ const TRANSLATIONS = {
     pdfName: "FULL NAME",
     pdfPrice: "TOTAL PRICE",
     pdfBookingCodePV: "Booking Code PV",
-    pdfFooter1: "- This QR code contains all important information. Please present it at check-in.",
-    pdfFooter2: "- This is an electronic ticket. No printing required."
-  }
+    pdfFooter1:
+      "- This QR code contains all important information. Please present it at check-in.",
+    pdfFooter2: "- This is an electronic ticket. No printing required.",
+  },
 };
 const getText = (lang, key) => {
-    return TRANSLATIONS[lang]?.[key] || TRANSLATIONS['vi'][key];
+  return TRANSLATIONS[lang]?.[key] || TRANSLATIONS["vi"][key];
 };
 const transporter = nodemailer.createTransport({
   service: "gmail",
@@ -137,10 +163,11 @@ const transporter = nodemailer.createTransport({
 });
 
 const createThankYouEmail = (passengerName, lang) => {
-  const safeLang = (lang && lang.toString().toLowerCase().startsWith('en')) ? 'en' : 'vi';
-  
+  const safeLang =
+    lang && lang.toString().toLowerCase().startsWith("en") ? "en" : "vi";
+
   const t = TRANSLATIONS[safeLang];
-  
+
   return `
         <div style="font-family: Arial, sans-serif; max-width: 650px; margin: auto; padding: 20px; border: 1px solid #e0e0e0; background-color: #f7f7f7;">
             <h2 style="color: #0056b3; border-bottom: 2px solid #ddd; padding-bottom: 10px;">${t.thankYouHeader}</h2>
@@ -210,7 +237,8 @@ const createTicketInfoEmail = (
   const seatsDetailHtml = seats
     ?.map((seat, index) => {
       const seatNumber = seat.seatNumber.replace(flightNumber, "");
-      const seatType = seat.seatType === "economy" ? t.classEconomy : t.classBusiness;
+      const seatType =
+        seat.seatType === "economy" ? t.classEconomy : t.classBusiness;
       return `
            <div style="margin-bottom: 15px;">
                 <div style="background-color: #e9ecef; padding: 10px; border-radius: 5px;">
@@ -354,9 +382,7 @@ const drawTicketPDF = async (doc, data, qrCodeBuffer, lang) => {
     .fillColor("black")
     .fontSize(12)
     .text(t.greeting, PADDING, currentY)
-    .text(
-      t.pdfGreetingBody,   { align: "left" }
-    );
+    .text(t.pdfGreetingBody, { align: "left" });
 
   currentY = doc.y + 10;
 
@@ -394,16 +420,10 @@ const drawTicketPDF = async (doc, data, qrCodeBuffer, lang) => {
   };
 
   // Thông tin chuyến bay
-  doc
-    .fontSize(12)
-    .fillColor("black")
-    .text(t.pdfJourneyInfo, LEFT_COL_X, infoY);
+  doc.fontSize(12).fillColor("black").text(t.pdfJourneyInfo, LEFT_COL_X, infoY);
   infoY = doc.y + 5;
 
-  drawInfoBlock(
-    t.pdfRoute,
-    `${data.departureName} - ${data.arriveName}`
-  );
+  drawInfoBlock(t.pdfRoute, `${data.departureName} - ${data.arriveName}`);
   drawInfoBlock(t.pdfFlightNo, data.flightNumber);
   drawInfoBlock(t.pdfDate, data.departureDay);
   drawInfoBlock(t.pdfTime, data.departureTime);
@@ -420,14 +440,14 @@ const drawTicketPDF = async (doc, data, qrCodeBuffer, lang) => {
   infoY = doc.y + 5;
 
   drawInfoBlock(t.pdfName, data.passengerName);
-  const formattedPrice = new Intl.NumberFormat(lang === 'en' ? 'en-US' : 'vi-VN', {
-      style: 'currency',
-      currency: 'VND'
-  }).format(data.totalPrice);
-  drawInfoBlock(
-    t.pdfPrice,
-    formattedPrice
-  );
+  const formattedPrice = new Intl.NumberFormat(
+    lang === "en" ? "en-US" : "vi-VN",
+    {
+      style: "currency",
+      currency: "VND",
+    }
+  ).format(data.totalPrice);
+  drawInfoBlock(t.pdfPrice, formattedPrice);
 
   // --- Cột phải (Mã QR và Mã đặt chỗ) ---
   if (qrCodeBuffer) {
@@ -456,14 +476,7 @@ const drawTicketPDF = async (doc, data, qrCodeBuffer, lang) => {
     });
 
   currentY = TICKET_FRAME_Y + TICKET_FRAME_HEIGHT + 10;
-doc
-    .fillColor("#333")
-    .fontSize(10)
-    .text(
-      t.pdfFooter1,
-      PADDING,
-      currentY
-    );
+  doc.fillColor("#333").fontSize(10).text(t.pdfFooter1, PADDING, currentY);
   doc.text(t.pdfFooter2);
 };
 // File thông tin
@@ -538,7 +551,7 @@ const informationFile = async (
   });
 
   return {
-    filename: `E-Ticket_${allTicketIds}.pdf`, 
+    filename: `E-Ticket_${allTicketIds}.pdf`,
     content: pdfBuffer,
     contentType: "application/pdf",
   };
@@ -553,10 +566,14 @@ const formatEmail = async (req, res) => {
             selectedSeats: selectedSeats
   */
 
-  const { flight, passenger, totalPrice, ticketInfo, selectedSeats, language } = req.body;
-  const lang = (language && language.toString().toLowerCase().startsWith('en')) ? 'en' : 'vi';
+  const { flight, passenger, totalPrice, ticketInfo, selectedSeats, language } =
+    req.body;
+  const lang =
+    language && language.toString().toLowerCase().startsWith("en")
+      ? "en"
+      : "vi";
   console.log("Ngôn ngữ nhận được:", language); // Log để kiểm tra
-  console.log("Ngôn ngữ sử dụng:", lang); 
+  console.log("Ngôn ngữ sử dụng:", lang);
 
   const t = TRANSLATIONS[lang] || TRANSLATIONS.vi; // Fallback an toàn
 
@@ -586,7 +603,7 @@ const formatEmail = async (req, res) => {
 
   const email1Options = {
     from: `"FlightHK Support" <${process.env.EMAIL_USER}>`,
-    to: recipientEmail, 
+    to: recipientEmail,
     subject: t.emailSubjectSuccess,
     html: thankYouContent,
   };
@@ -656,6 +673,47 @@ const formatEmail = async (req, res) => {
     success: "success",
   });
 };
+
+// Gửi email phản hồi bạn đã hủy vé thành công
+const sendCancellationEmail = async (passengerEmail, ticketID) => {
+  const mailOptions = {
+    from: '"FlightHK Support" <your-email@gmail.com>',
+    to: passengerEmail,
+    subject: `[Thông báo hủy vé] Mã đặt chỗ: ${ticketID}`,
+    html: `
+      <h3>Hủy vé thành công!</h3>
+      <p>Chào bạn, chúng tôi xác nhận vé <b>${ticketID}</b> của bạn đã được hủy thành công.</p>
+      <p>Để tiến hành hoàn tiền, vui lòng phản hồi email này bằng cách: </p>
+      <ul>
+        <li>Cung cấp số tài khoản ngân hàng + Tên ngân hàng + Chủ tài khoản.</li>
+        <li>Hoặc gửi ảnh mã QR nhận tiền.</li>
+      </ul>
+      <p>Trân trọng,</p>
+    `,
+  };
+  // Gửi email phản hồi cho khách hàng đã hoàn tiền
+
+  return await transporter.sendMail(mailOptions);
+};
+
+const sendRefundSuccessEmail = async (passengerEmail, ticketID) => {
+  const mailOptions = {
+    from: '"FlightHK Support" <your-email@gmail.com>',
+    to: passengerEmail,
+    subject: `Re: [Thông báo hủy vé] Mã đặt chỗ: ${ticketID}`, // Thêm Re:
+    html: `
+      <h3>Hoàn tiền thành công!</h3>
+      <p>Chúng tôi đã thực hiện lệnh chuyển khoản hoàn tiền cho mã vé <b>${ticketID}</b>.</p>
+      <p>Số tiền sẽ hiển thị trong tài khoản của bạn sau 1-3 ngày làm việc tùy ngân hàng.</p>
+      <p>Cảm ơn bạn đã sử dụng dịch vụ của FlightHK.</p>
+    `,
+    // Logic để tạo thread trong Email
+  };
+
+  await transporter.sendMail(mailOptions);
+};
 module.exports = {
   formatEmail,
+  sendCancellationEmail,
+  sendRefundSuccessEmail,
 };
