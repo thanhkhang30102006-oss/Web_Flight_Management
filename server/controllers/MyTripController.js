@@ -160,12 +160,14 @@ const cancelTicket = async (req, res) => {
     const contactEmail = ticket.contactEmail;
     const paymentID = ticket.paymentID;
     const seatNumber = ticket.seatNumber;
-    await Ticket.destroy({ where: { ticketID: ticketID }, transaction: t });
-
-    await Seat.destroy({
-      where: { seatNumber: seatNumber },
-      transaction: t,
-    });
+    await Ticket.update(
+      { ticketState: "cancelled", cancelledAt: new Date() },
+      { where: { ticketID: ticketID }, transaction: t }
+    );
+    await Seat.update(
+      { seatState: "available" },
+      { where: { seatNumber: seatNumber }, transaction: t }
+    );
     await t.commit();
 
     if (contactEmail) {

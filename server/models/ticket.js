@@ -57,6 +57,10 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         defaultValue: "valid",
       },
+      cancelledAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
       paymentID: {
         type: DataTypes.STRING,
         allowNull: false,

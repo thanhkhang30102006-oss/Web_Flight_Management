@@ -191,7 +191,9 @@ const MyTrips = () => {
               return updatedTrips.filter((group) => group.tickets.length > 0);
             });
 
-            alert("Đã hủy vé thành công");
+            alert(
+              "Đã hủy vé thành công. Bạn vẫn có 1 tiếng để liên hệ hoàn lại vé"
+            );
           }, 1500);
         } else {
           alert("Lỗi: " + (result.message || "Không thể hủy vé"));

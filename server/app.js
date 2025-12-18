@@ -10,6 +10,8 @@ const CryptoJS = require("crypto-js");
 const db = require("./models");
 
 var app = express();
+
+require("./cron.js");
 require("dotenv").config();
 app.use(logger("dev"));
 app.use(express.json());
