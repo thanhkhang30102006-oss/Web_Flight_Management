@@ -248,7 +248,7 @@
     "settings": "Settings",
     "support": "Support",
     "flightManagement": "Flight Management",
-    "createFlight": "Create Flight",
+    "createFlight": "Create/Update",
     "flightSchedule": "Flight Schedule",
     "updateStatus": "Update Status",
     "seatLoad": "Seat Load",

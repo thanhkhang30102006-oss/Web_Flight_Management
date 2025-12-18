@@ -256,9 +256,9 @@ const SeatMapChange = () => {
         </div>
 
         {/* MAIN GRID */}
-        <div className="booking-grid">
+        <div className="seatchange-booking-grid">
           {/* --- CỘT TRÁI: INFO --- */}
-          <div className="glass-panel info-column">
+          <div className="glass-panel seatchange-info-column">
             <div className="current-seat-info">
               <h4>Ghế hiện tại</h4>
               <div>{ticket.seatNumber}</div>

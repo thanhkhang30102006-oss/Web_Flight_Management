@@ -11,6 +11,7 @@ import {
   Plane,
 } from "lucide-react";
 import CreateFlightModal from "./CreateFlightModal";
+import EditFlightStatusModal from "./EditFlightStatusModal";
 
 // Hàm giả lập tính giờ đến (Departure + 2h15p)
 const calculateArrivalTime = (depTime) => {
@@ -35,10 +36,62 @@ const FlightManagement = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all"); // 'all' | 'active' | 'delayed' | 'cancelled'
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 8; // Số dòng mỗi trang
+  const itemsPerPage = 8;
   const [refreshKey, setRefreshKey] = useState(0);
   const [flights, setFlights] = useState([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedFlight, setSelectedFlight] = useState(null);
+
+  const handleEditClick = (flight) => {
+    setSelectedFlight(flight);
+    setIsEditModalOpen(true);
+  };
+  const handleUpdateFlight = async (updatedData) => {
+    try {
+      console.log("Dữ liệu gửi đi update:", updatedData);
+
+      // Gọi API cập nhật (Giả lập)
+      const response = await fetch(
+        `http://localhost:3001/api/staff/flightmanagement/update/${updatedData.flightNumber}`,
+        {
+          method: "PUT", // Hoặc POST tùy backend của bạn
+          headers: {
+            "Content-Type": "application/json",
+            // 'Authorization': `Bearer ${token}` // Nếu cần token
+          },
+          body: JSON.stringify({
+            flightState: updatedData.flightState,
+            departureDay: updatedData.departureDay,
+            departureTime: updatedData.departureTime,
+            arriveDay: updatedData.arriveDay,
+            arriveTime: updatedData.arriveTime,
+            reason: updatedData.reason, // Gửi lý do lên server
+          }),
+        }
+      );
+
+      // Giả lập thành công nếu không có API thật
+      // const result = await response.json();
+
+      // Cập nhật lại state local để UI thay đổi ngay
+      const updatedFlights = flights.map((f) =>
+        f.flightNumber === updatedData.flightNumber ? updatedData : f
+      );
+      setFlights(updatedFlights);
+
+      alert(
+        `Cập nhật trạng thái chuyến bay ${updatedData.flightNumber} thành công!`
+      );
+      setIsEditModalOpen(false);
+      setSelectedFlight(null);
+    } catch (error) {
+      console.error("Lỗi cập nhật:", error);
+      alert("Cập nhật thất bại.");
+    }
+  };
+
   // useEffect load dữ liệu ra trang
   useEffect(() => {
     const getFlights = async () => {
@@ -129,7 +182,7 @@ const FlightManagement = () => {
         </div>
         <button
           className="btn-action primary"
-          onClick={() => setIsModalOpen(true)}
+          onClick={() => setIsCreateModalOpen(true)}
           style={{
             background: "#2eff66ba",
             border: "1px solid rgba(255, 255, 255, 0.6)",
@@ -189,7 +242,9 @@ const FlightManagement = () => {
           <tbody>
             {displayedFlights.length > 0 ? (
               displayedFlights.map((flight, index) => {
-                const arrTime = calculateArrivalTime(flight.departureTime);
+                const displayArrTime = flight.arriveTime
+                  ? flight.arriveTime.slice(0, 5)
+                  : calculateArrivalTime(flight.departureTime);
                 return (
                   <tr key={index}>
                     <td>
@@ -212,7 +267,16 @@ const FlightManagement = () => {
                           {flight.departureTime.slice(0, 5)}
                         </span>
                         <span className="time-sep">-</span>
-                        <span className="time-sub">{arrTime}</span>
+                        <span className="time-sub">{displayArrTime}</span>
+                        <div
+                          style={{
+                            fontSize: "10px",
+                            color: "#94a3b8",
+                            marginTop: "2px",
+                          }}
+                        >
+                          {flight.departureDay?.split("T")[0]}
+                        </div>
                       </div>
                     </td>
                     <td style={{ color: "#f7f8f9ff", fontSize: "13px" }}>
@@ -230,7 +294,11 @@ const FlightManagement = () => {
                       </span>
                     </td>
                     <td style={{ textAlign: "center" }}>
-                      <button className="action-icon-btn edit" title="Sửa">
+                      <button
+                        className="action-icon-btn edit"
+                        title="Sửa trạng thái & giờ"
+                        onClick={() => handleEditClick(flight)}
+                      >
                         <Edit size={16} />
                       </button>
                       <button className="action-icon-btn delete" title="Xóa">
@@ -259,9 +327,16 @@ const FlightManagement = () => {
       </div>
       {/* --- MODAL COMPONENT --- */}
       <CreateFlightModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
         onSave={handleCreateFlight}
+      />
+
+      <EditFlightStatusModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        flight={selectedFlight}
+        onSave={handleUpdateFlight}
       />
 
       {/* FOOTER: Pagination */}

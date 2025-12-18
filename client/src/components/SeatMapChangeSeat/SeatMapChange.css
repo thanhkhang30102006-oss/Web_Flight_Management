@@ -28,7 +28,7 @@
 }
 
 /* --- GRID LAYOUT --- */
-.booking-grid {
+.seatchange-booking-grid {
   flex: 1;
   padding: 20px;
   display: flex;
@@ -40,7 +40,7 @@
 
 
 /* --- INFO COLUMN (CỘT TRÁI) --- */
-.info-column {
+.seatchange-info-column {
   width: 320px;
   display: flex;
   flex-direction: column;
