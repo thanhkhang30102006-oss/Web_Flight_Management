@@ -11,6 +11,7 @@ import BookingOperations from "../components/DashBoardStaff/BookingOperations";
 import RevenueReports from "../components/DashBoardStaff/RevenueReports";
 import CustomerSupport from "../components/DashBoardStaff/CustomerSupport";
 import FlightScheduleMap from "../components/DashBoardStaff/FlightScheduleMap";
+import FlightReport from "../components/DashBoardStaff/FlightReport";
 
 // Dữ liệu mô phỏng bảng `flightinformations`
 const StaffDashboard = () => {
@@ -25,10 +26,10 @@ const StaffDashboard = () => {
       // Nhóm Flight Management
       case "flight-mgt":
       case "flight-create-update":
-      case "flight-status":
-      case "flight-report":
         return <FlightManagement />;
 
+      case "flight-report":
+        return <FlightReport />;
       case "flight-schedule-map":
         return <FlightScheduleMap />;
       // Nhóm Booking Operations

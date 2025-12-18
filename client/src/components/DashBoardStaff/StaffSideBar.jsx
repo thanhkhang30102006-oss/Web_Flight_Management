@@ -73,12 +73,8 @@ function StaffSidebar({ currentTab, onTabChange }) {
           name: t("sidebar.flightSchedule", "Lên lịch bay"),
         },
         {
-          id: "flight-status",
-          name: t("sidebar.updateStatus", "Cập nhật trạng thái"),
-        },
-        {
-          id: "flight-load",
-          name: t("sidebar.seatLoad", "Tình trạng ghế (Load)"),
+          id: "flight-report",
+          name: t("sidebar.flightReport", "Báo cáo chuyến bay"),
         },
       ],
     },

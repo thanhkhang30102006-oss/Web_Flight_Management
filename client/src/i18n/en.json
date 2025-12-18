@@ -251,7 +251,7 @@
     "createFlight": "Create/Update",
     "flightSchedule": "Flight Schedule",
     "updateStatus": "Update Status",
-    "seatLoad": "Seat Load",
+    "flightReport": "Report/Statistics",
     "bookingOps": "Booking Operations",
     "searchBooking": "Search Booking",
     "changeBooking": "Change Date/Seat",
