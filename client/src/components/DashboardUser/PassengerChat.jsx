@@ -143,7 +143,6 @@ const PassengerChat = () => {
   const handleSend = async (e) => {
     e.preventDefault();
     if (!inputValue.trim()) return;
-
     // Dữ liệu gửi lên Server
     const msgData = {
       passengerID: currentUser.id,

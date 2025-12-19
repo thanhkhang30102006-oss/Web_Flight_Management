@@ -19,7 +19,7 @@ import "./CustomerSupport.css";
 import "../../pages/StaffDashboard.css";
 
 const { socket } = useSocket;
-
+const API_URL = `http://localhost:3001`;
 const CustomerSupport = () => {
   const { socket } = useSocket();
 

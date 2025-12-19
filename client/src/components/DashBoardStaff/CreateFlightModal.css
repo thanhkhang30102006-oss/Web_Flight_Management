@@ -13,7 +13,7 @@
 }
 
 
-.modal-content.glass-panel{
+.flightstaff-modal-content.glass-panel{
   width: 600px;
   max-width: 90%;
   background: rgba(30, 41, 59, 0.95); 
@@ -21,13 +21,20 @@
   box-shadow: 0 20px 50px rgba(0,0,0,0.5);
   padding: 30px;
 }
-.modal-header {
+.flightstaff-modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);  
   padding-bottom: 15px;
   margin-bottom: 20px;
+}
+.flightstaff-modal-header h2{
+  text-align: center;
+    margin-bottom: 30px;
+    color:#fff;
+    font-weight: 600;
+    font-size: 24px;
 }
 
 .btn-close {

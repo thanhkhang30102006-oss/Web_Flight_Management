@@ -14,7 +14,6 @@ const customizeConfig = {
   ...config,
   timezone: "+07:00",
   dialectOptions: {
-    useUTC: false,
     dateStrings: true,
     typeCast: true,
   },

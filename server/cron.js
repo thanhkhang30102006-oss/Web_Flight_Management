@@ -17,9 +17,11 @@ cron.schedule("*/5 * * * *", async () => {
 
   if (seatNumbersToDelete.length > 0) {
     await Ticket.destroy({
-      ticketState: "cancelled",
-      cancelledAt: {
-        [Op.lte]: expiredTime,
+      where: {
+        ticketState: "cancelled",
+        cancelledAt: {
+          [Op.lte]: expiredTime,
+        },
       },
     });
 

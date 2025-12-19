@@ -2,13 +2,13 @@ import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import airplaneIcon from "../../assets/Image/airplane-plane-flight-white.svg";
 import {
-  LayoutDashboard, // Tổng quan
-  Plane, // Quản lý chuyến bay
-  Ticket, // Nghiệp vụ vé
-  BarChart3, // Doanh thu & Báo cáo
-  MessageSquare, // Hỗ trợ
+  LayoutDashboard,
+  Plane,
+  Ticket,
+  BarChart3,
+  MessageSquare,
   LogOut,
-  ChevronDown, // Mũi tên
+  ChevronDown,
 } from "lucide-react";
 import "./StaffSideBar.css";
 
@@ -65,20 +65,16 @@ function StaffSidebar({ currentTab, onTabChange }) {
       type: "dropdown", // Menu cha
       subItems: [
         {
-          id: "flight-create",
-          name: t("sidebar.createFlight", "Tạo chuyến bay"),
+          id: "flight-create-update",
+          name: t("sidebar.createFlight"),
         },
         {
-          id: "flight-schedule",
-          name: t("sidebar.flightSchedule", "Lên lịch bay"),
+          id: "flight-schedule-map",
+          name: t("sidebar.flightSchedule", "Lịch trình bay"),
         },
         {
-          id: "flight-status",
-          name: t("sidebar.updateStatus", "Cập nhật trạng thái"),
-        },
-        {
-          id: "flight-load",
-          name: t("sidebar.seatLoad", "Tình trạng ghế (Load)"),
+          id: "flight-report",
+          name: t("sidebar.flightReport", "Báo cáo chuyến bay"),
         },
       ],
     },
@@ -148,6 +144,7 @@ function StaffSidebar({ currentTab, onTabChange }) {
               onMouseEnter={() =>
                 item.type === "dropdown" && handleMouseEnter(item.id)
               }
+              style={{ cursor: "pointer" }}
             >
               {/* MENU CHA */}
               <div

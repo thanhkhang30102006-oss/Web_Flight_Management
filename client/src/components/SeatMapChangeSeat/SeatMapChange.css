@@ -1,0 +1,248 @@
+/* src/components/BookingFlight/SeatMapChange.css */
+
+/* --- LAYOUT & VIDEO BACKGROUND --- */
+.seatmap-change-layout {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  color: #333; /* Reset màu chữ mặc định */
+}
+
+.seatmap-video-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+}
+
+
+/* --- HEADER --- */
+.compact-header {
+  background: rgba(255, 255, 255, 0.126) !important; /* Header trắng đục */
+ 
+}
+
+/* --- GRID LAYOUT --- */
+.seatchange-booking-grid {
+  flex: 1;
+  padding: 20px;
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  align-items: stretch;
+  overflow: hidden; /* Quan trọng để scroll */
+}
+
+
+/* --- INFO COLUMN (CỘT TRÁI) --- */
+.seatchange-info-column {
+  width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.current-seat-info,
+.new-seat-info {
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+/* --- INFO CARDS (Thông tin ghế) --- */
+.current-seat-info,
+.new-seat-info {
+  padding: 15px;
+  border-radius: 12px;
+  text-align: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Style riêng cho ghế hiện tại */
+.current-seat-info {
+  background: #d7e3fc;
+  border: 1px solid #e2e8f0;
+}
+
+.current-seat-info h4,
+.new-seat-info h4 {
+  margin: 0 0 5px 0;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.current-seat-info div {
+  font-size: 28px;
+  font-weight: 800;
+  color: #64748b;
+  line-height: 1.2;
+}
+
+/* Style riêng cho ghế mới */
+.new-seat-info {
+  background: #ffc2d1;
+  border: 1px dashed #cbd5e1;
+}
+
+/* Trạng thái khi ĐÃ chọn ghế mới */
+.new-seat-info.active {
+  background: #eff6ff;
+  border: 2px solid #3b82f6;
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.15);
+  transform: translateY(-2px);
+}
+
+.new-seat-info .selected-seat-id {
+  font-size: 28px;
+  font-weight: 800;
+  color: #3b82f6;
+  animation: popIn 0.3s ease;
+}
+
+.new-seat-info .placeholder-text {
+  font-style: italic;
+  color: #94a3b8;
+  font-size: 14px;
+}
+
+/* Mũi tên điều hướng ở giữa */
+.arrow-down {
+  text-align: center;
+  color: #79acff;
+  margin: 5px 0;
+  animation: bounce 2s infinite;
+}
+
+/* --- ALERT BOX --- */
+.alert-box {
+  font-size: 14px;
+  color: #dc2626;
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  margin-top: 15px;
+  padding: 12px;
+  background: rgba(254, 202, 202, 0.15); /* Màu đỏ nhạt */
+  border-radius: 8px;
+  border: 1px solid rgba(220, 38, 38, 0.1);
+}
+
+/* --- ACTION BUTTON (Nút xác nhận) --- */
+.confirm-btn {
+  margin-top: auto;
+  padding: 15px;
+  border: none;
+  border-radius: 12px;
+  font-weight: bold;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+/* Trạng thái Disable */
+.confirm-btn:disabled {
+  background: #cbd5e1;
+  color: white;
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+/* Trạng thái Active */
+.confirm-btn:not(:disabled) {
+  background: #3b82f6;
+  color: white;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+.confirm-btn:not(:disabled):hover {
+  background: #2563eb;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.5);
+}
+
+.confirm-btn:not(:disabled):active {
+  transform: translateY(0);
+}
+
+/* Animation nhẹ */
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.8); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {transform: translateY(0) rotate(90deg);}
+  40% {transform: translateY(-7px) rotate(95deg);}
+  60% {transform: translateY(-10px) rotate(85deg);}
+}
+
+/* SKIBIDI ANIMATION */
+/* --- FULLSCREEN LOADING OVERLAY --- */
+.fullscreen-loading {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.7); /* Nền tối 70% */
+  backdrop-filter: blur(4px); /* Làm mờ nhẹ nền sau */
+  z-index: 9999; /* Đảm bảo đè lên tất cả */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.loading-content {
+  background: white;
+  padding: 30px 50px;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+  transform: scale(0.9);
+  animation: popIn 0.3s ease-out forwards;
+}
+
+.loading-content p {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #334155;
+}
+
+/* Spinner xoay */
+.spinner-large {
+  width: 50px;
+  height: 50px;
+  border: 5px solid #e2e8f0;
+  border-top-color: #3b82f6; /* Màu xanh chủ đạo */
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes popIn {
+  to { transform: scale(1); }
+}

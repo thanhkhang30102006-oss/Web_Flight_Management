@@ -18,7 +18,7 @@ import "./MyTrips.css";
 import { useNavigate } from "react-router-dom";
 const userData = localStorage.getItem("userData");
 const loggedInUser = userData ? JSON.parse(userData) : null;
-const passengerID = loggedInUser.id;
+const passengerID = loggedInUser?.id;
 
 const MyTrips = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -111,15 +111,22 @@ const MyTrips = () => {
   const filteredTrips = trips.filter((trip) => {
     if (!trip.tickets || trip.tickets.length === 0) return false;
 
-    const term = searchTerm.toLowerCase();
-
+    const term = searchTerm.toLowerCase().trim();
+    if (!term) return true;
+    if (trip.tickets.length.toString() === term) return true;
+    if ((trip.paymentID?.toLowerCase() || "").includes(term)) return true;
     return trip.tickets.some((ticket) => {
       return (
         (ticket.flightNumber?.toLowerCase() || "").includes(term) ||
         (ticket.departurePoint?.toLowerCase() || "").includes(term) ||
         (ticket.arrivePoint?.toLowerCase() || "").includes(term) ||
         (ticket.departureDay?.toLowerCase() || "").includes(term) ||
-        (ticket.departureTime?.toLowerCase() || "").includes(term)
+        (ticket.departureTime?.toLowerCase() || "").includes(term) ||
+        (ticket.seatNumber?.toLowerCase() || "").includes(term) ||
+        (ticket.ticketID?.toLowerCase() || "").includes(term) ||
+        (ticket.contactName?.toLowerCase() || "").includes(term) ||
+        (ticket.contactPhone?.toLowerCase() || "").includes(term) ||
+        (ticket.contactEmail?.toLowerCase() || "").includes(term)
       );
     });
   });
@@ -225,99 +232,145 @@ const MyTrips = () => {
 
       <div className="trips-container">
         {filteredTrips.length > 0 ? (
-          filteredTrips.map((group) => (
-            <div
-              key={group.paymentID}
-              className="payment-group-section"
-              style={{ marginBottom: "30px" }}
-            >
-              <div
-                className="payment-header"
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  background: "rgba(255, 255, 255, 0.9)",
-                  padding: "12px 20px",
-                  borderRadius: "12px",
-                  marginBottom: "15px",
-                  boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
-                  borderLeft: "4px solid #007bff",
-                }}
-              >
-                <div style={{ display: "flex", flexDirection: "column" }}>
-                  <span
-                    style={{
-                      fontSize: "14px",
-                      fontWeight: "bold",
-                      color: "#333",
-                    }}
-                  >
-                    Đơn hàng #{group.paymentID}
-                  </span>
-                  <span style={{ fontSize: "12px", color: "#666" }}>
-                    {group.tickets.length} vé •{" "}
-                    {group.status === "valid" ? "Đã thanh toán" : group.status}
-                  </span>
+          filteredTrips.map((group) => {
+            const gridColumns =
+              group.tickets.length === 5 ? "repeat(5, 1fr)" : "repeat(4, 1fr)";
+
+            return (
+              <div key={group.paymentID} className="payment-group-section">
+                {/* HEADER (Giữ nguyên đẹp như cũ) */}
+                <div className="mytrip-payment-header">
+                  <div style={{ display: "flex", flexDirection: "column" }}>
+                    <span
+                      style={{
+                        fontSize: "15px",
+                        fontWeight: "700",
+                        color: "#1e293b",
+                      }}
+                    >
+                      #{group.paymentID}
+                    </span>
+                    <span
+                      style={{
+                        fontSize: "12px",
+                        color: group.status === "valid" ? "#16a34a" : "#64748b",
+                        fontWeight: "600",
+                        marginTop: "2px",
+                      }}
+                    >
+                      {group.tickets.length} vé •{" "}
+                      {group.status === "valid" ? "Thành công" : group.status}
+                    </span>
+                  </div>
+
+                  <div style={{ textAlign: "right" }}>
+                    <span
+                      style={{
+                        fontSize: "11px",
+                        color: "#64748b",
+                        textTransform: "uppercase",
+                      }}
+                    >
+                      Tổng tiền
+                    </span>
+                    <div
+                      className="price-tag"
+                      style={{
+                        fontSize: "16px",
+                        fontWeight: "800",
+                        color: "#dc2626",
+                      }}
+                    >
+                      {new Intl.NumberFormat("vi-VN", {
+                        style: "currency",
+                        currency: "VND",
+                      }).format(group.totalPrice || 0)}
+                    </div>
+                  </div>
                 </div>
 
-                <div style={{ textAlign: "right" }}>
-                  <span
-                    style={{
-                      fontSize: "12px",
-                      color: "#888",
-                      display: "block",
-                    }}
-                  >
-                    Tổng cộng
-                  </span>
-                  {/* Thêm check an toàn cho tổng tiền */}
-                  <strong style={{ fontSize: "18px", color: "#d32f2f" }}>
-                    {(group.totalPrice || 0).toLocaleString()} VND
-                  </strong>
+                {/* GRID VÉ BÊN TRONG */}
+                <div
+                  className="trips-grid animate-fade-in"
+                  style={{
+                    // Áp dụng số cột đã tính toán ở trên
+                    gridTemplateColumns: gridColumns,
+                  }}
+                >
+                  {group.tickets.map((trip) => (
+                    <motion.div
+                      key={trip.ticketID}
+                      className={`trip-card glass-panel ${trip.status}`}
+                      whileHover={{ scale: 1.02, y: -2 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => setSelectedTrip(trip)}
+                    >
+                      <div className="card-top">
+                        <div className="route">
+                          <span className="code">{trip.departurePoint}</span>
+                          <Plane className="plane-icon" size={14} />
+                          <span className="code">{trip.arrivePoint}</span>
+                        </div>
+                        <span
+                          className={`status-badge ${trip.status}`}
+                          style={{ fontSize: "10px" }}
+                        >
+                          {trip.status === "valid" ? "Active" : "Huỷ"}
+                        </span>
+                      </div>
+
+                      <div className="card-body">
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                          }}
+                        >
+                          <div
+                            className="info-row"
+                            style={{ marginBottom: "4px" }}
+                          >
+                            <Calendar
+                              size={13}
+                              style={{ marginRight: "6px" }}
+                            />
+                            <span style={{ fontSize: "13px" }}>
+                              {trip.departureDay}
+                            </span>
+                          </div>
+                          <div
+                            className="info-row"
+                            style={{ marginBottom: "4px" }}
+                          >
+                            <Clock size={13} style={{ marginRight: "6px" }} />
+                            <span style={{ fontSize: "13px" }}>
+                              {trip.departureTime}
+                            </span>
+                          </div>
+                        </div>
+                        <div
+                          className="info-row flight-num"
+                          style={{ marginTop: "6px" }}
+                        >
+                          <Ticket size={13} />
+                          <span style={{ fontSize: "13px" }}>
+                            {trip.flightNumber} - {trip.seatNumber}
+                          </span>
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
                 </div>
               </div>
-
-              <div className="trips-grid animate-fade-in">
-                {group.tickets.map((trip) => (
-                  <motion.div
-                    key={trip.ticketID}
-                    className={`trip-card glass-panel ${trip.status}`}
-                    whileHover={{ scale: 1.01, y: -5 }}
-                    onClick={() => setSelectedTrip(trip)}
-                  >
-                    <div className="card-top">
-                      <div className="route">
-                        <span className="code">{trip.departurePoint}</span>
-                        <Plane className="plane-icon" size={16} />
-                        <span className="code">{trip.arrivePoint}</span>
-                      </div>
-                      <span className={`status-badge ${trip.status}`}>
-                        {trip.status === "valid" ? "Sắp khởi hành" : "Đã hủy"}
-                      </span>
-                    </div>
-                    <div className="card-body">
-                      <div className="info-row">
-                        <Calendar size={14} /> {trip.departureDay}
-                      </div>
-                      <div className="info-row">
-                        <Clock size={14} /> {trip.departureTime}
-                      </div>
-                      <div className="info-row flight-num">
-                        <Ticket size={14} /> {trip.flightNumber}
-                      </div>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-          ))
+            );
+          })
         ) : (
           <div className="empty-state">
             <Plane size={48} />
             <p>Không tìm thấy chuyến bay nào.</p>
           </div>
         )}
+
         {/* 3. DETAIL MODAL (Overlay) */}
         <AnimatePresence>
           {selectedTrip && (

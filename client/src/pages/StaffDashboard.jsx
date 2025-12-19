@@ -10,6 +10,8 @@ import FlightManagement from "../components/DashBoardStaff/FlightManagement";
 import BookingOperations from "../components/DashBoardStaff/BookingOperations";
 import RevenueReports from "../components/DashBoardStaff/RevenueReports";
 import CustomerSupport from "../components/DashBoardStaff/CustomerSupport";
+import FlightScheduleMap from "../components/DashBoardStaff/FlightScheduleMap";
+import FlightReport from "../components/DashBoardStaff/FlightReport";
 
 // Dữ liệu mô phỏng bảng `flightinformations`
 const StaffDashboard = () => {
@@ -23,14 +25,13 @@ const StaffDashboard = () => {
 
       // Nhóm Flight Management
       case "flight-mgt":
-      case "flight-create":
-      case "flight-schedule":
-      case "flight-status":
-      case "flight-load":
-        // Ở đây tạm thời return FlightManagement chung,
-        // sau này bạn có thể tạo component riêng cho Create/Schedule...
+      case "flight-create-update":
         return <FlightManagement />;
 
+      case "flight-report":
+        return <FlightReport />;
+      case "flight-schedule-map":
+        return <FlightScheduleMap />;
       // Nhóm Booking Operations
       case "booking-ops":
       case "booking-search":
@@ -64,7 +65,7 @@ const StaffDashboard = () => {
       </video>
 
       {/* Lớp phủ mờ */}
-      <div className="video-overlay"></div>
+      <div className="dashboard-video-overlay"></div>
 
       {/* Sidebar */}
       <StaffSidebar currentTab={currentTab} onTabChange={setCurrentTab} />

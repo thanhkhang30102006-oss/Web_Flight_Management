@@ -1,0 +1,316 @@
+/* src/components/FlightManagement/FlightScheduleMap.css */
+
+.schedule-map-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-height: 100vh;
+  padding-bottom: 50px;
+  color: #fff;
+}
+
+/* --- PHẦN TRÊN: LIST & MAP --- */
+.split-view-container {
+  display: flex;
+  gap: 20px;
+  height: 600px; 
+  transition: height 0.3s ease;
+}
+
+.left-panel-list {
+  flex: 0 0 500px; /* Cố định chiều rộng list */
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.list-header {
+  padding: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.list-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px;
+}
+
+
+
+/* Custom Scrollbar */
+.list-content::-webkit-scrollbar {
+  width: 6px;
+}
+.list-content::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+.schedule-map-container .flights-list {
+  max-height: none !important; /* Bỏ giới hạn chiều cao cũ */
+  height: auto !important;
+  padding-right: 5px;
+}
+.schedule-map-container .flight-card {
+  background: rgba(255, 255, 255, 0.752); /* Nền trong suốt tối */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #e2e8f0; /* Chữ màu sáng */
+  margin-bottom: 10px;
+  min-width: 300px; 
+  max-width: 450px;
+  min-height: 150px; 
+  border-radius: 12px;
+}
+/* 3. Hiệu ứng Hover mới */
+.schedule-map-container .flights-list:hover .flight-card {
+  filter: none; /* Bỏ hiệu ứng làm mờ danh sách cũ */
+  opacity: 1;
+}
+
+
+
+.schedule-map-container .airport-code,
+.schedule-map-container .airport-name,
+.schedule-map-container .time-info .time {
+  color: #313131; /* Tên sân bay và giờ màu trắng */
+}
+
+.schedule-map-container .time-info .date,
+.schedule-map-container .plane-type,
+.schedule-map-container .seat-info {
+  color: #070707;
+}
+
+
+.schedule-map-container .flight-map-container{
+    max-height: 600px;
+    height: 600px;
+}
+
+.right-panel-map {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  position: relative;
+}
+
+/* --- PHẦN DƯỚI: TIMELINE (GANTT CHART) --- */
+.bottom-panel-timeline {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 20px;
+  min-height: 300px;
+}
+
+.timeline-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.date-picker-custom {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 8px 15px;
+  border-radius: 8px;
+  outline: none;
+  font-family: inherit;
+}
+
+/* Timeline Track */
+.gantt-chart-wrapper {
+  position: relative;
+  width: 100%;
+  overflow-x: auto;
+  padding-top: 30px; /* Chừa chỗ cho thước đo */
+}
+
+.time-ruler-horizontal {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  padding-bottom: 5px;
+  margin-bottom: 10px;
+  position: relative;
+}
+
+.time-mark {
+  font-size: 11px;
+  color: #ffffff;
+  position: relative;
+}
+.time-mark::after {
+  content: "";
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  width: 1px;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.flight-rows-container {
+  position: relative;
+  min-height: 200px;
+}
+
+/* Grid Lines dọc */
+.vertical-grid-lines {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.v-line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  border-left: 1px dashed rgba(255, 255, 255, 0.05);
+}
+
+/* Thanh Bar chuyến bay */
+.gantt-flight-bar {
+  position: relative;
+  height: 40px;
+  margin-bottom: 15px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+}
+
+.flight-progress-bar {
+  position: absolute;
+  height: 30px;
+  top: 5px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #3b82f6, #2563eb);
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  font-size: 11px;
+  color: white;
+  white-space: nowrap;
+  overflow: visible !important;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  justify-content: center;
+}
+
+.flight-progress-bar:hover {
+  transform: scaleY(1.1);
+  z-index: 10;
+  box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4);
+}
+.bar-custom-tooltip {
+  visibility: hidden;
+  opacity: 0;
+  position: absolute;
+  
+  /* Vị trí: Bên phải thanh bar */
+  left: 100%; 
+  top: 50%;
+  transform: translateY(-50%) translateX(10px); /* Căn giữa dọc và đẩy ra 10px */
+  
+  background-color: rgba(30, 41, 59, 0.95); /* Màu nền tối */
+  color: white;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap; /* Không xuống dòng */
+  z-index: 100;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+  pointer-events: none; /* Tránh chuột bị dính */
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+
+
+/* --- TRƯỜNG HỢP 1: BÊN PHẢI (Right) - Dành cho chuyến sáng (<12h) --- */
+.bar-custom-tooltip.right {
+  left: 100%; 
+  right: auto;
+  transform: translateY(-50%) translateX(10px); /* Cách ra 10px */
+}
+
+/* Mũi tên chỉ sang TRÁI (vào thanh bar) */
+.bar-custom-tooltip.right::before {
+  content: "";
+  position: absolute;
+  right: 100%; /* Gắn vào cạnh trái tooltip */
+  top: 50%;
+  transform: translateY(-50%);
+  border-width: 6px;
+  border-style: solid;
+  border-color: transparent rgba(30, 41, 59, 0.95) transparent transparent;
+}
+
+/* Hover effect Right */
+.flight-progress-bar:hover .bar-custom-tooltip.right {
+  visibility: visible;
+  opacity: 1;
+  transform: translateY(-50%) translateX(12px);
+}
+
+
+/* --- TRƯỜNG HỢP 2: BÊN TRÁI (Left) - Dành cho chuyến chiều (>12h) --- */
+.bar-custom-tooltip.left {
+  right: 100%; 
+  left: auto;
+  transform: translateY(-50%) translateX(-10px); /* Cách ra -10px */
+}
+
+/* Mũi tên chỉ sang PHẢI (vào thanh bar) */
+.bar-custom-tooltip.left::before {
+  content: "";
+  position: absolute;
+  left: 100%; /* Gắn vào cạnh phải tooltip */
+  top: 50%;
+  transform: translateY(-50%);
+  border-width: 6px;
+  border-style: solid;
+  border-color: transparent transparent transparent rgba(30, 41, 59, 0.95);
+}
+
+/* Hover effect Left */
+.flight-progress-bar:hover .bar-custom-tooltip.left {
+  visibility: visible;
+  opacity: 1;
+  transform: translateY(-50%) translateX(-12px);
+}
+
+
+/* Trạng thái màu sắc */
+.flight-progress-bar.active { background: linear-gradient(90deg, #22c55e, #15803d); }
+.flight-progress-bar.delayed { background: linear-gradient(90deg, #eab308, #a16207); }
+.flight-progress-bar.cancelled { background: linear-gradient(90deg, #ef4444, #b91c1c); opacity: 0.7; }
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .split-view-container {
+    flex-direction: column;
+    height: auto;
+  }
+  .left-panel-list {
+    flex: none;
+    height: 400px;
+    width: 100%;
+  }
+  .right-panel-map {
+    height: 400px;
+  }
+}

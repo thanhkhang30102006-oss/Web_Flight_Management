@@ -4,14 +4,19 @@ import { useLocation, useNavigate } from "react-router-dom";
 import SeatMap from "../BookingFlight/SeatMap";
 import { motion } from "framer-motion";
 import { useSocket } from "../../context/SocketContext";
+import toast, { Toaster } from "react-hot-toast";
+
 import {
   ArrowLeft,
   ArrowRight,
   Save,
   AlertTriangle,
   Plane,
+  Loader2,
 } from "lucide-react";
-import "../BookingFlight/BookingPage.css";
+import "./SeatMapChange.css";
+import videoWallpaper from "../../assets/videos/background-wallpaper-bookingpage.mp4";
+
 const SeatMapChange = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -28,6 +33,7 @@ const SeatMapChange = () => {
   const [dbOccupiedSeats, setDbOccupiedSeats] = useState([]);
   const { socket, connectSocket, disconnectSocket } = useSocket();
   const socketRef = useRef(socket);
+  const [isProcessing, setIsProcessing] = useState(false);
   const displaySelections = liveSelections;
   // Lấy thông tin cụ thể của chuyến bay và những ghế đã bán
   useEffect(() => {
@@ -170,7 +176,7 @@ const SeatMapChange = () => {
       `Bạn xác nhận đổi từ ghế ${ticket.seatNumber} sang ghế ${newSelectedSeat.id}?`
     );
     if (!confirm) return;
-
+    setIsProcessing(true);
     try {
       const token = localStorage.getItem("accessToken");
       const response = await fetch(
@@ -191,15 +197,18 @@ const SeatMapChange = () => {
       );
 
       const res = await response.json();
+      await new Promise((resolve) => setTimeout(resolve, 2000));
       if (res.success === "success") {
-        alert("Đổi ghế thành công!");
+        toast.success("Đổi ghế thành công!");
         navigate("/user");
       } else {
-        alert(res.message || "Đổi ghế thất bại");
+        toast.error(res.message || "Đổi ghế thất bại");
       }
     } catch (e) {
       console.error(e);
       alert("Lỗi kết nối server");
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -210,268 +219,171 @@ const SeatMapChange = () => {
   const selectedSeatsArray = newSelectedSeat ? [newSelectedSeat] : [];
 
   return (
-    <div
-      className="booking-layout seat-change-mode"
-      style={{
-        height: "100vh",
-        overflow: "hidden",
-        display: "flex",
-        flexDirection: "column",
-      }}
-    >
-      {/* HEADER ĐƠN GIẢN */}
-      <div
-        className="compact-header"
-        style={{
-          flexShrink: 0,
-          background: "white",
-          zIndex: 10,
-          padding: "15px 20px",
-          boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
-        }}
-      >
-        <button
-          onClick={() => navigate(-1)}
-          className="btn-back"
-          style={{
-            border: "none",
-            background: "transparent",
-            cursor: "pointer",
-          }}
-        >
-          <ArrowLeft size={24} />
-        </button>
-        <div className="header-info" style={{ marginLeft: "15px" }}>
-          <h2 style={{ margin: 0, fontSize: "18px" }}>Đổi chỗ ngồi</h2>
-          <div
-            className="flight-route-badge"
-            style={{
-              color: "#666",
-              fontSize: "14px",
-              display: "flex",
-              alignItems: "center",
-              gap: "5px",
-            }}
-          >
-            <span>{ticket.flightNumber}</span>
-            <span className="separator">•</span>
-            <span>
-              Hạng vé: <b>{ticket.class}</b>
-            </span>
-            <span className="separator">•</span>
-            <span>
-              Ghế hiện tại: <b>{ticket.seatNumber}</b>
-            </span>
-          </div>
-        </div>
-      </div>
+    <div className="seatmap-change-layout">
+      {/* 1. BACKGROUND VIDEO */}
+      <video className="seatmap-video-bg" autoPlay muted loop playsInline>
+        <source src={videoWallpaper} type="video/webm" />
+        <source src={videoWallpaper.replace("webm", "mp4")} type="video/mp4" />
+      </video>
+      <div className="seatmap-overlay"></div>
 
-      <div
-        className="booking-grid"
-        style={{
-          flex: 1,
-          overflow: "hidden",
-          padding: "20px",
-          display: "flex",
-          gap: "20px",
-          justifyContent: "center",
-        }}
-      >
-        {/* --- CỘT TRÁI: INFO & ACTION --- */}
-        <div
-          className="glass-panel info-column"
-          style={{
-            width: "300px",
-            display: "flex",
-            flexDirection: "column",
-            gap: "20px",
-            height: "fit-content",
-          }}
-        >
-          <div
-            className="current-seat-info"
-            style={{
-              padding: "15px",
-              background: "#f8f9fa",
-              borderRadius: "8px",
-              border: "1px dashed #ccc",
-            }}
-          >
-            <h4 style={{ margin: "0 0 10px 0", color: "#666" }}>
-              Ghế hiện tại
-            </h4>
-            <div
-              style={{ fontSize: "24px", fontWeight: "bold", color: "#333" }}
-            >
-              {ticket.seatNumber}
-            </div>
-          </div>
-
-          <div
-            className="arrow-down"
-            style={{ textAlign: "center", color: "#007bff" }}
-          >
-            <ArrowRight size={24} style={{ transform: "rotate(90deg)" }} />
-          </div>
-
-          <div
-            className={`new-seat-info ${newSelectedSeat ? "active" : ""}`}
-            style={{
-              padding: "15px",
-              background: newSelectedSeat ? "#e3f2fd" : "#eee",
-              borderRadius: "8px",
-              border: newSelectedSeat
-                ? "1px solid #2196f3"
-                : "1px solid transparent",
-            }}
-          >
-            <h4 style={{ margin: "0 0 10px 0", color: "#666" }}>Ghế mới</h4>
-            {newSelectedSeat ? (
-              <div
-                style={{
-                  fontSize: "24px",
-                  fontWeight: "bold",
-                  color: "#007bff",
-                }}
-              >
-                {newSelectedSeat.id}
-              </div>
-            ) : (
-              <div style={{ fontStyle: "italic", color: "#999" }}>
-                Chưa chọn ghế
-              </div>
-            )}
-          </div>
-
-          <div
-            className="alert-box"
-            style={{
-              fontSize: "13px",
-              color: "#d32f2f",
-              display: "flex",
-              gap: "8px",
-              alignItems: "start",
-            }}
-          >
-            <AlertTriangle
-              size={16}
-              style={{ flexShrink: 0, marginTop: "2px" }}
-            />
-            <span>
-              Bạn chỉ được đổi sang các ghế trống cùng hạng{" "}
-              <b>{ticket.class}</b>.
-            </span>
-          </div>
-
+      <div className="seatmap-content-wrapper">
+        {/* HEADER */}
+        <div className="compact-header">
           <button
-            onClick={handleConfirmChange}
-            disabled={!newSelectedSeat}
-            style={{
-              marginTop: "10px",
-              padding: "12px",
-              background: newSelectedSeat ? "#007bff" : "#ccc",
-              color: "white",
-              border: "none",
-              borderRadius: "8px",
-              fontWeight: "bold",
-              cursor: newSelectedSeat ? "pointer" : "not-allowed",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: "8px",
-            }}
+            onClick={() => navigate(-1)}
+            className="btn-back"
+            style={{ color: "#00ff08ff" }}
           >
-            <Save size={18} /> Xác nhận đổi ghế
+            <ArrowLeft size={30} />
           </button>
+          <div className="header-info" style={{ marginLeft: "15px" }}>
+            <h2 style={{ margin: 0, fontSize: "18px", color: "#ffffffff" }}>
+              Đổi chỗ ngồi
+            </h2>
+            <div className="flight-route-badge" style={{ color: "#ffffffff" }}>
+              <span style={{ fontWeight: "bold" }}>{ticket.flightNumber}</span>
+              <span className="separator">•</span>
+              <span>
+                Hạng vé: <b>{ticket.class}</b>
+              </span>
+              <span className="separator">•</span>
+              <span>
+                Ghế cũ: <b>{ticket.seatNumber}</b>
+              </span>
+            </div>
+          </div>
         </div>
 
-        {/* --- CỘT PHẢI: MAP (TÁI SỬ DỤNG) --- */}
-        <div
-          className="glass-panel seat-column"
-          style={{
-            flex: 1,
-            display: "flex",
-            flexDirection: "column",
-            overflow: "hidden",
-          }}
-        >
-          {/* Component SeatMap được tái sử dụng */}
-          <div
-            className="seat-picker-wrapper custom-scrollbar"
-            style={{ flex: 1, overflowY: "auto" }}
-          >
-            <SeatMap
-              liveSelections={liveSelections}
-              pendingSeats={pendingSeats}
-              mySocketID={socket ? socket.id : null}
-              selectedSeats={selectedSeatsArray} // Pass mảng chứa 1 ghế
-              occupiedSeats={dbOccupiedSeats}
-              onSeatClick={handleSeatClick}
-              flightSelected={flightFullInfo}
-            />
+        {/* MAIN GRID */}
+        <div className="seatchange-booking-grid">
+          {/* --- CỘT TRÁI: INFO --- */}
+          <div className="glass-panel seatchange-info-column">
+            <div className="current-seat-info">
+              <h4>Ghế hiện tại</h4>
+              <div>{ticket.seatNumber}</div>
+            </div>
+
+            {/* Mũi tên */}
+            <div className="arrow-down">
+              <ArrowRight size={24} />
+            </div>
+
+            {/* Ghế mới chọn */}
+            <div className={`new-seat-info ${newSelectedSeat ? "active" : ""}`}>
+              <h4>Ghế mới chọn</h4>
+              {newSelectedSeat ? (
+                <div className="selected-seat-id">{newSelectedSeat.id}</div>
+              ) : (
+                <div className="placeholder-text">
+                  Vui lòng chọn ghế trên sơ đồ
+                </div>
+              )}
+            </div>
+
+            {/* Cảnh báo */}
+            <div className="alert-box">
+              <AlertTriangle
+                size={16}
+                style={{ flexShrink: 0, marginTop: "2px" }}
+              />
+              <span>
+                Chỉ được đổi sang các ghế trống cùng hạng <b>{ticket.class}</b>.
+              </span>
+            </div>
+
+            {/* Nút xác nhận */}
+            <button
+              className="confirm-btn"
+              onClick={handleConfirmChange}
+              disabled={!newSelectedSeat}
+            >
+              <Save size={20} /> Xác nhận đổi ghế
+            </button>
           </div>
 
-          {/* Chú thích đơn giản */}
+          {/* --- CỘT PHẢI: MAP --- */}
           <div
-            className="seat-legend"
+            className="glass-panel seat-column"
             style={{
-              marginTop: "10px",
-              paddingTop: "10px",
-              borderTop: "1px solid #eee",
+              flex: 1,
+              display: "flex",
+              flexDirection: "column",
+              overflow: "hidden",
             }}
           >
             <div
-              style={{
-                display: "flex",
-                gap: "15px",
-                fontSize: "12px",
-                justifyContent: "center",
-              }}
+              className="seat-picker-wrapper custom-scrollbar"
+              style={{ flex: 1, overflowY: "auto" }}
             >
-              <div
-                style={{ display: "flex", alignItems: "center", gap: "5px" }}
-              >
-                <span
-                  style={{
-                    width: 16,
-                    height: 16,
-                    background: "#ddd",
-                    borderRadius: 4,
-                  }}
-                ></span>{" "}
-                Đã bán/Ghế cũ
+              <SeatMap
+                liveSelections={liveSelections}
+                pendingSeats={pendingSeats}
+                mySocketID={socket ? socket.id : null}
+                selectedSeats={selectedSeatsArray}
+                occupiedSeats={dbOccupiedSeats}
+                onSeatClick={handleSeatClick}
+                flightSelected={flightFullInfo}
+              />
+            </div>
+
+            {/* Chú thích */}
+            <div className="seat-legend">
+              <div className="legend-row">
+                <div className="legend-item">
+                  <span className="box available"></span>
+                  {t("bookingPage.seatMap.legend.economy", "Phổ thông")}
+                </div>
+                <div className="legend-item">
+                  <span className="box business"></span>
+                  {t("bookingPage.seatMap.legend.business", "Thương gia")}
+                </div>
+                <div className="legend-item">
+                  <span className="box occupied"></span>
+                  {t("bookingPage.seatMap.legend.occupied", "Đã bán")}
+                </div>
               </div>
-              <div
-                style={{ display: "flex", alignItems: "center", gap: "5px" }}
-              >
-                <span
-                  style={{
-                    width: 16,
-                    height: 16,
-                    background: "#fff",
-                    border: "1px solid #ccc",
-                    borderRadius: 4,
-                  }}
-                ></span>{" "}
-                Còn trống
+
+              <div className="legend-row">
+                <div className="legend-item">
+                  <span className="box selected economy"></span>
+                  <span className="box selected business"></span>
+                  {t(
+                    "bookingPage.seatMap.legend.selected.another",
+                    "Đang chọn của khách hàng khác"
+                  )}
+                </div>
+                <div className="legend-item">
+                  <span className="box selected"></span>
+                  <span className="box selected business personal"></span>
+                  {t(
+                    "bookingPage.seatMap.legend.selected.personal",
+                    "Đang chọn của mình"
+                  )}
+                </div>
               </div>
-              <div
-                style={{ display: "flex", alignItems: "center", gap: "5px" }}
-              >
-                <span
-                  style={{
-                    width: 16,
-                    height: 16,
-                    background: "#4caf50",
-                    borderRadius: 4,
-                  }}
-                ></span>{" "}
-                Đang chọn
+
+              <div className="legend-row">
+                <div className="legend-item">
+                  <span className="box pending"></span>
+                  {t("bookingPage.seatMap.legend.pending", "Đang giữ")}
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
+      {isProcessing && (
+        <div className="fullscreen-loading">
+          <div className="loading-content">
+            <div className="spinner-large"></div>
+            <p>Đang xử lý đổi ghế...</p>
+            <span style={{ fontSize: "14px", color: "#64748b" }}>
+              Vui lòng không tắt trình duyệt
+            </span>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

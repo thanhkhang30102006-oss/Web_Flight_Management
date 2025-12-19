@@ -25,7 +25,7 @@ import airplaneIcon from "../../assets/Image/airplane-plane-flight-white.svg";
 const API_BASE_URL = "http://localhost:3001/api/user/setting";
 const userData = localStorage.getItem("userData");
 const loggedInUser = userData ? JSON.parse(userData) : null;
-const passengerID = loggedInUser.id;
+const passengerID = loggedInUser?.id;
 // Hàm validate (Copy từ LoginRegis)
 function validatePassword(password) {
   const minLength = /.{8,}/;
@@ -533,7 +533,7 @@ const Settings = () => {
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="about-section"
+            className="setting-about-section"
           >
             <div className="app-logo-large">
               <img

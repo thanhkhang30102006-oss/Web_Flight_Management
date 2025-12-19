@@ -37,10 +37,10 @@ const CreateFlightModal = ({ isOpen, onClose, onSave }) => {
 
   return (
     <div className="modal-overlay fade-in">
-      <div className="modal-content glass-panel">
+      <div className="flightstaff-modal-content glass-panel">
         {/* Header */}
-        <div className="modal-header">
-          <h2 className="panel-title" style={{ marginBottom: 0 }}>
+        <div className="flightstaff-modal-header">
+          <h2 className="flightstaff-panel-title" style={{ marginBottom: 0 }}>
             <Plane size={24} style={{ marginRight: 30 }} />
             Tạo chuyến bay mới
           </h2>

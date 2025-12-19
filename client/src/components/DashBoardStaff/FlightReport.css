@@ -1,0 +1,147 @@
+/* FlightReport.css */
+
+.flight-report-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  color: #fff;
+  padding-bottom: 50px;
+}
+
+/* Header */
+.report-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 10px;
+}
+.report-header .panel-title {
+  font-size: 2.4rem;
+}
+.header-actions {
+  display: flex;
+  gap: 10px;
+  height: auto;
+  min-height: 50px;
+  max-height: 50px;
+}
+
+/* KPI Cards */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+.kpi-card {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.kpi-icon {
+  width: 50px; height: 50px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+}
+.kpi-icon.blue { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+.kpi-icon.green { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
+.kpi-icon.purple { background: rgba(168, 85, 247, 0.2); color: #c084fc; }
+
+.kpi-info { display: flex; flex-direction: column; }
+.kpi-label { font-size: 13px; color: #e9eff8; text-transform: uppercase; }
+.kpi-value { font-size: 24px; font-weight: 800; margin: 5px 0; color: #fff; }
+.kpi-sub { font-size: 11px; color: #e3e3e3; }
+
+/* Charts */
+.charts-section {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr; /* Chart cột rộng hơn */
+  gap: 20px;
+}
+.chart-card {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+.chart-card h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: 16px;
+  color: #e2e8f0;
+  border-bottom: 1px dashed rgba(255,255,255,0.1);
+  padding-bottom: 10px;
+}
+
+/* Toolbar compact */
+.compact-toolbar {
+  display: flex;
+  justify-content: space-between;
+  padding: 15px 20px;
+  align-items: center;
+}
+.search-box {
+  display: flex; align-items: center; gap: 10px;
+  background: rgba(0,0,0,0.2);
+  padding: 8px 15px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.1);
+  width: 600px;
+}
+.search-box input {
+  background: transparent; border: none; color: white; outline: none; width: 100%;
+}
+.search-box ::placeholder {
+ color: rgb(194, 214, 230);
+}
+.filters-group { display: flex; gap: 15px; }
+.filter-item {
+  display: flex; align-items: center; gap: 8px;
+  background: rgba(255,255,255,0.05);
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+.filter-item select {
+  background: transparent; border: none; color: #e2e8f0; outline: none;
+  cursor: pointer;
+}
+.filter-item select option { background: #1e293b; color: white; }
+
+/* Table specific */
+.report-route { font-weight: 600; font-size: 14px; }
+.report-date { font-size: 12px; color: #e9e9e9; }
+
+.occupancy-wrapper {
+  display: flex; align-items: center; gap: 10px;
+}
+.progress-bar-bg {
+  flex: 1;
+  height: 8px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.progress-bar-fill { height: 100%; border-radius: 4px; transition: width 0.5s ease; }
+.occupancy-text { font-size: 12px; font-weight: bold; width: 35px; text-align: right; }
+
+.seat-stats { font-size: 12px; }
+.seat-stats .booked { color: #fff; font-weight: 600; }
+.seat-stats .divider { color: #ffffff; margin: 0 4px; }
+.seat-stats .total { color: #5eff00; }
+
+.revenue-cell {
+  font-size: 1.2rem;
+  font-family: 'Consolas', monospace;
+  font-weight: 700;
+  color: #fbbf24; /* Vàng tiền tệ */
+  text-align: right;
+}
+
+@media (max-width: 1024px) {
+  .kpi-grid, .charts-section { grid-template-columns: 1fr; }
+  .compact-toolbar { flex-direction: column; gap: 10px; align-items: flex-start; }
+  .search-box { width: 100%; }
+}

@@ -12,6 +12,7 @@ const searchFlights = async (req, res) => {
         departurePoint: departure,
         arrivePoint: arrive,
         departureDay: departureDay,
+        flightState: "active",
       },
       limit: 4,
     });

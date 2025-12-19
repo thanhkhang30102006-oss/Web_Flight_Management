@@ -270,10 +270,14 @@ if (!global.lockedSeats) {
 
 const messageRouter = require("./routes/messageRoutes");
 app.use("/api/messages", messageRouter);
-
+// Chức năng router dẫn đến setting của người dùng
 const passengerRouter = require("./routes/passenger");
 app.use("/api/user/setting", passengerRouter);
-
+// Router quản lý chuyến bay của người dùng
 const tripRouter = require("./routes/tripRoutes");
 app.use("/api/user/mytrip", tripRouter);
+
+// Router quản lý việc load dữ liệu ra thống kê
+const chartRouter = require("./routes/chartDataRoutes.js");
+app.use("api/staff/chart", chartRouter);
 module.exports = app;
