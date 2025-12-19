@@ -685,8 +685,7 @@ const sendCancellationEmail = async (passengerEmail, ticketID) => {
       <p>Chào bạn, chúng tôi xác nhận vé <b>${ticketID}</b> của bạn đã được hủy thành công.</p>
       <p>Để tiến hành hoàn tiền, vui lòng phản hồi email này bằng cách: </p>
       <ul>
-        <li>Cung cấp số tài khoản ngân hàng + Tên ngân hàng + Chủ tài khoản.</li>
-        <li>Hoặc gửi ảnh mã QR nhận tiền.</li>
+        <li>Hệ thống sẽ dựa theo số tài khoản khách hàng đã chuyển từ trước</li>
       </ul>
       <p>Trân trọng,</p>
     `,
@@ -712,8 +711,67 @@ const sendRefundSuccessEmail = async (passengerEmail, ticketID) => {
 
   await transporter.sendMail(mailOptions);
 };
+
+// Hàm hủy chuyến bay gửi emaail xin lỗi khách hàng + hoàn tiền
+const sendFlightCancellationToAll = async (
+  emailList,
+  flightNumber,
+  reason = "Lý do khai thác / Operational reasons"
+) => {
+  if (!emailList || emailList.length === 0) return;
+
+  // Mẫu Email HTML
+  const mailContent = `
+    <div style="font-family: Arial, sans-serif; max-width: 650px; margin: auto; padding: 20px; border: 1px solid #e0e0e0; background-color: #ffffff;">
+        <h2 style="color: #d9534f; border-bottom: 2px solid #ddd; padding-bottom: 10px;">
+            [FLIGHTHK] THÔNG BÁO HỦY CHUYẾN BAY / FLIGHT CANCELLATION NOTICE
+        </h2>
+        
+        <p><strong>Kính gửi Quý khách hàng / Dear Valued Customer,</strong></p>
+        
+        <p>Chúng tôi rất tiếc phải thông báo chuyến bay <strong>${flightNumber}</strong> của quý khách đã bị hủy.</p>
+        <p><em>We regret to inform you that your flight <strong>${flightNumber}</strong> has been cancelled.</em></p>
+        
+        <div style="background-color: #f8d7da; color: #721c24; padding: 15px; border-radius: 5px; margin: 20px 0;">
+            <strong>Lý do hủy / Reason:</strong> ${reason ? reason : ""}
+        </div>
+
+        <h3>HƯỚNG DẪN HOÀN VÉ / REFUND INSTRUCTIONS:</h3>
+        <p>Hệ thống đã tự động ghi nhận yêu cầu hủy vé của quý khách. Để được hoàn tiền, quý khách vui lòng:</p>
+        <ul>
+            <li>Kiểm tra email xác nhận hủy vé chi tiết sẽ được gửi sau ít phút.</li>
+            <li>Hoặc liên hệ tổng đài <strong>1900.599.997</strong> để được hỗ trợ đổi chuyến bay khác miễn phí.</li>
+        </ul>
+        
+        <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;" />
+        
+        <p>Chúng tôi thành thật xin lỗi vì sự bất tiện này và mong nhận được sự thông cảm của quý khách.</p>
+        <p><em>We sincerely apologize for this inconvenience and appreciate your understanding.</em></p>
+        
+        <p><strong>Công ty Dịch vụ FlightHK</strong></p>
+    </div>
+  `;
+
+  const sendPromises = emailList.map((email) => {
+    return transporter
+      .sendMail({
+        from: `"FlightHK Notification" <${process.env.EMAIL_USER}>`,
+        to: email,
+        subject: `[QUAN TRỌNG] Thông báo hủy chuyến bay ${flightNumber}`,
+        html: mailContent,
+      })
+      .catch((err) => console.error(`Lỗi gửi mail tới ${email}:`, err.message));
+  });
+
+  // Chạy song song tất cả email
+  await Promise.all(sendPromises);
+  console.log(
+    `Đã gửi thông báo hủy chuyến ${flightNumber} tới ${emailList.length} địa chỉ email.`
+  );
+};
 module.exports = {
   formatEmail,
   sendCancellationEmail,
   sendRefundSuccessEmail,
+  sendFlightCancellationToAll,
 };

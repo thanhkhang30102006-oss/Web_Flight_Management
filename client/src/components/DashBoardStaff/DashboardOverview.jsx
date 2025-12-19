@@ -6,7 +6,6 @@ import {
   Loader2,
   Thermometer,
 } from "lucide-react";
-import { DB_FLIGHTS, MOCK_REVENUE_WEEKLY } from "../../data/staffMockData";
 import {
   AreaChart,
   Area,
@@ -25,58 +24,93 @@ import {
   LabelList,
 } from "recharts";
 import { AIRPORT_COORDS, getWeatherIcon } from "../../data/weatherHelper";
-
+import { format, parseISO } from "date-fns";
 // --- 1. HÀM XỬ LÝ DỮ LIỆU (HELPER) ---
-const processHourlyFlights = (flights) => {
-  if (!flights) return [];
+const processHourlyFlights = (groupFlight) => {
+  if (!groupFlight) return [];
   // Tạo mảng 24 giờ với giá trị 0
   const hours = Array.from({ length: 24 }, (_, i) => ({
     hour: `${i}h`,
     count: 0,
   }));
 
-  flights.forEach((f) => {
-    if (f.departureTime) {
-      // Lấy giờ từ "14:30:00" -> 14. Dùng try-catch hoặc check kỹ để tránh lỗi data rác
-      try {
-        const hour = parseInt(f.departureTime.split(":")[0]);
-        if (hours[hour]) {
-          hours[hour].count += 1;
-        }
-      } catch (e) {
-        console.error("Lỗi format giờ:", f.departureTime);
+  if (Array.isArray(groupFlight)) {
+    groupFlight.forEach((item) => {
+      const hourIndex = item.departureHour;
+      if (hours[hourIndex]) {
+        hours[hourIndex].count = parseInt(item.totalFlights);
       }
-    }
-  });
+    });
+  }
   return hours;
 };
+
 // Xử lý thống kê loại máy bay
-const processPlaneTypes = (flights) => {
-  const counts = {};
-  flights.forEach((f) => {
-    counts[f.planeType] = (counts[f.planeType] || 0) + 1;
-  });
-  // Chuyển về dạng mảng cho Recharts
-  return Object.keys(counts).map((type) => ({
-    name: type,
-    value: counts[type],
+const processPlaneTypes = (flightsData) => {
+  if (!Array.isArray(flightsData)) return [];
+  return flightsData.map((item) => ({
+    name: item.planeType,
+    value: parseInt(item.totalPlaneType),
   }));
 };
+// Xử lý báo cáo doanh thu theo tuần
 
+const processRevenue = (paymentsData) => {
+  const daysMap = {
+    Monday: "T2",
+    Tuesday: "T3",
+    Wednesday: "T4",
+    Thursday: "T5",
+    Friday: "T6",
+    Saturday: "T7",
+    Sunday: "CN",
+  };
+
+  const stats = {
+    Monday: 0,
+    Tuesday: 0,
+    Wednesday: 0,
+    Thursday: 0,
+    Friday: 0,
+    Saturday: 0,
+    Sunday: 0,
+  };
+
+  if (Array.isArray(paymentsData)) {
+    paymentsData.forEach((payment) => {
+      // payment.createdAt format ISO string
+      const date = parseISO(payment.createdAt);
+      const dayName = format(date, "EEEE");
+
+      if (stats[dayName] !== undefined) {
+        stats[dayName] += Number(payment.paymentPrice);
+      }
+    });
+  }
+
+  const order = [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday",
+  ];
+  return order.map((day) => ({
+    day: daysMap[day],
+    revenue: stats[day],
+  }));
+};
 // Xử lý tuyến bay phổ biến
-const processTopRoutes = (flights) => {
-  const routes = {};
-  flights.forEach((f) => {
-    const route = `${f.departurePoint} - ${f.arrivePoint}`;
-    routes[route] = (routes[route] || 0) + 1;
-  });
-  return Object.keys(routes)
-    .map((r) => ({
-      name: r,
-      flights: routes[r],
+const processTopRoutes = (routesData) => {
+  if (!Array.isArray(routesData)) return [];
+  return routesData
+    .map((item) => ({
+      name: `${item.departurePoint} - ${item.arrivePoint}`,
+      flights: parseInt(item.totalFlights),
     }))
-    .sort((a, b) => b.flights - a.flights)
-    .slice(0, 5); // Lấy top 5
+    .slice(0, 5);
 };
 
 // Màu cho biểu đồ tròn
@@ -139,25 +173,61 @@ const Weather3Regions = () => {
 };
 
 const DashboardOverview = () => {
-  const hourlyData = useMemo(() => processHourlyFlights(DB_FLIGHTS), []);
-  const planeData = useMemo(() => processPlaneTypes(DB_FLIGHTS), []);
-  const routeData = useMemo(() => processTopRoutes(DB_FLIGHTS), []);
+  const [loading, setLoading] = useState(true);
+  const [realData, setRealData] = useState({
+    groupFlight: [],
+    payments: [],
+    flights: [],
+    popularRoutes: [],
+  });
 
-  const totalActive = DB_FLIGHTS.filter(
-    (f) => f.flightState === "active"
-  ).length;
-  const totalDelayed = DB_FLIGHTS.filter(
-    (f) => f.flightState === "delayed"
-  ).length;
-  const totalCancelled = DB_FLIGHTS.filter(
-    (f) => f.flightState === "cancelled"
-  ).length;
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        // Thay đường dẫn API của bạn vào đây
+        const response = await fetch(`api/staff/chart/dashboard`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        const result = await response.json();
+        if (result.data && result.success) {
+          setRealData(result.data);
+        }
+      } catch (error) {
+        console.error("Lỗi khi fetch dashboard data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const chartData = [
-    { name: "Active", value: totalActive, color: "#4ade80" },
-    { name: "Delayed", value: totalDelayed, color: "#facc15" },
-    { name: "Cancelled", value: totalCancelled, color: "#f87171" },
-  ];
+    fetchDashboardData();
+  }, []);
+  const hourlyData = useMemo(
+    () => processHourlyFlights(realData.groupFlight),
+    [realData.groupFlight]
+  );
+  const revenueData = useMemo(
+    () => processRevenue(realData.payments),
+    [realData.payments]
+  );
+  const planeData = useMemo(
+    () => processPlaneTypes(realData.flights),
+    [realData.flights]
+  );
+  const routeData = useMemo(
+    () => processTopRoutes(realData.popularRoutes),
+    [realData.popularRoutes]
+  );
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <Loader2 className="w-10 h-10 animate-spin text-blue-500" />
+      </div>
+    );
+  }
 
   return (
     <div className="glass-panel fade-in overview-panel">
@@ -188,7 +258,7 @@ const DashboardOverview = () => {
                 dataKey="hour"
                 stroke="#94a3b8"
                 tick={{ fontSize: 10 }}
-                interval={3} // Chỉ hiện mốc giờ: 0, 3, 6, 9... cho đỡ rối
+                interval={3}
               />
               <YAxis
                 stroke="#94a3b8"
@@ -228,7 +298,7 @@ const DashboardOverview = () => {
         <div className="chart-card">
           <h3 className="chart-title">Doanh thu 7 ngày qua</h3>
           <ResponsiveContainer width="100%" height={250}>
-            <BarChart data={MOCK_REVENUE_WEEKLY}>
+            <BarChart data={revenueData}>
               <CartesianGrid
                 strokeDasharray="3 3"
                 stroke="#334155"
@@ -237,7 +307,7 @@ const DashboardOverview = () => {
               <XAxis dataKey="day" stroke="#94a3b8" />
               <YAxis
                 stroke="#94a3b8"
-                tickFormatter={(value) => `${value / 1000000}M`} // Rút gọn số liệu
+                tickFormatter={(value) => `${value / 1000000}M`}
                 width={40}
               />
               <Tooltip

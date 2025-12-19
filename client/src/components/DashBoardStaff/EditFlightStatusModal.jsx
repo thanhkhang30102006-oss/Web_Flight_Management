@@ -8,7 +8,7 @@ const EditFlightStatusModal = ({ isOpen, onClose, flight, onSave }) => {
     departureTime: "",
     arriveDay: "",
     arriveTime: "",
-    reason: "", // Lý do thay đổi
+    reason: "",
   });
 
   // Khi mở modal, điền dữ liệu của chuyến bay vào form
@@ -16,7 +16,6 @@ const EditFlightStatusModal = ({ isOpen, onClose, flight, onSave }) => {
     if (flight) {
       setFormData({
         flightState: flight.flightState || "active",
-        // Cắt chuỗi để lấy đúng định dạng yyyy-MM-dd và HH:mm cho input HTML
         departureDay: flight.departureDay
           ? flight.departureDay.split("T")[0]
           : "",
@@ -25,7 +24,7 @@ const EditFlightStatusModal = ({ isOpen, onClose, flight, onSave }) => {
           : "",
         arriveDay: flight.arriveDay ? flight.arriveDay.split("T")[0] : "",
         arriveTime: flight.arriveTime ? flight.arriveTime.slice(0, 5) : "",
-        reason: "", // Reset lý do mỗi khi mở mới
+        reason: "",
       });
     }
   }, [flight, isOpen]);
@@ -76,7 +75,6 @@ const EditFlightStatusModal = ({ isOpen, onClose, flight, onSave }) => {
             >
               <option value="active">Active (Hoạt động)</option>
               <option value="delayed">Delayed (Hoãn)</option>
-              <option value="cancelled">Cancelled (Hủy)</option>
             </select>
           </div>
 

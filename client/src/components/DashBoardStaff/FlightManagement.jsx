@@ -9,6 +9,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Plane,
+  X,
 } from "lucide-react";
 import CreateFlightModal from "./CreateFlightModal";
 import EditFlightStatusModal from "./EditFlightStatusModal";
@@ -37,7 +38,7 @@ const FlightManagement = () => {
   const [filterStatus, setFilterStatus] = useState("all"); // 'all' | 'active' | 'delayed' | 'cancelled'
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
-  const [refreshKey, setRefreshKey] = useState(0);
+  const [refreshKey, setRefreshKey] = useState(false);
   const [flights, setFlights] = useState([]);
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -51,15 +52,14 @@ const FlightManagement = () => {
   const handleUpdateFlight = async (updatedData) => {
     try {
       console.log("Dữ liệu gửi đi update:", updatedData);
-
+      const currentFlightNumber = selectedFlight?.flightNumber;
       // Gọi API cập nhật (Giả lập)
       const response = await fetch(
-        `http://localhost:3001/api/staff/flightmanagement/update/${updatedData.flightNumber}`,
+        `http://localhost:3001/api/staff/flightmanagement/update/${currentFlightNumber}`,
         {
-          method: "PUT", // Hoặc POST tùy backend của bạn
+          method: "PUT",
           headers: {
             "Content-Type": "application/json",
-            // 'Authorization': `Bearer ${token}` // Nếu cần token
           },
           body: JSON.stringify({
             flightState: updatedData.flightState,
@@ -67,22 +67,17 @@ const FlightManagement = () => {
             departureTime: updatedData.departureTime,
             arriveDay: updatedData.arriveDay,
             arriveTime: updatedData.arriveTime,
-            reason: updatedData.reason, // Gửi lý do lên server
+            reason: updatedData.reason,
           }),
         }
       );
-
-      // Giả lập thành công nếu không có API thật
-      // const result = await response.json();
-
-      // Cập nhật lại state local để UI thay đổi ngay
-      const updatedFlights = flights.map((f) =>
-        f.flightNumber === updatedData.flightNumber ? updatedData : f
-      );
-      setFlights(updatedFlights);
+      if (!response.ok) {
+        throw new Error("Lỗi khi tạo chuyến bay");
+      }
+      setRefreshKey((prevKey) => !prevKey);
 
       alert(
-        `Cập nhật trạng thái chuyến bay ${updatedData.flightNumber} thành công!`
+        `Cập nhật trạng thái chuyến bay ${currentFlightNumber} thành công!`
       );
       setIsEditModalOpen(false);
       setSelectedFlight(null);
@@ -119,20 +114,64 @@ const FlightManagement = () => {
     };
     getFlights();
   }, [refreshKey]);
-  const handleCreateFlight = (newFlightData) => {
-    // Thêm vào đầu danh sách
-    const newFlight = {
-      ...newFlightData,
-      // Nếu không nhập giờ đến thì tự tính giả lập để hiển thị cho đẹp
-      arriveTime:
-        newFlightData.arriveTime ||
-        calculateArrivalTime(newFlightData.departureTime),
-    };
+  const handleCreateFlight = async (newFlightData) => {
+    const formData = newFlightData;
 
-    setFlights([newFlight, ...flights]);
+    try {
+      const response = await fetch(
+        "http://localhost:3001/api/staff/flightmanagement/create-flight",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Lỗi khi tạo chuyến bay");
+      }
+      setRefreshKey((prevKey) => !prevKey);
+      alert(`Đã tạo chuyến bay ${newFlightData.flightNumber} thành công!`);
+      setIsCreateModalOpen(false);
+    } catch (err) {
+      console.error(err);
+    }
     alert(`Đã tạo chuyến bay ${newFlight.flightNumber} thành công!`);
   };
+  // Hàm xử lý hủy chuyến bay
+  const handleCancelledFlight = async (flight) => {
+    const isConfirmed = window.confirm(
+      `Bạn có chắc chắn muốn HỦY chuyến bay ${flight.flightNumber} không? Hành động này không thể hoàn tác.`
+    );
+    if (!isConfirmed) return;
+    try {
+      console.log("Dữ liệu gửi đi update:", flight);
+      // Gọi API cập nhật (Giả lập)
+      const response = await fetch(
+        `http://localhost:3001/api/staff/flightmanagement/cancel/${flight.flightNumber}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Lỗi khi tạo chuyến bay");
+      }
+      setRefreshKey((prevKey) => !prevKey);
 
+      alert(
+        `Hủy chuyến bay ${flight.flightNumber} thành công!. Hãy kiểm tra kĩ lại thông tin!`
+      );
+      setSelectedFlight(null);
+    } catch (error) {
+      console.error("Lỗi cập nhật:", error);
+      alert("Cập nhật thất bại.");
+    }
+  };
   // 1. Lọc dữ liệu
   const filteredFlights = useMemo(() => {
     if (!flights) return []; // Check null
@@ -176,7 +215,7 @@ const FlightManagement = () => {
             className="sub-text"
             style={{ fontSize: "13px", color: "#dfe6f0ff" }}
           >
-            Tổng số chuyến bay hôm nay:{" "}
+            Tổng số chuyến bay:{""}
             <strong style={{ color: "#fff" }}>{flights.length}</strong>
           </p>
         </div>
@@ -301,9 +340,16 @@ const FlightManagement = () => {
                       >
                         <Edit size={16} />
                       </button>
-                      <button className="action-icon-btn delete" title="Xóa">
-                        <Trash2 size={16} />
-                      </button>
+
+                      {flight.flightState !== "cancelled" && (
+                        <button
+                          className="action-icon-btn delete"
+                          title="Hủy chuyến bay"
+                          onClick={() => handleCancelledFlight(flight)}
+                        >
+                          <X size={16} />
+                        </button>
+                      )}
                     </td>
                   </tr>
                 );

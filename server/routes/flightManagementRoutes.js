@@ -6,4 +6,8 @@ router.get(
   "/hasflight/:flightNumber",
   FlightManagementController.showOnlyOneFlight
 );
+
+router.post("/create-flight", FlightManagementController.addingFlight);
+router.put("/update/:flightNumber", FlightManagementController.updateFlight);
+router.put("/cancel/:flightNumber", FlightManagementController.cancelledFlight);
 module.exports = router;
