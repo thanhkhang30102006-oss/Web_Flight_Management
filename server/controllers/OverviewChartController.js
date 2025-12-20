@@ -8,6 +8,14 @@ const { Op } = require("sequelize");
 const { startOfDay, endOfDay } = require("date-fns");
 const { toZonedTime, fromZonedTime } = require("date-fns-tz");
 const { startOfWeek, endOfWeek } = require("date-fns");
+
+// Xử lý service
+const averagePayment = require("../service/overview/averagePayment.service");
+const averageSeat = require("../service/overview/averageSeat.service");
+const totalFlight = require("../service/overview/totalFlight.service");
+const flightState = require("../service/overview/flightState.service");
+const popularMostPassenger = require("../service/overview/popularMostPassenger.service");
+const tableSummary = require("../service/overview/tableSummary.service");
 const infoDashboard = async (req, res) => {
   // Lấy số lượng chuyến bay theo ngày và giờ
   try {
@@ -127,4 +135,51 @@ const infoDashboard = async (req, res) => {
     });
   }
 };
-module.exports = { infoDashboard };
+
+// Hàm xử lý dữ liệu lấy thông tin bao gồm averageRevenueInEachFlight, percentageSeatInEachFlight,...
+const statiscialChartFlight = async (req, res) => {
+  try {
+    const [
+      totalFlightResult,
+      flightStateResult,
+      popularFlightResult,
+      tableSummaryResult,
+      averageSeatResult,
+      averagePaymentResult,
+    ] = await Promise.all([
+      totalFlight.totalFlightIncome(), // totalFlightResult
+      flightState.flightStateStat(), // flightStateResult
+      popularMostPassenger.popularRoutesWithMostPassenger(), // popularFlightResult
+      tableSummary.tableSummaryFlight(), // tableSummaryResult
+      averageSeat.averageSeatInEachFlight(), // averageSeatResult
+      averagePayment.averageRevenueInEachFlight(), // averagePaymentResult
+    ]);
+
+    const responseData = {
+      overview: {
+        totalFlights: totalFlightResult.flightTotal, // Hiển thị tổng số chuyến bay
+        averageSeatFill: averageSeatResult.percent, // Số % ghế trên hệ thống
+        averageRevenue: averagePaymentResult.averageRevenue, // Doanh thu trung bình
+        totalRevenue: averagePaymentResult.totalSystemRevenue, // Tổng doanh thu
+      },
+      charts: {
+        flightStates: flightStateResult.flightState, // Dữ liệu cho biểu đồ tròn
+        popularRoutes: popularFlightResult.flightPopular, // Dữ liệu cho biểu đồ cột
+      },
+      tableData: tableSummaryResult,
+    };
+    return res.status(200).json({
+      status: "success",
+      message: "Lấy dữ liệu chart thành công",
+      data: responseData,
+    });
+  } catch (error) {
+    console.error("Dashboard Controller Error:", error);
+    return res.status(500).json({
+      status: "error",
+      message: "Lỗi server khi tổng hợp dữ liệu",
+      error: error.message,
+    });
+  }
+};
+module.exports = { infoDashboard, statiscialChartFlight };

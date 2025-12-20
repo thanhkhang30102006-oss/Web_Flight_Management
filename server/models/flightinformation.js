@@ -6,7 +6,16 @@ module.exports = (sequelize, DataTypes) => {
     /**
      * Helper method for defining associations.
      */
-    static associate(models) {}
+    static associate(models) {
+      FlightInformation.hasMany(models.Ticket, {
+        foreignKey: "flightNumber",
+        as: "tickets",
+      });
+      FlightInformation.hasMany(models.Seat, {
+        foreignKey: "flightNumber",
+        as: "seats",
+      });
+    }
   }
 
   FlightInformation.init(

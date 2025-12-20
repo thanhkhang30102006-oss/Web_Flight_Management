@@ -769,9 +769,87 @@ const sendFlightCancellationToAll = async (
     `Đã gửi thông báo hủy chuyến ${flightNumber} tới ${emailList.length} địa chỉ email.`
   );
 };
+
+// Đôi hàm xử lý gửi email báo cáo và xuất file pdf
+const sendSystemReportEmail = async (req, res) => {
+  const { overview, tableData, reportEmail } = req.body;
+
+  try {
+    const rowsHtml = tableData
+      .map(
+        (f) => `
+      <tr>
+        <td style="border: 1px solid #ddd; padding: 8px;">${f.flightNumber}</td>
+        <td style="border: 1px solid #ddd; padding: 8px;">${f.route}</td>
+        <td style="border: 1px solid #ddd; padding: 8px;">${
+          f.status === "active"
+            ? "Đúng giờ"
+            : f.status === "delayed"
+            ? "Trễ chuyến"
+            : "Đã hủy"
+        }</td>
+        <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">${new Intl.NumberFormat(
+          "vi-VN"
+        ).format(f.revenue)} ₫</td>
+      </tr>
+    `
+      )
+      .join("");
+
+    const mailOptions = {
+      from: `"He thong FlightHK" <${process.env.EMAIL_USER}>`,
+      to: reportEmail,
+      subject: `[BAO CAO] Thong ke hoat dong ngay ${new Date().toLocaleDateString(
+        "vi-VN"
+      )}`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 800px; margin: auto; border: 1px solid #eee; padding: 20px;">
+          <h2 style="color: #2563eb;">BÁO CÁO TỔNG QUAN HỆ THỐNG</h2>
+          <div style="background: #f8fafc; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+            <p><b>Tổng số chuyến bay:</b> ${overview.totalFlights}</p>
+            <p><b>Doanh thu trung bình:</b> ${new Intl.NumberFormat(
+              "vi-VN"
+            ).format(overview.averageRevenue)} ₫</p>
+            <p><b>Tỷ lệ lấp đầy TB:</b> ${overview.averageSeatFill.toFixed(
+              2
+            )}%</p>
+          </div>
+          
+          <h3>Chi tiết các chuyến bay</h3>
+          <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+              <tr style="background-color: #3b82f6; color: white;">
+                <th style="padding: 10px;">Số hiệu</th>
+                <th>Chặng bay</th>
+                <th>Trạng thái</th>
+                <th>Doanh thu</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rowsHtml}
+            </tbody>
+          </table>
+          <p style="margin-top: 20px; font-size: 12px; color: #666;">Đây là email tự động từ hệ thống quản lý FlightHK.</p>
+        </div>
+      `,
+    };
+
+    await transporter.sendMail(mailOptions);
+    return res
+      .status(200)
+      .json({ status: "success", message: "Gửi báo cáo thành công!" });
+  } catch (error) {
+    console.error("Email Report Error:", error);
+    return res
+      .status(500)
+      .json({ status: "error", message: "Lỗi khi gửi email báo cáo" });
+  }
+};
+// NỘI DUNG CỦA GỬI EMAIL
 module.exports = {
   formatEmail,
   sendCancellationEmail,
   sendRefundSuccessEmail,
   sendFlightCancellationToAll,
+  sendSystemReportEmail,
 };
