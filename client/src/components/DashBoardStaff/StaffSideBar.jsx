@@ -9,6 +9,7 @@ import {
   MessageSquare,
   LogOut,
   ChevronDown,
+  SquareCheckBig,
 } from "lucide-react";
 import "./StaffSideBar.css";
 
@@ -59,6 +60,12 @@ function StaffSidebar({ currentTab, onTabChange }) {
       type: "single", // Menu đơn
     },
     {
+      id: "check-in",
+      name: "Check-In",
+      icon: <SquareCheckBig size={20} />,
+      type: "single",
+    },
+    {
       id: "flight-mgt",
       name: t("sidebar.flightManagement", "Quản lý chuyến bay"),
       icon: <Plane size={20} />,
@@ -82,25 +89,7 @@ function StaffSidebar({ currentTab, onTabChange }) {
       id: "booking-ops",
       name: t("sidebar.bookingOps", "Nghiệp vụ vé"),
       icon: <Ticket size={20} />,
-      type: "dropdown",
-      subItems: [
-        {
-          id: "booking-search",
-          name: t("sidebar.searchBooking", "Tra cứu vé"),
-        },
-        {
-          id: "booking-change",
-          name: t("sidebar.changeBooking", "Đổi ngày/chỗ"),
-        },
-        {
-          id: "booking-cancel",
-          name: t("sidebar.cancelBooking", "Hủy vé"),
-        },
-        {
-          id: "booking-refund",
-          name: t("sidebar.refund", "Hoàn tiền"),
-        },
-      ],
+      type: "single",
     },
     {
       id: "revenue",

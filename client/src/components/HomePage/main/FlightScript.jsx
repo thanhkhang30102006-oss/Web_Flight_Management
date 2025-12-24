@@ -6,7 +6,6 @@ import videoWallpaper from "../../../assets/videos/background-wallpaper.webm";
 import "./FlightPage.css";
 import { useTranslation } from "react-i18next";
 import { FlightList, FlightMap } from "./FlightIndex.jsx";
-
 // Hardcode airport coords (mở rộng nếu cần)
 const airportCoords = {
   // --- Miền Bắc (6 sân bay) ---

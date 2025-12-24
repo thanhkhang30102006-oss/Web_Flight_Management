@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { X, Save, Clock, Calendar, AlertTriangle } from "lucide-react";
+import {
+  X,
+  Save,
+  Clock,
+  Calendar,
+  AlertTriangle,
+  MailCheck,
+  MailX,
+} from "lucide-react";
 
 const EditFlightStatusModal = ({ isOpen, onClose, flight, onSave }) => {
   const [formData, setFormData] = useState({
@@ -10,6 +18,7 @@ const EditFlightStatusModal = ({ isOpen, onClose, flight, onSave }) => {
     arriveTime: "",
     reason: "",
   });
+  const [sendNotification, setSendNotification] = useState(false);
 
   // Khi mở modal, điền dữ liệu của chuyến bay vào form
   useEffect(() => {
@@ -26,6 +35,7 @@ const EditFlightStatusModal = ({ isOpen, onClose, flight, onSave }) => {
         arriveTime: flight.arriveTime ? flight.arriveTime.slice(0, 5) : "",
         reason: "",
       });
+      setSendNotification(false);
     }
   }, [flight, isOpen]);
 
@@ -43,7 +53,11 @@ const EditFlightStatusModal = ({ isOpen, onClose, flight, onSave }) => {
       return;
     }
     // Gửi dữ liệu ngược lại cho component cha
-    onSave({ ...flight, ...formData });
+    onSave({
+      ...flight,
+      ...formData,
+      sendNotification: sendNotification,
+    });
   };
 
   return (
@@ -152,6 +166,62 @@ const EditFlightStatusModal = ({ isOpen, onClose, flight, onSave }) => {
             ></textarea>
           </div>
 
+          {/* --- CHECKBOX GỬI EMAIL (STYLE MỚI) --- */}
+          <div
+            className="form-group"
+            style={{
+              background: sendNotification
+                ? "rgba(34, 197, 94, 0.15)"
+                : "rgba(239, 68, 68, 0.1)",
+              padding: "12px",
+              borderRadius: "8px",
+              border: `1px solid ${sendNotification ? "#22c55e" : "#f87171"}`,
+              transition: "all 0.3s ease",
+            }}
+          >
+            <label
+              style={{
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                gap: "12px",
+                margin: 0,
+                color: "#e2e8f0",
+              }}
+            >
+              <input
+                type="checkbox"
+                checked={sendNotification}
+                onChange={(e) => setSendNotification(e.target.checked)}
+                style={{ width: "20px", height: "20px", cursor: "pointer" }}
+              />
+              <span
+                style={{
+                  fontSize: "14px",
+                  fontWeight: "600",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                }}
+              >
+                {sendNotification ? (
+                  <>
+                    <MailCheck size={18} color="#4ade80" />
+                    <span style={{ color: "#4ade80" }}>
+                      Gửi email thông báo cho hành khách
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <MailX size={18} color="#f87171" />
+                    <span style={{ color: "#f87171" }}>
+                      Không gửi email thông báo
+                    </span>
+                  </>
+                )}
+              </span>
+            </label>
+          </div>
           <div
             className="modal-actions"
             style={{

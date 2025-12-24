@@ -1,3 +1,50 @@
+/* Lớp phủ toàn màn hình cho animation */
+.takeoff-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(to bottom, #38bdf8, #0ea5e9); /* Màu trời xanh */
+  z-index: 9999; /* Luôn nằm trên cùng */
+  display: flex;
+  
+  overflow: hidden;
+}
+
+.takeoff-plane-container {
+  position: absolute;
+  /* Chúng ta sẽ dùng x, y của framer-motion để định vị */
+  top: 0;
+  left: 0;
+  color: white;
+  filter: drop-shadow(0 15px 15px rgba(0,0,0,0.3));
+  z-index: 10;
+}
+/* Máy bay */
+.takeoff-plane {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  color: white;
+  filter: drop-shadow(0 10px 10px rgba(0,0,0,0.2));
+}
+
+/* Mây và Gió */
+.takeoff-cloud {
+  position: absolute;
+  color: rgba(255, 255, 255, 0.7);
+  z-index: 5;
+}
+
+/* STYLE MỚI: Đường gió ngang */
+.wind-line {
+    position: absolute;
+    background: linear-gradient(to left, rgba(255,255,255,0), rgba(255,255,255,0.8), rgba(255,255,255,0));
+    height: 3px; /* Độ dày của gió */
+    border-radius: 10px;
+    z-index: 4;
+}
 /* --- LAYOUT CHUNG --- */
 .success-page-layout {
   position: relative;

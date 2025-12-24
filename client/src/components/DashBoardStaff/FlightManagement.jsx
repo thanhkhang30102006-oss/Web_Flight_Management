@@ -10,7 +10,9 @@ import {
   ChevronRight,
   Plane,
   X,
+  Grid,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import CreateFlightModal from "./CreateFlightModal";
 import EditFlightStatusModal from "./EditFlightStatusModal";
 
@@ -33,6 +35,7 @@ const calculateArrivalTime = (depTime) => {
 };
 
 const FlightManagement = () => {
+  const navigate = useNavigate();
   // State quản lý
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all"); // 'all' | 'active' | 'delayed' | 'cancelled'
@@ -333,6 +336,19 @@ const FlightManagement = () => {
                       </span>
                     </td>
                     <td style={{ textAlign: "center" }}>
+                      <button
+                        className="action-icon-btn view-seat"
+                        title="Xem sơ đồ ghế & Hành khách"
+                        onClick={() =>
+                          navigate(
+                            `/staff/flight-seats/${flight.flightNumber}`,
+                            { state: { flight } }
+                          )
+                        }
+                        style={{ marginRight: "5px", color: "#9ac0ffff" }} // Màu xanh dương
+                      >
+                        <Grid size={16} />
+                      </button>
                       <button
                         className="action-icon-btn edit"
                         title="Sửa trạng thái & giờ"

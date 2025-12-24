@@ -12,6 +12,7 @@ import StaffDashboard from "./pages/StaffDashboard.jsx";
 import AdminDashboard from "./pages/AdminDashboard.jsx";
 import BookSuccess from "./components/BookingFlight/BookingSuccess.jsx";
 import SeatMapChange from "./components/SeatMapChangeSeat/SeatMapChange.jsx";
+import FlightSeatDetail from "./components/DashBoardStaff/FlightSeatDetail.jsx";
 export default function App() {
   return (
     <Routes>
@@ -29,6 +30,10 @@ export default function App() {
       <Route path="/staff-dashboard" element={<StaffDashboard />} />
       <Route path="/admin-dashboard" element={<AdminDashboard />} />
       <Route path="/seat-change" element={<SeatMapChange />} />
+      <Route
+        path="/staff/flight-seats/:flightNumber"
+        element={<FlightSeatDetail />}
+      />
     </Routes>
   );
 }

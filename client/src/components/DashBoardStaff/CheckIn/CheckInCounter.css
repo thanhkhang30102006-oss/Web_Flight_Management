@@ -1,0 +1,177 @@
+/* src/components/FlightManagement/CheckInCounter.css */
+
+.checkin-container {
+  min-height: 100vh;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: white;
+  background: rgba(210, 210, 210, 0.1); 
+  backdrop-filter: blur(10px);     
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  border-radius: 24px;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.45); 
+}
+
+/* SEARCH BOX */
+.checkin-search-box {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  padding: 30px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  width: 100%;
+  max-width: 600px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  margin-bottom: 40px;
+  text-align: center;
+}
+
+.input-group-lg {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.input-lg {
+  flex: 1;
+  padding: 15px 20px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.2);
+  background: rgba(0,0,0,0.2);
+  color: white;
+  font-size: 16px;
+  outline: none;
+}
+.input-lg:focus {
+  border-color: #3b82f6;
+  background: rgba(0,0,0,0.4);
+}
+
+.btn-search-lg {
+  padding: 0 30px;
+  background: #3b82f6;
+  border: none;
+  border-radius: 12px;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-search-lg:hover { background: #2563eb; transform: translateY(-2px); }
+
+/* BOARDING PASS UI */
+.boarding-pass-wrapper {
+  animation: slideUp 0.5s ease-out;
+}
+
+.boarding-pass {
+  display: flex;
+  background: white;
+  color: #1e293b;
+  width: 750px;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+  position: relative;
+}
+
+/* Cắt lỗ tròn giả lập vé */
+.boarding-pass::before, .boarding-pass::after {
+  content: '';
+  position: absolute;
+  width: 30px; height: 30px;
+  background: #050505; 
+  border-radius: 50%;
+  z-index: 10;
+}
+.boarding-pass::before { top: -15px; left: 71%; }
+.boarding-pass::after { bottom: -15px; left: 71%; }
+
+/* Phần trái (Main Info) */
+.pass-main {
+  flex: 2.3;
+  padding: 25px;
+  border-right: 2px dashed #cbd5e1;
+  position: relative;
+}
+
+.airline-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 20px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px;
+}
+.brand-name { font-weight: 900; font-size: 20px; color: #3b82f6; letter-spacing: 1px; }
+.pass-type { font-weight: 700; text-transform: uppercase; color: #64748b; font-size: 14px; }
+
+.flight-route-large {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 30px;
+}
+.city-code { font-size: 48px; font-weight: 900; line-height: 1; }
+.city-name { font-size: 14px; color: #64748b; font-weight: 500; }
+.flight-icon-large { color: #3b82f6;}
+
+.pass-details-grid {
+  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px;
+}
+.detail-item label { font-size: 11px; text-transform: uppercase; color: #94a3b8; display: block; margin-bottom: 2px; }
+.detail-item span { font-size: 16px; font-weight: 700; color: #1e293b; }
+
+/* Phần phải (Stub) */
+.pass-stub {
+  flex: 1;
+  padding: 25px;
+  background: #f6faff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.seat-large {
+  font-size: 48px; font-weight: 900; color: #3b82f6; margin: 10px 0;
+}
+
+.barcode-area {
+  margin-top: auto;
+  opacity: 0.7;
+}
+
+/* ACTIONS */
+.checkin-actions {
+  margin-top: 30px;
+  display: flex; gap: 20px;
+}
+.btn-confirm {
+  padding: 15px 40px;
+  background: #22c55e;
+  color: white;
+  border: none; border-radius: 50px;
+  font-size: 18px; font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 10px 20px rgba(34, 197, 94, 0.4);
+  transition: 0.3s;
+  display: flex; align-items: center; gap: 10px;
+}
+.btn-confirm:hover { background: #16a34a; transform: scale(1.05); }
+
+.status-stamp {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%) rotate(-15deg);
+  border: 5px solid #22c55e;
+  color: #22c55e;
+  font-size: 45px; font-weight: 900;
+  padding: 10px 30px;
+  text-transform: uppercase;
+  border-radius: 10px;
+  opacity: 0;
+  animation: stampIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  pointer-events: none;
+  z-index: 10000000;
+}
+
+@keyframes slideUp { from { opacity: 0; transform: translateY(50px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes stampIn { from { opacity: 0; transform: translate(-50%, -50%) scale(2) rotate(0deg); } to { opacity: 0.8; transform: translate(-50%, -50%) scale(1) rotate(-15deg); } }

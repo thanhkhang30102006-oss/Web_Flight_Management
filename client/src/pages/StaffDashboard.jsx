@@ -12,7 +12,7 @@ import RevenueReports from "../components/DashBoardStaff/RevenueReports";
 import CustomerSupport from "../components/DashBoardStaff/CustomerSupport";
 import FlightScheduleMap from "../components/DashBoardStaff/FlightScheduleMap";
 import FlightReport from "../components/DashBoardStaff/FlightReport";
-
+import CheckInCounter from "../components/DashBoardStaff/CheckIn/CheckInCounter";
 // Dữ liệu mô phỏng bảng `flightinformations`
 const StaffDashboard = () => {
   const [currentTab, setCurrentTab] = useState("dashboard");
@@ -22,7 +22,8 @@ const StaffDashboard = () => {
     switch (currentTab) {
       case "dashboard":
         return <DashboardOverview />;
-
+      case "check-in":
+        return <CheckInCounter />;
       // Nhóm Flight Management
       case "flight-mgt":
       case "flight-create-update":
@@ -34,10 +35,6 @@ const StaffDashboard = () => {
         return <FlightScheduleMap />;
       // Nhóm Booking Operations
       case "booking-ops":
-      case "booking-search":
-      case "booking-change":
-      case "booking-cancel":
-      case "booking-refund":
         return <BookingOperations />;
 
       // Nhóm Revenue

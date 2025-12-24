@@ -11,6 +11,7 @@ const SeatMap = ({
   occupiedSeats = [],
   onSeatClick,
   flightSelected = [],
+  isStaffMode = false,
 }) => {
   const { t } = useTranslation();
   const colLabels = ["A", "B", "C", "", "D", "E", "F"];
@@ -68,10 +69,11 @@ const SeatMap = ({
           const isSelected = selectedSeats.some((s) => s.id === seatId);
           const isHeldByOther = holderSocketId && holderSocketId !== mySocketID;
           const isSelectedByMe = selectedSeats.some((s) => s.id === seatId);
-          const isDisabled =
-            isSold ||
-            (isPending && !isSelectedByMe) ||
-            (isHeldByOther && !isSelectedByMe);
+          const isDisabled = isStaffMode
+            ? false
+            : isSold ||
+              (isPending && !isSelectedByMe) ||
+              (isHeldByOther && !isSelectedByMe);
           // 2. Logic xác định class màu sắc
           let additionalClass = "";
           // Logic xác định trạng thái hiển thị (text)
@@ -110,6 +112,7 @@ const SeatMap = ({
           }
           return (
             <button
+              type="button"
               key={seatId}
               className={`seat-item ${defaultType} ${additionalClass}`}
               onClick={() => onSeatClick(seatId, type)}

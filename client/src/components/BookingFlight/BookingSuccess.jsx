@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import toast, { Toaster } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import {
@@ -21,9 +21,141 @@ import {
   Armchair,
   QrCode,
   Loader2,
+  Ticket,
+  Cloud,
+  Wind,
 } from "lucide-react";
+import airplaneIcon from "../../assets/Image/airplane-plane-flight-white.svg";
 import "./BookingSuccess.css";
 import videoWallpaper from "../../assets/videos/background-wallpaper-bookingpage.mp4";
+
+// --- SUB-COMPONENT: ANIMATION CẤT CÁNH ---
+const TakeoffOverlay = () => {
+  const { t } = useTranslation();
+  // Cấu hình ngẫu nhiên cho mây
+  const clouds = Array.from({ length: 6 }).map((_, i) => ({
+    id: i,
+    y: Math.random() * 80 - 10,
+    size: 200 + Math.random() * 50,
+    duration: 1.5 + Math.random() * 4,
+    delay: Math.random() * 0.5,
+    opacity: 0.3 + Math.random() * 0.5,
+  }));
+
+  // Cấu hình ngẫu nhiên cho gió
+  const windLines = Array.from({ length: 15 }).map((_, i) => ({
+    id: i,
+    y: Math.random() * 80 - 10,
+    width: 100 + Math.random() * 300,
+    duration: 0.6 + Math.random() * 0.8,
+    delay: Math.random() * 0.5,
+    opacity: 0.3 + Math.random() * 0.5,
+  }));
+
+  return (
+    <motion.div
+      className="takeoff-overlay"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      {/* 1. Hiệu ứng Mây trôi (Phải sang Trái) */}
+      {clouds.map((cloud) => (
+        <motion.div
+          key={`cloud-${cloud.id}`}
+          className="takeoff-cloud"
+          style={{ top: `${cloud.y}%` }}
+          initial={{ x: "130vw", opacity: 0 }}
+          animate={{ x: "-20vw", opacity: [0, 0.8, 0.8, 0] }}
+          transition={{
+            duration: cloud.duration,
+            repeat: Infinity,
+            ease: "linear",
+            delay: cloud.delay,
+          }}
+        >
+          <Cloud
+            size={cloud.size}
+            fill="white"
+            stroke="none"
+            style={{ opacity: 0.6 }}
+          />
+        </motion.div>
+      ))}
+
+      {/* 2. Hiệu ứng Gió (Phải sang Trái - Nhanh) */}
+      {windLines.map((wind) => (
+        <motion.div
+          key={`wind-line-${wind.id}`}
+          className="wind-line"
+          style={{
+            top: `${wind.y}%`,
+            width: `${wind.width}px`, // Áp dụng chiều dài random
+          }}
+          initial={{ x: "110vw", opacity: 0 }}
+          animate={{ x: "-50vw", opacity: [0, wind.opacity, 0] }}
+          transition={{
+            duration: wind.duration,
+            repeat: Infinity,
+            ease: "linear",
+            delay: wind.delay,
+          }}
+        />
+      ))}
+
+      {/* 4. Máy bay cất cánh (Dưới lên trên) */}
+      <motion.img
+        src={airplaneIcon}
+        className="takeoff-plane-img"
+        style={{ width: 150 }}
+        initial={{
+          x: "-20vw",
+          y: "100vh",
+          rotate: 0,
+          scale: 0.5,
+          opacity: 0,
+        }}
+        animate={{
+          x: ["-80vw", "40vw", "120vw"],
+          y: ["80vh", "0vh", "-60vh"],
+          scale: [0.5, 2.5, 3],
+          rotate: [-25, -5, 5],
+          opacity: [0, 1, 1, 0],
+        }}
+        transition={{
+          duration: 6,
+          times: [0, 0.5, 1],
+          ease: [0.45, 0.95, 0.55, 0.95],
+          delay: 0.1,
+        }}
+      />
+
+      {/* Text tạm biệt (Optional) */}
+      <motion.h2
+        style={{
+          position: "absolute",
+          bottom: "15%",
+          color: "white",
+          fontSize: "3.4rem",
+          fontWeight: "600",
+          textShadow: "0 2px 4px rgba(0,0,0,0.3)",
+          width: "100%",
+          textAlign: "center",
+          zIndex: 20,
+        }}
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.8, duration: 0.8 }}
+      >
+        {t(
+          "booking.success.animationText",
+          "Chúc quý khách chuyến bay tốt đẹp!"
+        )}
+      </motion.h2>
+    </motion.div>
+  );
+};
 
 const BookSuccess = () => {
   const { t, i18n } = useTranslation();
@@ -32,7 +164,7 @@ const BookSuccess = () => {
 
   const ticketRef = useRef(null);
   const [isProcessing, setIsProcessing] = useState(false);
-
+  const [isLeaving, setIsLeaving] = useState(false);
   // 1. Lấy dữ liệu từ State
   const { flight, passenger, totalPrice, ticketInfo, selectedSeats } =
     location.state || {};
@@ -174,6 +306,16 @@ const BookSuccess = () => {
 
   if (!location.state) return null;
 
+  const handleGoHome = () => {
+    // 1. Bật animation
+    setIsLeaving(true);
+
+    // 2. Đợi animation chạy xong (ví dụ 2.2 giây) rồi mới chuyển trang
+    setTimeout(() => {
+      navigate("/user");
+    }, 5000);
+  };
+
   return (
     <div className="success-page-layout">
       {/* Background Video (Tùy chọn) */}
@@ -184,10 +326,14 @@ const BookSuccess = () => {
       <div className="success-overlay"></div>
       <Toaster position="top-center" reverseOrder={false} />
 
+      <AnimatePresence>
+        {isLeaving && <TakeoffOverlay key="takeoff" />}
+      </AnimatePresence>
+
       <motion.div
         className="success-container"
         initial={{ opacity: 0, y: 50 }}
-        animate={{ opacity: 1, y: 0 }}
+        animate={{ opacity: isLeaving ? 0 : 1, y: isLeaving ? -50 : 0 }} // Fade out khi bấm Home
         transition={{ duration: 0.6, ease: "easeOut" }}
       >
         {/* --- PHẦN 1: HEADER THÔNG BÁO --- */}
@@ -274,6 +420,12 @@ const BookSuccess = () => {
                         </span>
                       ))}
                     </b>
+                  </span>
+                </div>
+                <div className="tf-item">
+                  <Ticket size={16} />
+                  <span>
+                    Mã Vé: <b>{allTicketIds[0]}</b>
                   </span>
                 </div>
                 <div className="tf-item">
@@ -372,7 +524,7 @@ const BookSuccess = () => {
 
         {/* --- PHẦN 4: NÚT ĐIỀU HƯỚNG --- */}
         <div className="footer-actions">
-          <button className="btn-home" onClick={() => navigate("/user")}>
+          <button className="btn-home" onClick={handleGoHome}>
             <Home size={20} /> {t("booking.success.buttons.home")}{" "}
           </button>
         </div>
