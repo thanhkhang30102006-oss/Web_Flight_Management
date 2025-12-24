@@ -1,0 +1,40 @@
+/* src/pages/AdminDashboard.css */
+
+/* NỀN TỔNG THỂ CỦA ADMIN */
+.admin-layout {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  position: relative;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #fff;
+}
+
+/* VIDEO BACKGROUND (Giống trang User) */
+.admin-video-bg {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  z-index: -2;
+}
+.admin-overlay {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.275);
+  backdrop-filter: blur(5px);
+  z-index: -1;
+}
+
+
+.main-content
+{
+    z-index: 1;
+}
+
+.content-container
+{
+    z-index: 2;
+}

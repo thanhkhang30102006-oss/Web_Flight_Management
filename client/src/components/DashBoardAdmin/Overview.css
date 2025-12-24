@@ -1,0 +1,103 @@
+/* --- 1. KPI CARDS (PHẦN TRÊN) --- */
+.kpi-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 25px;
+}
+
+.kpi-card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+ 
+  border-radius: 20px;
+  padding: 25px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.6); /* Viền mờ */
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.45);
+  transition: transform 0.3s ease, border-color 0.3s;
+}
+
+.kpi-card:hover {
+  transform: translateY(-5px);
+ 
+}
+
+.kpi-icon-box {
+  width: 60px; height: 60px;
+  border-radius: 15px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px;
+}
+/* Màu sắc riêng cho từng icon */
+.kpi-blue { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+.kpi-green { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
+.kpi-purple { background: rgba(168, 85, 247, 0.2); color: #c084fc; }
+
+.kpi-details h3 {
+  margin: 0;
+  font-size: 14px;
+  color: #ededed; /* Màu chữ mờ */
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.kpi-details .value {
+  font-size: 28px;
+  font-weight: 800;
+  margin: 5px 0;
+  color: #fff;
+}
+
+.kpi-details .sub-text {
+  font-size: 12px;
+}
+.text-up { color: #4ade80; display: flex; align-items: center; gap: 4px; }
+.text-down { color: #f87171; display: flex; align-items: center; gap: 4px; }
+
+
+/* --- 2. CHART SECTION (PHẦN DƯỚI) --- */
+.chart-section {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  padding: 30px;
+  flex: 1; /* Chiếm hết phần còn lại */
+  min-height: 450px;
+  display: flex;
+  flex-direction: column;
+}
+
+.chart-header {
+  display:  inline-flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.chart-header h2 {
+  padding-left: 24px;
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0;
+  flex-wrap: nowrap;
+  display: flex; align-items: center; gap: 10px;
+}
+
+/* Custom Recharts Tooltip */
+.custom-tooltip {
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 10px 15px;
+  border-radius: 8px;
+  color: #fff;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .kpi-container {
+    grid-template-columns: 1fr; /* Xếp dọc trên màn hình nhỏ */
+  }
+}

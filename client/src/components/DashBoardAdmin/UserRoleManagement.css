@@ -1,0 +1,128 @@
+
+/* --- TABS SWITCHER --- */
+.tabs-container {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 25px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 10px;
+}
+
+.tab-btn {
+  background: transparent;
+  border: none;
+  color: #f0efef;
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.3s;
+  display: flex; align-items: center; gap: 8px;
+}
+
+.tab-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  outline: none;
+}
+
+.tab-btn.active {
+  background: rgba(59, 131, 246, 0.512);
+  color: #ffffff;
+  outline: none;
+  border: 2px solid rgba(131, 178, 255, 0.865);
+}
+
+/* --- STATUS BADGES --- */
+.badge {
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.badge-active { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
+.badge-blocked { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+
+/* --- STAFF MODAL --- */
+.staff-modal {
+  position: fixed;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  background: #1e293b;
+  padding: 30px;
+  border-radius: 20px;
+  width: 500px;
+  border: 1px solid rgba(255,255,255,0.2);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+  z-index: 1000;
+}
+.modal-backdrop {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(5px);
+  z-index: 999;
+}
+
+
+/* src/pages/AdminDashboard.css */
+
+/* --- ACTION BUTTONS (Dùng cho bảng User/Staff) --- */
+.btn-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px; /* Khoảng cách giữa icon và chữ */
+  padding: 8px 14px;
+  border: none;
+  border-radius: 8px; /* Bo góc mềm mại */
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  background-color: #ff4343c5;
+
+}
+
+.btn-action:hover {
+  transform: translateY(-2px); /* Nổi lên nhẹ */
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #3b82f6, #2563eb); /* Gradient xanh dương */
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3); /* Bóng đổ xanh */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 15px rgba(59, 130, 246, 0.4);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
+}
+
+.btn-primary:disabled {
+  background: #94a3b8;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
