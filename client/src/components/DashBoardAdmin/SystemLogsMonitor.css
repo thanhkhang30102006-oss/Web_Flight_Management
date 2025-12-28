@@ -1,0 +1,46 @@
+
+/* --- SYSTEM LOGS LAYOUT --- */
+.system-health-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.health-card {
+  background: rgba(20, 20, 30, 0.6);
+  padding: 20px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.log-terminal {
+  flex: 1;
+  background: #0f172a; /* Nền đen giống Terminal */
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 20px;
+  overflow-y: auto;
+  font-family: 'Consolas', 'Monaco', monospace;
+  font-size: 13px;
+  color: #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.log-row {
+  display: grid;
+  grid-template-columns: 140px 80px 1fr;
+  gap: 10px;
+  padding: 4px 0;
+  border-bottom: 1px dashed rgba(255,255,255,0.05);
+}
+
+.log-time { color: #94a3b8; }
+.log-level.info { color: #4ade80; }
+.log-level.warn { color: #fbbf24; }
+.log-level.error { color: #f87171; font-weight: bold; }
