@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Header } from "../components/DashboardUser/header";
-import AdminSidebar from "../components/DashBoardStaff/AdminSideBar";
+import AdminSidebar from "../components/DashBoardAdmin/AdminSideBar";
 // File CSS bố cục (đã tạo ở bước trước)
 import "../pages/DashboardLayout.css";
 

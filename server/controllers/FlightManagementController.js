@@ -13,7 +13,6 @@ const showAllFlight = async (req, res) => {
       ],
     });
 
-    console.log("Kết quả tìm được:", JSON.stringify(Flights, null, 2));
     return res.status(200).json(Flights);
   } catch (error) {
     console.log(error);
