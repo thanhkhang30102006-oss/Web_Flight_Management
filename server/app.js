@@ -281,3 +281,8 @@ app.use("/api/user/mytrip", tripRouter);
 const chartRouter = require("./routes/chartDataRoutes.js");
 app.use("/api/staff/chart", chartRouter);
 module.exports = app;
+
+
+// Router quản lý template email
+const adminRoutes = require('./routes/adminRoutes');
+app.use('/api/admin', adminRoutes);
