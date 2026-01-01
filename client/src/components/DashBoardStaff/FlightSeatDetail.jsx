@@ -46,6 +46,10 @@ const FlightSeatDetail = () => {
   // 2. Xử lý khi Staff click ghế
   const handleSeatClick = async (seatId) => {
     const targetSeatNumber = (seatId + flightNumber).toUpperCase();
+
+    if (!targetSeatNumber) {
+      return;
+    }
     const isOccupied = occupiedSeats.some(
       (s) => s.seatNumber.toUpperCase() === targetSeatNumber
     );
@@ -58,15 +62,25 @@ const FlightSeatDetail = () => {
 
     try {
       // MOCK DATA (Thay bằng API thật khi có)
-      await new Promise((r) => setTimeout(r, 400));
+      const response = await fetch(
+        `http://localhost:3001/api/staff/flightmanagement/flight-seats/${flightNumber}/${seatId}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      // Hiển thị kết quả sau khi gọi API ra đây
+      const result = await response.json();
       const mockPassenger = {
-        ticketID: "TKT-" + Math.floor(Math.random() * 1000000),
-        seatNumber: seatId,
-        passengerName: "Nguyễn Văn A",
-        passengerEmail: "khachhang@example.com",
-        passengerMobile: "0909123456",
-        passengerPassport: "B1234567",
-        ticketState: "valid",
+        ticketID: result.data.ticketID,
+        seatNumber: result.data.seatNumber,
+        passengerName: result.data.contactName,
+        passengerEmail: result.data.contactEmail,
+        passengerMobile: result.data.contactPhone,
+        passengerPassport: result.data.contactPassport,
+        ticketState: result.data.ticketState,
       };
       setSelectedSeatPassenger(mockPassenger);
     } catch (error) {
@@ -87,7 +101,11 @@ const FlightSeatDetail = () => {
 
       <div className="detail-header-bar">
         <button
-          onClick={() => navigate(-1)}
+          onClick={() =>
+            navigate("/staff-dashboard", {
+              state: { activeTab: "flight-create-update" },
+            })
+          }
           className="btn-back"
           style={{ color: "#00ff08ff" }}
         >
@@ -264,16 +282,10 @@ const FlightSeatDetail = () => {
                   </div>
                 </div>
               </div>
-
-              <div className="action-buttons">
-                <button className="btn-cancel-ticket">
-                  <Trash2 size={18} /> Hủy vé & Hoàn tiền
-                </button>
-              </div>
             </div>
           ) : (
             <div className="empty-state-box">
-              <div className="empty-icon">💺</div>
+              <div className="empty-icon"></div>
               <h3>Chưa chọn ghế</h3>
               <p>
                 Vui lòng click vào ghế màu xám

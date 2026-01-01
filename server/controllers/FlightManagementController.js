@@ -13,7 +13,6 @@ const showAllFlight = async (req, res) => {
       ],
     });
 
-    console.log("Kết quả tìm được:", JSON.stringify(Flights, null, 2));
     return res.status(200).json(Flights);
   } catch (error) {
     console.log(error);
@@ -141,10 +140,63 @@ const cancelledFlight = async (req, res) => {
     return res.status(500).json({ message: "Lỗi server" + error.message });
   }
 };
+
+// Hàm lấy toàn bộ danh sách thông tin để hiển thị ghế của chuyến bay
+const showSeatDetails = async (req, res) => {
+  const { flightNumber, seatID } = req.params;
+
+  // Lấy các thông tin
+  /*
+  ticketID
+  seatNumber
+  contactName
+  contactEmail
+  contactMobile
+  contactPassport
+  ticketState
+
+
+  */
+  try {
+    const seatNumber = `${seatID}${flightNumber}`;
+    const ticket = await Ticket.findOne({
+      where: {
+        flightNumber: flightNumber,
+        seatNumber: seatNumber,
+      },
+    });
+
+    if (!ticket || ticket.length === 0) {
+      return res.status(401).json({
+        message: "Bị lỗi khi tra cứu khách hàng",
+        success: false,
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        ticketID: ticket.ticketID,
+        seatNumber: seatID,
+        contactName: ticket.contactName,
+        contactEmail: ticket.contactEmail,
+        contactPhone: ticket.contactPhone,
+        contactPassport: ticket.contactPassport,
+        ticketState: ticket.ticketState,
+      },
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: `Lỗi server: ${error.message}`,
+      success: false,
+    });
+  }
+};
 module.exports = {
   showAllFlight,
   showOnlyOneFlight,
   addingFlight,
   updateFlight,
   cancelledFlight,
+  showSeatDetails,
 };

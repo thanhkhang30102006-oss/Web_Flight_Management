@@ -13,10 +13,19 @@ import CustomerSupport from "../components/DashBoardStaff/CustomerSupport";
 import FlightScheduleMap from "../components/DashBoardStaff/FlightScheduleMap";
 import FlightReport from "../components/DashBoardStaff/FlightReport";
 import CheckInCounter from "../components/DashBoardStaff/CheckIn/CheckInCounter";
+import { useLocation } from "react-router-dom";
 // Dữ liệu mô phỏng bảng `flightinformations`
 const StaffDashboard = () => {
-  const [currentTab, setCurrentTab] = useState("dashboard");
+  const location = useLocation();
+  const [currentTab, setCurrentTab] = useState(
+    location.state?.activeTab || "dashboard"
+  );
 
+  useEffect(() => {
+    if (location.state?.activeTab) {
+      setCurrentTab(location.state.activeTab);
+    }
+  }, [location.state]);
   // Hàm render nội dung dựa trên tab được chọn
   const renderContent = () => {
     switch (currentTab) {
