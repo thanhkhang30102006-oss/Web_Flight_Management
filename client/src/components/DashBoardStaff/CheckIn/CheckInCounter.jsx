@@ -27,36 +27,46 @@ const CheckInCounter = () => {
     setLoading(true);
     setTicketData(null);
     setIsCheckedIn(false);
-
+    console.log(query);
     try {
-      // --- LOGIC API THẬT (Khi có backend) ---
-      /*
-      const res = await fetch(`http://localhost:3001/api/staff/checkin/search?q=${query}`);
-      const data = await res.json();
-      if(data.success) setTicketData(data.ticket);
-      */
+      const response = await fetch(`api/staff/check-in/search`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ticketID: query,
+        }),
+      });
 
-      // --- MOCK DATA (Để demo hiển thị) ---
-      await new Promise((r) => setTimeout(r, 800)); // Delay giả
+      if (!response.ok) {
+        throw new Error("Lỗi kết nối mạng hoặc API sai đường dẫn");
+      }
 
+      const data = await response.json();
+      await new Promise((r) => setTimeout(r, 800));
+      const isAlreadyCheckedIn = data.ticketState === "be-checked";
+      const assignedGate = data.gate
+        ? data.gate
+        : String(Math.floor(Math.random() * 5) + 1);
       // Giả lập tìm thấy vé
       const mockTicket = {
-        ticketID: "TKT-8822109",
-        flightNumber: "VN002",
-        passengerName: "PHAN THANH KHANG",
-        seatNumber: "2A",
-        class: "Business",
-        departure: "HAN",
-        arrive: "SGN",
-        date: "2025-12-29",
-        time: "20:00",
-        gate: "05", // Gate thường gán lúc checkin
-        status: "valid", // valid, cancelled
-        checkinState: "no", // no, yes
+        ticketID: data.ticketID,
+        flightNumber: data.flightNumber,
+        passengerName: data.contactName,
+        seatNumber: data.seatNumber,
+        class: data.seatType,
+        departure: data.departurePoint,
+        arrive: data.arrivePoint,
+        date: data.departureDay,
+        time: data.departureTime,
+        gate: assignedGate,
+        status: data.ticketState,
+        checkinState: isAlreadyCheckedIn ? "yes" : "no",
       };
 
       setTicketData(mockTicket);
-      setIsCheckedIn(mockTicket.checkinState === "yes");
+      setIsCheckedIn(isAlreadyCheckedIn);
     } catch (error) {
       alert("Không tìm thấy vé!");
     } finally {
@@ -68,17 +78,19 @@ const CheckInCounter = () => {
   const handleConfirmCheckIn = async () => {
     setLoading(true);
     try {
-      // --- LOGIC API THẬT ---
-      /*
-      await fetch(`http://localhost:3001/api/staff/checkin/confirm`, {
-         method: 'POST',
-         body: JSON.stringify({ ticketID: ticketData.ticketID })
+      const response = await fetch(`api/staff/check-in/confirm`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ticketID: ticketData.ticketID,
+          gate: ticketData.gate,
+        }),
       });
-      */
 
       await new Promise((r) => setTimeout(r, 500)); // Delay xử lý
       setIsCheckedIn(true);
-      // alert("Check-in thành công!");
     } catch (error) {
       alert("Lỗi check-in");
     } finally {

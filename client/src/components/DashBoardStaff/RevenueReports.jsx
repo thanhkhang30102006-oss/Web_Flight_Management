@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import {
   BarChart,
@@ -31,53 +31,141 @@ import jsPDF from "jspdf"; // Import PDF
 import { autoTable } from "jspdf-autotable";
 import "./RevenueReports.css";
 import "../../pages/StaffDashboard.css"; // Dùng chung CSS
-
-// --- DỮ LIỆU GIẢ LẬP CHO BÁO CÁO ---
-const MOCK_DATA = {
-  week: [
-    { name: "T2", revenue: 120, ticket: 150 },
-    { name: "T3", revenue: 98, ticket: 120 },
-    { name: "T4", revenue: 150, ticket: 180 },
-    { name: "T5", revenue: 110, ticket: 140 },
-    { name: "T6", revenue: 210, ticket: 250 },
-    { name: "T7", revenue: 250, ticket: 300 },
-    { name: "CN", revenue: 230, ticket: 280 },
-  ],
-  month: Array.from({ length: 12 }, (_, i) => ({
-    name: `T${i + 1}`,
-    revenue: Math.floor(Math.random() * 500) + 200, // Random 200-700
-    ticket: Math.floor(Math.random() * 800) + 300,
-  })),
-};
-
-const TOP_ROUTES = [
-  { name: "HAN-SGN", value: 4500, color: "#60a5fa" },
-  { name: "SGN-DAD", value: 2300, color: "#facc15" },
-  { name: "HAN-DAD", value: 1800, color: "#4ade80" },
-  { name: "SGN-PQC", value: 1200, color: "#f87171" },
-];
+import { format, parseISO, getDay, getMonth } from "date-fns";
 
 const RevenueReports = () => {
   const { t, i18n } = useTranslation();
   const [filterType, setFilterType] = useState("week"); // 'week' | 'month'
+  const [apiData, setApiData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  // Chọn dữ liệu dựa trên filter
-  const currentData = useMemo(() => MOCK_DATA[filterType], [filterType]);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        // Thay URL này bằng đường dẫn API thực tế của bạn
+        const response = await fetch(`api/staff/chart/revenue`);
+        if (!response.ok) {
+          throw new Error("Lỗi kết nối mạng hoặc API sai đường dẫn");
+        }
+        const apiResponse = await response.json();
 
-  // Tính tổng
-  const totalRevenue = useMemo(
-    () => currentData.reduce((acc, curr) => acc + curr.revenue, 0),
-    [currentData]
-  );
+        if (apiResponse.status === "success") {
+          setApiData(apiResponse.data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch report data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const totalTickets = useMemo(
-    () => currentData.reduce((acc, curr) => acc + curr.ticket, 0),
-    [currentData]
-  );
+    fetchData();
+  }, []);
+
+  // Biến danh sách payment thô thành array [T2, T3... CN] hoặc [T1... T12]
+  const processChartData = (payments, type) => {
+    if (!payments) return [];
+
+    let dataMap = {};
+
+    if (type === "week") {
+      const daysOrder = ["T2", "T3", "T4", "T5", "T6", "T7", "CN"];
+
+      daysOrder.forEach((day) => {
+        dataMap[day] = { name: day, revenue: 0, ticket: 0 };
+      });
+
+      payments.forEach((item) => {
+        const date = parseISO(item.createdAt);
+        const dayIndex = getDay(date);
+
+        let label = dayIndex === 0 ? "CN" : `T${dayIndex + 1}`;
+
+        if (dataMap[label]) {
+          dataMap[label].revenue += parseFloat(item.paymentPrice || 0);
+        }
+      });
+
+      return daysOrder.map((day) => dataMap[day]);
+    } else {
+      for (let i = 1; i <= 12; i++) {
+        const label = `T${i}`;
+        dataMap[label] = { name: label, revenue: 0, ticket: 0 };
+      }
+
+      payments.forEach((item) => {
+        const date = parseISO(item.createdAt);
+        const monthIndex = getMonth(date) + 1;
+        const label = `T${monthIndex}`;
+
+        if (dataMap[label]) {
+          dataMap[label].revenue += parseFloat(item.paymentPrice || 0);
+          dataMap[label].ticket += 1;
+        }
+      });
+
+      // Trả về mảng từ T1 đến T12
+      return Object.values(dataMap);
+    }
+  };
+  // Xử lý filter, và logic key trong json
+  const dashboardData = useMemo(() => {
+    if (!apiData) return null;
+
+    const currentData = apiData[filterType];
+    if (!currentData) return null;
+
+    // --- MAPPING 3 BIỂU ĐỒ CARD (WIDGETS) ---
+    const stats = {
+      // 1. Tổng doanh thu (kèm %)
+      revenue: currentData.payment.totalRevenue,
+      revenuePct: currentData.payment.percentageSummary,
+
+      // 2. Tổng số vé (kèm %)
+      // Backend: week dùng 'numberTicket', year dùng 'countTicketYear' -> Cần fallback
+      tickets: currentData.ticket.numberTicket || 0,
+      ticketPct:
+        filterType === "week"
+          ? currentData.ticket.percentageTicket
+          : currentData.ticket.percentageTicketYear,
+
+      // 3. Giá vé trung bình (kèm %)
+      avgPrice:
+        filterType === "week"
+          ? currentData.ticket.averageTicketPrice
+          : currentData.ticket.averageTicketPriceYear,
+      avgPricePct:
+        filterType === "week"
+          ? currentData.ticket.percentageTicketPrice
+          : currentData.ticket.percentageTicketPriceYear,
+    };
+
+    // Biểu đồ hiện chi tiết doanh thu kĩ càng theo ngày và tháng
+    const chartData = processChartData(
+      currentData.payment.paymentData,
+      filterType
+    );
+
+    // Biểu đồ doanh thu
+    const rawRoutes = currentData.route.routeRevenueData || [];
+    const routeData = rawRoutes
+      .map((r, index) => ({
+        name: `${r.departurePoint}-${r.arrivePoint}`,
+        value: parseFloat(r.totalRevenue),
+        color: ["#60a5fa", "#facc15", "#4ade80", "#f87171", "#a78bfa"][
+          index % 5
+        ],
+      }))
+      .sort((a, b) => b.value - a.value)
+      .slice(0, 5);
+    const recentTransactions = apiData.income?.tickets || [];
+    return { stats, chartData, routeData, recentTransactions };
+  }, [apiData, filterType]);
 
   const handleExportExcel = () => {
     // 1. Chuẩn bị dữ liệu (Format lại key tiếng Việt cho đẹp)
-    const excelData = currentData.map((item) => ({
+    const excelData = dashboardData.chartData.map((item) => ({
       [t("report.fileExport.colTime")]: item.name,
       [t("report.fileExport.colRevenue")]: item.revenue,
       [t("report.fileExport.colTickets")]: item.ticket,
@@ -134,10 +222,10 @@ const RevenueReports = () => {
         );
         doc.text(`${t("report.fileExport.exportDate")}: ${dateStr}`, 14, 36);
 
-        const revenueStr = totalRevenue.toLocaleString(
+        const revenueStr = dashboardData.stats.revenue.toLocaleString(
           i18n.language === "vi" ? "vi-VN" : "en-US"
         );
-        const ticketStr = totalTickets.toLocaleString(
+        const ticketStr = dashboardData.stats.tickets.toLocaleString(
           i18n.language === "vi" ? "vi-VN" : "en-US"
         );
 
@@ -162,7 +250,7 @@ const RevenueReports = () => {
           t("report.fileExport.colRevenue"),
           t("report.fileExport.colTickets"),
         ];
-        const tableRows = currentData.map((item) => [
+        const tableRows = dashboardData.chartData.map((item) => [
           item.name,
           item.revenue,
           item.ticket,
@@ -185,7 +273,12 @@ const RevenueReports = () => {
       alert("Không thể tải font. Vui lòng kiểm tra mạng.");
     }
   };
-
+  if (loading)
+    return (
+      <div className="p-10 text-center text-white">Đang tải dữ liệu...</div>
+    );
+  if (!dashboardData)
+    return <div className="p-10 text-center text-white">Không có dữ liệu</div>;
   return (
     <div className="fade-in revenue-container">
       {/* --- HEADER: TITLE & FILTER --- */}
@@ -204,8 +297,8 @@ const RevenueReports = () => {
               {t("report.fileExport.periodWeek")}
             </button>
             <button
-              className={`filter-btn ${filterType === "month" ? "active" : ""}`}
-              onClick={() => setFilterType("month")}
+              className={`filter-btn ${filterType === "year" ? "active" : ""}`}
+              onClick={() => setFilterType("year")}
             >
               {t("report.fileExport.periodYear")}
             </button>
@@ -229,13 +322,20 @@ const RevenueReports = () => {
             <div className="icon-box blue">
               <DollarSign size={24} />
             </div>
-            <span className="growth positive">
-              <ArrowUpRight size={16} /> +12.5%
+            <span
+              className={`growth ${dashboardData.stats.revenuePct >= 0 ? "positive" : "negative"}`}
+            >
+              {dashboardData.stats.revenuePct >= 0 ? (
+                <ArrowUpRight size={16} />
+              ) : (
+                <ArrowDownRight size={16} />
+              )}
+              {Math.abs(dashboardData.stats.revenuePct)}%
             </span>
           </div>
           <h3>{t("report.fileExport.totalRevenue")}</h3>
           <div className="value">
-            {totalRevenue.toLocaleString()}
+            {dashboardData.stats.revenue?.toLocaleString()}{" "}
             {t("report.fileExport.currency")}
           </div>
           <small>{t("report.comparePeriod")}</small>
@@ -246,12 +346,21 @@ const RevenueReports = () => {
             <div className="icon-box green">
               <CreditCard size={24} />
             </div>
-            <span className="growth positive">
-              <ArrowUpRight size={16} /> +8.2%
+            <span
+              className={`growth ${dashboardData.stats.ticketPct >= 0 ? "positive" : "negative"}`}
+            >
+              {dashboardData.stats.ticketPct >= 0 ? (
+                <ArrowUpRight size={16} />
+              ) : (
+                <ArrowDownRight size={16} />
+              )}
+              {Math.abs(dashboardData.stats.ticketPct)}%
             </span>
           </div>
           <h3>{t("report.fileExport.totalTickets")}</h3>
-          <div className="value">{totalTickets.toLocaleString()}</div>
+          <div className="value">
+            {dashboardData.stats.tickets?.toLocaleString()}
+          </div>
           <small>{t("report.ticketPerPeriod")}</small>
         </div>
 
@@ -260,13 +369,21 @@ const RevenueReports = () => {
             <div className="icon-box yellow">
               <TrendingUp size={24} />
             </div>
-            <span className="growth negative">
-              <ArrowDownRight size={16} /> -2.1%
+            <span
+              className={`growth ${dashboardData.stats.avgPricePct >= 0 ? "positive" : "negative"}`}
+            >
+              {dashboardData.stats.avgPricePct >= 0 ? (
+                <ArrowUpRight size={16} />
+              ) : (
+                <ArrowDownRight size={16} />
+              )}
+              {Math.abs(dashboardData.stats.avgPricePct)}%
             </span>
           </div>
           <h3>{t("report.avgTicketPrice")}</h3>
           <div className="value">
-            {((totalRevenue / totalTickets) * 1000).toLocaleString()} k
+            {dashboardData.stats.avgPrice?.toLocaleString()}{" "}
+            {t("report.fileExport.currency")}
           </div>
           <small>{t("report.vndPerTicket")}</small>
         </div>
@@ -276,9 +393,9 @@ const RevenueReports = () => {
       <div className="glass-panel chart-section">
         <h3 className="panel-title-small">{t("report.growthChart")}</h3>
         <div style={{ width: "100%", height: 350 }}>
-          <ResponsiveContainer>
+          <ResponsiveContainer width="100%" height="100%">
             <AreaChart
-              data={currentData}
+              data={dashboardData.chartData}
               margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
             >
               <defs>
@@ -293,23 +410,20 @@ const RevenueReports = () => {
                 vertical={false}
               />
               <XAxis dataKey="name" stroke="#94a3b8" />
-              <YAxis stroke="#94a3b8" tickFormatter={(val) => `${val}Tr`} />
+              <YAxis stroke="#94a3b8" />
               <Tooltip
                 contentStyle={{
                   background: "#1e293b",
                   border: "1px solid #334155",
                   color: "#fff",
                 }}
-                formatter={(val) => `${val} ${t("report.fileExport.currency")}`}
               />
               <Area
                 type="monotone"
                 dataKey="revenue"
                 stroke="#60a5fa"
-                fillOpacity={1}
                 fill="url(#colorRevenue)"
                 strokeWidth={3}
-                name={t("report.colRevenue")}
               />
             </AreaChart>
           </ResponsiveContainer>
@@ -318,14 +432,13 @@ const RevenueReports = () => {
 
       {/* --- SECTION 3: SPLIT VIEW (ROUTES & TABLE) --- */}
       <div className="split-layout">
-        {/* CỘT TRÁI: TOP ROUTES (BAR CHART) */}
         <div className="glass-panel">
           <h3 className="panel-title-small">{t("report.topRoutes")}</h3>
           <div style={{ width: "100%", height: 250 }}>
             <ResponsiveContainer>
               <BarChart
                 layout="vertical"
-                data={TOP_ROUTES}
+                data={dashboardData.routeData}
                 margin={{ left: 10 }}
               >
                 <CartesianGrid
@@ -339,14 +452,18 @@ const RevenueReports = () => {
                   type="category"
                   stroke="#fff"
                   width={70}
-                  tick={{ fontSize: 12, fontWeight: 600 }}
+                  style={{ fontSize: "12px" }}
                 />
                 <Tooltip
                   cursor={{ fill: "rgba(255,255,255,0.05)" }}
-                  contentStyle={{ background: "#1e293b", border: "none" }}
+                  contentStyle={{
+                    background: "#1e293b",
+                    border: "none",
+                    color: "#fff",
+                  }}
                 />
                 <Bar dataKey="value" radius={[0, 4, 4, 0]} barSize={20}>
-                  {TOP_ROUTES.map((entry, index) => (
+                  {dashboardData.routeData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Bar>
@@ -380,18 +497,18 @@ const RevenueReports = () => {
                 </tr>
               </thead>
               <tbody>
-                {[1, 2, 3, 4, 5].map((i) => (
+                {dashboardData.recentTransactions.map((i) => (
                   <tr key={i}>
-                    <td className="font-semibold text-xs">TRX-09{i}</td>
+                    <td className="font-semibold text-xs">{i.ticketID}</td>
                     <td className="font-semibold text-sm">
-                      Nguyen Van {String.fromCharCode(64 + i)}
+                      {i.passengerInfo.passengerName}
                     </td>
                     <td className="text-green-400 font-bold text-sm">
-                      {(1000 + i * 500).toLocaleString()}k
+                      {i.paymentInfo.paymentPrice}
                     </td>
                     <td>
                       <span className="status-badge state-active">
-                        {t("report.statusDone")}
+                        {i.ticketState === "valid" ? " Xong" : "Chưa hoàn tất"}
                       </span>
                     </td>
                   </tr>

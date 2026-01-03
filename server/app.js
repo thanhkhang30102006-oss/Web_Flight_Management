@@ -280,4 +280,8 @@ app.use("/api/user/mytrip", tripRouter);
 // Router quản lý việc load dữ liệu ra thống kê
 const chartRouter = require("./routes/chartDataRoutes.js");
 app.use("/api/staff/chart", chartRouter);
+
+// Manage function check-in
+const checkInRouter = require("./routes/checkInRoutes.js");
+app.use("/api/staff/check-in", checkInRouter);
 module.exports = app;

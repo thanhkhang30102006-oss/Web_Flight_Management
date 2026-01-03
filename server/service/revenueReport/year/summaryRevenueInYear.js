@@ -1,5 +1,5 @@
-const db = require("../models");
-const { sequelize } = require("../models");
+const db = require("../../../models");
+const { sequelize } = require("../../../models");
 const Flight = db.FlightInformation;
 const Seat = db.Seat;
 const Ticket = db.Ticket;
@@ -10,7 +10,7 @@ const {
   getPreviousYearQuery,
 } = require("../../../utils/weekData");
 
-const summaryRevenueYear = async () => {
+const summaryRevenueYearFunc = async () => {
   try {
     const yearRange = getCurrentYearQuery();
     const previousYear = getPreviousYearQuery();
@@ -26,7 +26,7 @@ const summaryRevenueYear = async () => {
       raw: true,
     });
 
-    const paymentPreviousYear = await PaymentfindAll({
+    const paymentPreviousYear = await Payment.findAll({
       where: {
         createdAt: {
           [Op.between]: [previousYear.startQuery, previousYear.endQuery],
@@ -40,11 +40,11 @@ const summaryRevenueYear = async () => {
 
     if (paymentNowsYear && paymentPreviousYear) {
       const sum = paymentNowsYear.reduce((total, payment) => {
-        return total + payment.paymentPrice;
+        return total + Number(payment.paymentPrice);
       }, 0);
       const previousSum = paymentPreviousYear.reduce((total, payment) => {
-        return total + payment.paymentPrice;
-      });
+        return total + Number(payment.paymentPrice);
+      }, 0);
       let percentage = null;
       if (previousSum !== 0) {
         if (sum !== 0) {
@@ -54,6 +54,9 @@ const summaryRevenueYear = async () => {
         }
       } else {
         percentage = 100;
+        if (sum === 0) {
+          percentage = 0;
+        }
       }
       return {
         success: true,
@@ -71,4 +74,4 @@ const summaryRevenueYear = async () => {
     throw error;
   }
 };
-module.exports = { summaryRevenueYear };
+module.exports = { summaryRevenueYearFunc };

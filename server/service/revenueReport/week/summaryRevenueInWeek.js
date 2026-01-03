@@ -1,7 +1,7 @@
 // Tính tổng giá tiền doanh thu trong tuần đó
 // Tách nhỏ từng thứ doanh thu là bao nhiêu
-const db = require("../models");
-const { sequelize } = require("../models");
+const db = require("../../../models");
+const { sequelize } = require("../../../models");
 const Flight = db.FlightInformation;
 const Seat = db.Seat;
 const Ticket = db.Ticket;
@@ -30,7 +30,7 @@ const summaryRevenue = async () => {
     });
 
     // Lấy doanh thu của tuần trước
-    const paymentPrevious = await PaymentfindAll({
+    const paymentPrevious = await Payment.findAll({
       where: {
         createdAt: {
           [Op.between]: [previuousWeek.startQuery, previuousWeek.endQuery],
@@ -43,11 +43,11 @@ const summaryRevenue = async () => {
     });
     if (paymentNows && paymentPrevious) {
       const sum = paymentNows.reduce((total, payment) => {
-        return total + payment.paymentPrice;
+        return total + Number(payment.paymentPrice);
       }, 0);
       const previousSum = paymentPrevious.reduce((total, payment) => {
-        return total + payment.paymentPrice;
-      });
+        return total + Number(payment.paymentPrice);
+      }, 0);
       let percentage = null;
       if (previousSum !== 0) {
         if (sum !== 0) {
@@ -57,6 +57,9 @@ const summaryRevenue = async () => {
         }
       } else {
         percentage = 100;
+        if (sum === 0) {
+          percentage = 0;
+        }
       }
       return {
         success: true,

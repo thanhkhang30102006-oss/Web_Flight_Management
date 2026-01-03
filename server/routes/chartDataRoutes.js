@@ -9,4 +9,6 @@ router.post(
   "/send-system-report",
   EmailServiceController.sendSystemReportEmail
 );
+
+router.get("/revenue", OverviewChartController.revenueData);
 module.exports = router;

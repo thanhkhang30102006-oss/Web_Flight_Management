@@ -16,6 +16,23 @@ const totalFlight = require("../service/overview/totalFlight.service");
 const flightState = require("../service/overview/flightState.service");
 const popularMostPassenger = require("../service/overview/popularMostPassenger.service");
 const tableSummary = require("../service/overview/tableSummary.service");
+
+// Xử lý doanh thu báo cáo
+// Nhóm week
+const summaryRevenueWeek = require("../service/revenueReport/week/summaryRevenueInWeek");
+const summaryTicketWeek = require("../service/revenueReport/week/summaryTicketInWeek");
+const averageTicketPriceWeek = require("../service/revenueReport/week/averageTicketPriceInWeek");
+const revenueBaseOnFlightWeek = require("../service/revenueReport/week/revenueBaseOnFlightInWeek");
+// Nhóm year
+const summaryRevenueYear = require("../service/revenueReport/year/summaryRevenueInYear");
+const summaryTicketYear = require("../service/revenueReport/year/summaryTicketInYear");
+const averageTicketPriceYear = require("../service/revenueReport/year/averageTicketPriceInYear");
+const revenueBaseOnFlightYear = require("../service/revenueReport/year/revenueBaseOnFlightInYear");
+
+// Thông tin khách hàng
+const passengerIncome = require("../service/revenueReport/nearlyInComeRevenue");
+
+// <-báo cáo doanh thu
 const infoDashboard = async (req, res) => {
   // Lấy số lượng chuyến bay theo ngày và giờ
   try {
@@ -182,4 +199,88 @@ const statiscialChartFlight = async (req, res) => {
     });
   }
 };
-module.exports = { infoDashboard, statiscialChartFlight };
+
+// HÀM XỬ LÝ THÔNG TIN DOANH THU BÁO CÁO---------------------
+const revenueData = async (req, res) => {
+  try {
+    const [
+      summaryRevenue,
+      summaryRevenueYearFunc,
+      countTicketFunc,
+      countTicketYearFunc,
+      averageTicketPriceInWeek,
+      averageTicketPriceInYear,
+      revenueInRoute,
+      revenueInRouteYear,
+      incomeRevenue,
+    ] = await Promise.all([
+      summaryRevenueWeek.summaryRevenue(),
+      summaryRevenueYear.summaryRevenueYearFunc(),
+      summaryTicketWeek.countTicketFunc(),
+      summaryTicketYear.countTicketYearFunc(),
+      averageTicketPriceWeek.averageTicketPriceInWeek(),
+      averageTicketPriceYear.averageTicketPriceInYear(),
+      revenueBaseOnFlightWeek.revenueInRoute(),
+      revenueBaseOnFlightYear.revenueInRouteYear(),
+      passengerIncome.incomeRevenue(),
+    ]);
+
+    const responseData = {
+      week: {
+        payment: {
+          paymentData: summaryRevenue.payments,
+          totalRevenue: summaryRevenue.totalRevenue,
+          percentageSummary: summaryRevenue.percentageSummary,
+        },
+        ticket: {
+          numberTicket: countTicketFunc.countTicket,
+          percentageTicket: countTicketFunc.percentageTicket,
+
+          // Price
+          averageTicketPrice: averageTicketPriceInWeek.averageTicketPrice,
+          percentageTicketPrice: averageTicketPriceInWeek.percentageTicketPrice,
+        },
+        route: {
+          routeRevenueData: revenueInRoute.formattedCurrent,
+        },
+      },
+      year: {
+        payment: {
+          paymentData: summaryRevenueYearFunc.payments,
+          totalRevenue: summaryRevenueYearFunc.totalRevenue,
+          percentageSummary: summaryRevenueYearFunc.percentageSummary,
+        },
+        ticket: {
+          numberTicket: countTicketYearFunc.countTicketYear,
+          percentageTicketYear: countTicketYearFunc.percentageTicketYear,
+
+          // Price
+
+          averageTicketPriceYear:
+            averageTicketPriceInYear.averageTicketPriceYear,
+          percentageTicketPriceYear:
+            averageTicketPriceInYear.percentageTicketPriceYear,
+        },
+        route: {
+          routeRevenueData: revenueInRouteYear.formattedResultYear,
+        },
+      },
+      income: {
+        tickets: incomeRevenue.tickets,
+      },
+    };
+    return res.status(200).json({
+      status: "success",
+      message: "Lấy dữ liệu chart thành công",
+      data: responseData,
+    });
+  } catch (error) {
+    console.error("Dashboard Controller Error:", error);
+    return res.status(500).json({
+      status: "error",
+      message: "Lỗi server khi tổng hợp dữ liệu",
+      error: error.message,
+    });
+  }
+};
+module.exports = { infoDashboard, statiscialChartFlight, revenueData };
