@@ -13,6 +13,8 @@ import AdminDashboard from "./pages/AdminDashboard.jsx";
 import BookSuccess from "./components/BookingFlight/BookingSuccess.jsx";
 import SeatMapChange from "./components/SeatMapChangeSeat/SeatMapChange.jsx";
 import FlightSeatDetail from "./components/DashBoardStaff/FlightSeatDetail.jsx";
+import ChristmasTree from "./components/Merry_Christmas/MerryChristmas.jsx";
+
 export default function App() {
   return (
     <Routes>
@@ -34,6 +36,7 @@ export default function App() {
         path="/staff/flight-seats/:flightNumber"
         element={<FlightSeatDetail />}
       />
+      <Route path="/ChristmasTree" element={<ChristmasTree />} />
     </Routes>
   );
 }

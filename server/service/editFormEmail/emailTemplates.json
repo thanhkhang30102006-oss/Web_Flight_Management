@@ -1,0 +1,134 @@
+[
+    {
+        "id": "booking_success_vi",
+        "name": "1. Xác nhận đặt vé (Booking Success)",
+        "subject": "[FLIGHTHK] Thông báo mua vé thành công",
+        "variables": [
+            "{{passengerName}}",
+            "{{printInstruction}}",
+            "{{promoBody}}",
+            "{{contactPhone}}"
+        ],
+        "content": "<div style='font-family: Arial, sans-serif; max-width: 650px; margin: auto; padding: 20px; border: 1px solid #e0e0e0; background-color: #f7f7f7;'><h2 style='color: #0056b3; border-bottom: 2px solid #ddd; padding-bottom: 10px;'>[FlightHK] Thông báo mua vé thành công</h2><p>Kính gửi Quý khách hàng, {{passengerName}}</p><p>Xin trân trọng cảm ơn quý khách đã lựa chọn sử dụng dịch vụ đặt vé hàng không trực tuyến công ty FlightHK của chúng tôi.</p><p><strong>{{printInstruction}}</strong></p><p>Vui lòng kiểm tra file đính kèm để xem vé điện tử chi tiết.</p><div style='border: 1px solid #ffeeba; background-color: #fff3cd; padding: 15px; margin: 20px 0; border-radius: 5px;'><p style='font-weight: bold; margin: 0;'>Ưu đãi: {{promoBody}}</p></div><p style='font-weight: bold; margin-bottom: 5px;'>Chú ý:</p><ul style='padding-left: 20px;'><li> Khi in vé ở các sân bay, quý khách vui lòng mang theo giấy tờ tùy thân.</li><li> Đây là email gửi tự động.</li><li> Liên hệ hỗ trợ: <strong>{{contactPhone}}</strong>.</li></ul><p>Xin Trân trọng cảm ơn!</p><p style='margin-top: 30px;'>Công ty Dịch vụ FlightHK.</p></div>"
+    },
+    {
+        "id": "booking_success_en",
+        "name": "1. Xác nhận đặt vé (Booking Success)",
+        "subject": "[FLIGHTHK] Booking Success Notification",
+        "variables": [
+            "{{passengerName}}",
+            "{{printInstruction}}",
+            "{{promoBody}}",
+            "{{contactPhone}}"
+        ],
+        "content": "<div style='font-family: Arial, sans-serif; max-width: 650px; margin: auto; padding: 20px; border: 1px solid #e0e0e0; background-color: #f7f7f7;'><h2 style='color: #0056b3; border-bottom: 2px solid #ddd; padding-bottom: 10px;'>[FlightHK] Booking Confirmation</h2><p>Dear Valued Customer, {{passengerName}}</p><p>Thank you for choosing FlightHK's online flight booking service.</p><p><strong>{{printInstruction}}</strong></p><p>Please check the attached file for your E-Ticket.</p><div style='border: 1px solid #ffeeba; background-color: #fff3cd; padding: 15px; margin: 20px 0; border-radius: 5px;'><p style='font-weight: bold; margin: 0;'>Offer: {{promoBody}}</p></div><p style='font-weight: bold; margin-bottom: 5px;'>Notice:</p><ul style='padding-left: 20px;'><li> When printing tickets, please bring your ID.</li><li> This is an automated email.</li><li> Contact support: <strong>{{contactPhone}}</strong>.</li></ul><p>Sincerely, thank you!</p><p style='margin-top: 30px;'>FlightHK Service Company.</p></div>"
+    },
+    {
+        "id": "ticket_info_vi",
+        "name": "2. Thông tin vé chi tiết (E-Ticket)",
+        "subject": "Vé Máy Bay Điện Tử Chuyến {{flightNumber}}",
+        "variables": [
+            "{{passengerName}}",
+            "{{flightNumber}}",
+            "{{route}}",
+            "{{allTicketIds}}",
+            "{{departureTime}}",
+            "{{seatDetails}}"
+        ],
+        "content": "<div style='font-family: Arial, sans-serif; max-width: 650px; margin: auto; border: 1px solid #ddd; padding: 0; background-color: #ffffff;'><h1 style='text-align: center; color: #0056b3; font-size: 24px; padding: 0 20px;'>Vé điện tử (E-Ticket)</h1><div style='padding: 20px;'><p style='font-weight: bold; font-size: 16px;'>Kính gửi: {{passengerName}},</p><p>Mã đặt chỗ của quý khách là: <strong style='color: #d9534f; font-size: 18px;'>{{allTicketIds}}</strong></p></div><h3 style='color: #0056b3; border-bottom: 2px solid #ddd; padding: 10px 20px; margin: 0;'>THÔNG TIN CHUYẾN BAY</h3><div style='padding: 20px; background-color: #f0f8ff;'><p><strong>Chuyến bay:</strong> {{flightNumber}}</p><p><strong>Hành trình:</strong> {{route}}</p><p><strong>Khởi hành:</strong> {{departureTime}}</p></div><h3 style='color: #0056b3; border-bottom: 2px solid #ddd; padding: 10px 20px; margin: 0;'>CHI TIẾT GHẾ:</h3><div style='padding: 20px;'>{{seatDetails}}<p><em>Vui lòng có mặt tại sân bay trước 2 tiếng.</em></p></div></div>"
+    },
+    {
+        "id": "ticket_info_en",
+        "name": "2. Thông tin vé chi tiết (E-Ticket)",
+        "subject": "Electronic Flight Ticket - Flight {{flightNumber}}",
+        "variables": [
+            "{{passengerName}}",
+            "{{flightNumber}}",
+            "{{route}}",
+            "{{allTicketIds}}",
+            "{{departureTime}}",
+            "{{seatDetails}}"
+        ],
+        "content": "<div style='font-family: Arial, sans-serif; max-width: 650px; margin: auto; border: 1px solid #ddd; padding: 0; background-color: #ffffff;'><h1 style='text-align: center; color: #0056b3; font-size: 24px; padding: 0 20px;'>E-Ticket</h1><div style='padding: 20px;'><p style='font-weight: bold; font-size: 16px;'>Dear: {{passengerName}},</p><p>Your booking code is: <strong style='color: #d9534f; font-size: 18px;'>{{allTicketIds}}</strong></p></div><h3 style='color: #0056b3; border-bottom: 2px solid #ddd; padding: 10px 20px; margin: 0;'>FLIGHT INFORMATION</h3><div style='padding: 20px; background-color: #f0f8ff;'><p><strong>Flight:</strong> {{flightNumber}}</p><p><strong>Route:</strong> {{route}}</p><p><strong>Departure:</strong> {{departureTime}}</p></div><h3 style='color: #0056b3; border-bottom: 2px solid #ddd; padding: 10px 20px; margin: 0;'>SEAT DETAILS:</h3><div style='padding: 20px;'>{{seatDetails}}<p><em>Please arrive at the airport 2 hours early.</em></p></div></div>"
+    },
+    {
+        "id": "cancellation_confirm_vi",
+        "name": "3. Xác nhận hủy vé (Cancellation)",
+        "subject": "[Thông báo hủy vé] Mã đặt chỗ: {{ticketID}}",
+        "variables": [
+            "{{ticketID}}"
+        ],
+        "content": "<h3>Hủy vé thành công!</h3><p>Chào bạn, chúng tôi xác nhận vé <b>{{ticketID}}</b> của bạn đã được hủy thành công.</p><p>Để tiến hành hoàn tiền, hệ thống sẽ dựa theo số tài khoản khách hàng đã chuyển từ trước.</p><p>Trân trọng, FlightHK Team.</p>"
+    },
+    {
+        "id": "cancellation_confirm_en",
+        "name": "3. Xác nhận hủy vé (Cancellation)",
+        "subject": "[Cancellation Confirmed] Booking ID: {{ticketID}}",
+        "variables": [
+            "{{ticketID}}"
+        ],
+        "content": "<h3>Cancellation Successful!</h3><p>Hello, we confirm that your ticket <b>{{ticketID}}</b> has been successfully cancelled.</p><p>The refund will be processed to the original payment method.</p><p>Best regards, FlightHK Team.</p>"
+    },
+    {
+        "id": "refund_success_vi",
+        "name": "4. Hoàn tiền thành công (Refund Success)",
+        "subject": "Re: [Thông báo hủy vé] Hoàn tiền vé {{ticketID}}",
+        "variables": [
+            "{{ticketID}}"
+        ],
+        "content": "<h3>Hoàn tiền thành công!</h3><p>Chúng tôi đã thực hiện lệnh chuyển khoản hoàn tiền cho mã vé <b>{{ticketID}}</b>.</p><p>Số tiền sẽ hiển thị trong tài khoản của bạn sau 1-3 ngày làm việc.</p><p>Cảm ơn bạn đã sử dụng dịch vụ của FlightHK.</p>"
+    },
+    {
+        "id": "refund_success_en",
+        "name": "4. Hoàn tiền thành công (Refund Success)",
+        "subject": "Re: [Cancellation] Refund for ticket {{ticketID}}",
+        "variables": [
+            "{{ticketID}}"
+        ],
+        "content": "<h3>Refund Successful!</h3><p>We have processed the refund for ticket <b>{{ticketID}}</b>.</p><p>The amount will appear in your account within 1-3 business days.</p><p>Thank you for using FlightHK services.</p>"
+    },
+    {
+        "id": "flight_cancellation_notice_vi",
+        "name": "5. Thông báo hủy chuyến bay (Flight Cancellation)",
+        "subject": "[QUAN TRỌNG] Thông báo hủy chuyến bay {{flightNumber}}",
+        "variables": [
+            "{{flightNumber}}",
+            "{{reason}}"
+        ],
+        "content": "<div style='border: 1px solid #d9534f; padding: 20px;'><h2 style='color: #d9534f;'>THÔNG BÁO HỦY CHUYẾN BAY</h2><p>Kính gửi Quý khách,</p><p>Chuyến bay <strong>{{flightNumber}}</strong> đã bị hủy do: <em>{{reason}}</em>.</p><p>Vui lòng liên hệ tổng đài 1900.599.997 để được hỗ trợ.</p></div>"
+    },
+    {
+        "id": "flight_cancellation_notice_en",
+        "name": "5. Thông báo hủy chuyến bay (Flight Cancellation)",
+        "subject": "[IMPORTANT] Flight Cancellation Notice {{flightNumber}}",
+        "variables": [
+            "{{flightNumber}}",
+            "{{reason}}"
+        ],
+        "content": "<div style='border: 1px solid #d9534f; padding: 20px;'><h2 style='color: #d9534f;'>FLIGHT CANCELLATION NOTICE</h2><p>Dear Customer,</p><p>Flight <strong>{{flightNumber}}</strong> has been cancelled due to: <em>{{reason}}</em>.</p><p>Please contact our hotline 1900.599.997 for assistance.</p></div>"
+    },
+    {
+        "id": "system_report_vi",
+        "name": "6. Báo cáo hệ thống (System Report)",
+        "subject": "[BAO CAO] Thong ke hoat dong",
+        "variables": [
+            "{{totalFlights}}",
+            "{{averageRevenue}}",
+            "{{averageSeatFill}}",
+            "{{tableRows}}"
+        ],
+        "content": "<div style='font-family: Arial, sans-serif; padding: 20px;'><h2 style='color: #2563eb;'>BÁO CÁO TỔNG QUAN HỆ THỐNG</h2><p><b>Tổng số chuyến bay:</b> {{totalFlights}}</p><p><b>Doanh thu TB:</b> {{averageRevenue}}</p><p><b>Tỷ lệ lấp đầy:</b> {{averageSeatFill}}%</p><h3>Chi tiết:</h3><table><thead><tr><th>Số hiệu</th><th>Chặng</th><th>Trạng thái</th><th>Doanh thu</th></tr></thead><tbody>{{tableRows}}</tbody></table></div>"
+    },
+    {
+        "id": "system_report_en",
+        "name": "6. Báo cáo hệ thống (System Report)",
+        "subject": "[REPORT] System Statistics",
+        "variables": [
+            "{{totalFlights}}",
+            "{{averageRevenue}}",
+            "{{averageSeatFill}}",
+            "{{tableRows}}"
+        ],
+        "content": "<div style='font-family: Arial, sans-serif; padding: 20px;'><h2 style='color: #2563eb;'>SYSTEM OVERVIEW REPORT</h2><p><b>Total Flights:</b> {{totalFlights}}</p><p><b>Avg Revenue:</b> {{averageRevenue}}</p><p><b>Fill Rate:</b> {{averageSeatFill}}%</p><h3>Details:</h3><table><thead><tr><th>Flight No</th><th>Route</th><th>Status</th><th>Revenue</th></tr></thead><tbody>{{tableRows}}</tbody></table></div>"
+    }
+]

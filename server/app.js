@@ -285,3 +285,8 @@ app.use("/api/staff/chart", chartRouter);
 const checkInRouter = require("./routes/checkInRoutes.js");
 app.use("/api/staff/check-in", checkInRouter);
 module.exports = app;
+
+
+// Router quản lý template email
+const adminRoutes = require('./routes/adminRoutes');
+app.use('/api/admin', adminRoutes);

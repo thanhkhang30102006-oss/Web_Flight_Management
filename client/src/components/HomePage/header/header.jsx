@@ -9,6 +9,7 @@ function Header() {
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslation();
+  const [searchTerm, setSearchTerm] = useState("");
   const [activeLink, setActiveLink] = useState(null);
   const [isScrolled, setIsScrolled] = useState(false);
 
@@ -42,6 +43,23 @@ function Header() {
   const handleNavigation = (route, id) => {
     navigate(route);
     setActiveLink(id);
+  };
+  const handleSearch = () => {
+    const normalizedSearch = searchTerm.trim().toLowerCase();
+
+    if (normalizedSearch === "merry christmas") {
+      navigate("/ChristmasTree");
+    } else {
+      // Logic tìm kiếm thông thường (nếu có)
+      console.log("Đang tìm kiếm:", searchTerm);
+    }
+  };
+
+  // Xử lý khi nhấn phím Enter trong ô input
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
   };
 
   return (
@@ -83,8 +101,11 @@ function Header() {
             type="text"
             placeholder={t("header.search", "Tìm kiếm...")}
             className="search-input"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            onKeyDown={handleKeyDown}
           />
-          <button className="search-button">
+          <button className="search-button" onClick={handleSearch}>
             {t("header.searchBtn", "Tìm")}
           </button>
         </div>

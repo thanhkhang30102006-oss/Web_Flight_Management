@@ -58,3 +58,135 @@
 {
     background-color: rgba(0, 0, 0, 0.5);
 }
+
+
+
+
+/* ------------------------- Toolbar chứa nút ngôn ngữ và nút dịch  ------------------------- */
+
+
+.utility-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #e2e8f0;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.2s;
+}
+.utility-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* Style cho Textarea giống Code Editor */
+.code-editor {
+    flex: 1;
+    width: 100%;
+    resize: none;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace; /* Font code */
+    font-size: 13px;
+    line-height: 1.6;
+    background-color: #1e293b !important; /* Màu nền tối hơn */
+    color: #a5b4fc !important; /* Màu chữ sáng dễ đọc */
+    padding: 15px;
+    white-space: pre; /* Quan trọng để giữ thụt đầu dòng */
+    overflow-x: auto; /* Cho phép cuộn ngang nếu dòng quá dài */
+}
+
+
+
+.editor-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.lang-toggle {
+    display: flex;
+    background: rgba(0,0,0,0.3);
+    border-radius: 6px;
+    padding: 3px;
+    gap: 5px;
+}
+
+.lang-btn {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.lang-btn:hover {
+    color: #fff;
+    background: rgba(255,255,255,0.05);
+}
+
+.lang-btn.active {
+    background: #3b82f6;
+    color: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* Nút dịch tự động */
+.translate-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(16, 185, 129, 0.15);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    color: #34d399;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.2s;
+}
+
+.translate-btn:hover:not(:disabled) {
+    background: rgba(16, 185, 129, 0.25);
+    transform: translateY(-1px);
+}
+
+.translate-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Tag hiển thị ngôn ngữ ở list bên trái */
+.lang-tag {
+    font-size: 9px;
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-weight: bold;
+}
+.lang-tag.vi { background: rgba(239, 68, 68, 0.2); color: #fca5a5; }
+.lang-tag.en { background: rgba(59, 130, 246, 0.2); color: #93c5fd; }
+
+.input-label {
+    font-size: 0.9rem;
+    color: #e2e8f0;
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+}

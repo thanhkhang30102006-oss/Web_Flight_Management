@@ -239,7 +239,7 @@
 .mytrip-ticket-visual-wrapper { flex: 1.2; }
 .manage-actions-wrapper { flex: 1; }
 
-h3 {
+.modal-content-flex.h3 {
   font-size: 18px; margin-bottom: 20px; color: rgba(255,255,255,0.9); border-left: 3px solid #3b82f6; padding-left: 10px;
 }
 
