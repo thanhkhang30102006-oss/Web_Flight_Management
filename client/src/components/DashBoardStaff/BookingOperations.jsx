@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import {
   Search,
   Filter,
@@ -14,32 +14,53 @@ import {
 import { DB_TICKETS } from "../../data/staffMockData";
 
 const BookingOperations = () => {
-  // --- STATE QUẢN LÝ ---
-  // Lưu DB_TICKETS vào state để có thể cập nhật trạng thái (Hủy/Khôi phục) trên UI
-  const [tickets, setTickets] = useState(DB_TICKETS);
+  const [tickets, setTickets] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
-
+  const [loading, setLoading] = useState(true);
   // State quản lý Modal (Popup)
   const [selectedTicket, setSelectedTicket] = useState(null);
+  const [modalLoading, setModalLoading] = useState(false);
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      // Thay URL này bằng đường dẫn API thực tế của bạn
+      const response = await fetch(`api/staff/ticket-business/list`);
+      if (!response.ok) {
+        throw new Error("Lỗi kết nối mạng hoặc API sai đường dẫn");
+      }
+      const apiResponse = await response.json();
+
+      if (apiResponse.success) {
+        setTickets(apiResponse.data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch report data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   const itemsPerPage = 8;
 
   // --- LOGIC LỌC DỮ LIỆU ---
   const filteredTickets = useMemo(() => {
     return tickets.filter((ticket) => {
-      // 1. Tìm kiếm trên TẤT CẢ các trường (Dynamic Search)
       const searchTermLower = searchTerm.toLowerCase();
-
-      const matchesSearch = Object.values(ticket).some((val) => {
-        // Kiểm tra nếu giá trị null hoặc undefined thì bỏ qua
+      const searchFields = [
+        ticket.ticketID,
+        ticket.passengerName,
+        ticket.flightNumber,
+        ticket.seatNumber,
+      ];
+      const matchesSearch = searchFields.some((val) => {
         if (val === null || val === undefined) return false;
-
-        // Chuyển giá trị về chuỗi (String) rồi so sánh
         return String(val).toLowerCase().includes(searchTermLower);
       });
-
       // 2. Lọc theo trạng thái
       const matchesStatus =
         filterStatus === "all" || ticket.ticketState === filterStatus;
@@ -60,20 +81,64 @@ const BookingOperations = () => {
       setCurrentPage(newPage);
     }
   };
+  // Hiện thông tin khách hàng chi tiết
+  const handleViewDetail = async (ticket) => {
+    try {
+      setModalLoading(true);
+      setSelectedTicket(ticket);
 
-  // --- LOGIC XỬ LÝ VÉ (HỦY / KHÔI PHỤC) ---
-  const handleUpdateTicketStatus = (ticketID, newStatus) => {
-    const updatedTickets = tickets.map((t) => {
-      if (t.ticketID === ticketID) {
-        return { ...t, ticketState: newStatus };
+      const response = await fetch("/api/staff/ticket-business/info-personal", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ticketID: ticket.ticketID }),
+      });
+
+      const resData = await response.json();
+
+      if (resData.success) {
+        setSelectedTicket(resData);
+      } else {
+        alert("Không thể lấy thông tin chi tiết vé");
       }
-      return t;
-    });
-    setTickets(updatedTickets);
+    } catch (error) {
+      console.error("Lỗi lấy chi tiết vé:", error);
+    } finally {
+      setModalLoading(false);
+    }
+  };
+  // --- LOGIC XỬ LÝ VÉ (HỦY / KHÔI PHỤC) ---
+  const handleUpdateTicketStatus = async (ticketID, actionType) => {
+    if (
+      !window.confirm(
+        `Bạn có chắc muốn ${actionType === "cancel" ? "HỦY" : "KHÔI PHỤC"} vé này không?`
+      )
+    )
+      return;
+    try {
+      const endpoint =
+        actionType === "cancel"
+          ? "/api/staff/ticket-business/cancel"
+          : "/api/staff/ticket-business/restore";
 
-    // Cập nhật lại vé đang xem trong modal để UI modal cũng đổi theo
-    if (selectedTicket && selectedTicket.ticketID === ticketID) {
-      setSelectedTicket({ ...selectedTicket, ticketState: newStatus });
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ticketID: ticketID }),
+      });
+
+      const resData = await response.json();
+
+      if (resData.success) {
+        alert(resData.message);
+        // Refresh lại danh sách sau khi thao tác thành công
+        fetchData();
+        setSelectedTicket(null); // Đóng modal
+      } else {
+        alert(resData.message || "Có lỗi xảy ra");
+      }
+    } catch (error) {
+      console.error(`Lỗi ${actionType} vé:`, error);
+      alert("Lỗi kết nối đến server");
     }
   };
   // --- XỬ LÝ CLICK RA NGOÀI MODAL (Overlay) ---
@@ -183,22 +248,30 @@ const BookingOperations = () => {
                   <td>
                     <span className="seat-badge">{ticket.seatNumber}</span>
                   </td>
-                  <td style={{ fontSize: "13px", color: "#ffffffff" }}>
-                    {new Date(ticket.ticketBookTime).toLocaleDateString(
-                      "vi-VN"
-                    )}
-                    <div style={{ fontSize: "11px", color: "#ffffffff" }}>
-                      {new Date(ticket.ticketBookTime).toLocaleTimeString(
-                        "vi-VN",
-                        {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        }
-                      )}
+                  <td>
+                    <span style={{ fontSize: "13px", color: "#ffffff" }}>
+                      {ticket.ticketBookTime
+                        ? new Date(ticket.ticketBookTime).toLocaleDateString(
+                            "vi-VN"
+                          )
+                        : "N/A"}
+                    </span>
+                    <div style={{ fontSize: "11px", color: "#94a3b8" }}>
+                      {ticket.ticketBookTime
+                        ? new Date(ticket.ticketBookTime).toLocaleTimeString(
+                            "vi-VN",
+                            { hour: "2-digit", minute: "2-digit" }
+                          )
+                        : ""}
                     </div>
                   </td>
                   <td style={{ fontWeight: "bold", color: "#4ade80" }}>
-                    {parseInt(ticket.paymentPrice).toLocaleString()} đ
+                    {ticket.price
+                      ? parseInt(ticket.price).toLocaleString()
+                      : parseInt(
+                          ticket.paymentPrice || 0
+                        ).toLocaleString()}{" "}
+                    đ
                   </td>
                   <td>
                     <span
@@ -212,7 +285,7 @@ const BookingOperations = () => {
                     <button
                       className="action-icon-btn edit"
                       title="Xem chi tiết"
-                      onClick={() => setSelectedTicket(ticket)}
+                      onClick={() => handleViewDetail(ticket)}
                     >
                       <Eye size={16} />
                     </button>
@@ -307,7 +380,7 @@ const BookingOperations = () => {
                   <span className="label">Trạng thái:</span>
 
                   <span
-                    className={`status-badge state-${selectedTicket.ticketState}`}
+                    className={`status-badge state-${selectedTicket.ticketState === "valid" ? "Hợp lệ" : "Đã hủy"}`}
                   >
                     {selectedTicket.ticketState === "valid"
                       ? "Hợp lệ"
@@ -352,7 +425,7 @@ const BookingOperations = () => {
                 <button
                   className="modal-action-btn restore"
                   onClick={() =>
-                    handleUpdateTicketStatus(selectedTicket.ticketID, "valid")
+                    handleUpdateTicketStatus(selectedTicket.ticketID, "restore")
                   }
                 >
                   <CheckCircle size={16} /> Khôi phục vé
@@ -362,10 +435,7 @@ const BookingOperations = () => {
                 <button
                   className="modal-action-btn cancel"
                   onClick={() =>
-                    handleUpdateTicketStatus(
-                      selectedTicket.ticketID,
-                      "cancelled"
-                    )
+                    handleUpdateTicketStatus(selectedTicket.ticketID, "cancel")
                   }
                 >
                   <AlertCircle size={16} /> Hủy vé
@@ -376,7 +446,6 @@ const BookingOperations = () => {
         </div>
       )}
 
-      {/* CSS Styles Inline cho Modal (Bạn có thể chuyển vào file CSS) */}
       <style jsx>{`
         .status-badge {
           padding: 4px 10px;

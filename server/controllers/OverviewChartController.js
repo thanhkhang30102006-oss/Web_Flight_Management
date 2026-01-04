@@ -28,7 +28,7 @@ const summaryRevenueYear = require("../service/revenueReport/year/summaryRevenue
 const summaryTicketYear = require("../service/revenueReport/year/summaryTicketInYear");
 const averageTicketPriceYear = require("../service/revenueReport/year/averageTicketPriceInYear");
 const revenueBaseOnFlightYear = require("../service/revenueReport/year/revenueBaseOnFlightInYear");
-
+const summaryPassengerYear = require("../service/revenueReport/year/summaryPassengerInYear");
 // Thông tin khách hàng
 const passengerIncome = require("../service/revenueReport/nearlyInComeRevenue");
 
@@ -283,4 +283,50 @@ const revenueData = async (req, res) => {
     });
   }
 };
-module.exports = { infoDashboard, statiscialChartFlight, revenueData };
+
+const adminChart = async (req, res) => {
+  try {
+    const [
+      countTicketYearFunc,
+      summaryRevenueYearFunc,
+      countPassengerYearFunc,
+    ] = await Promise.all([
+      summaryTicketYear.countTicketYearFunc(),
+      summaryRevenueYear.summaryRevenueYearFunc(),
+      summaryPassengerYear.countPassengerYearFunc(),
+    ]);
+
+    const responseData = {
+      year: {
+        //passenger
+        numberPassenger: countPassengerYearFunc.countPassengerYear,
+        percentagePassengerYear: countPassengerYearFunc.percentagePassengerYear,
+
+        // ticket
+        numberTicket: countTicketYearFunc.countTicketYear,
+        percentageTicketYear: countTicketYearFunc.percentageTicketYear,
+
+        // payment
+        paymentData: summaryRevenueYearFunc.payments,
+      },
+    };
+    return res.status(200).json({
+      status: "success",
+      message: "Lấy dữ liệu chart thành công",
+      data: responseData,
+    });
+  } catch (error) {
+    console.error("Dashboard Controller Error:", error);
+    return res.status(500).json({
+      status: "error",
+      message: "Lỗi server khi tổng hợp dữ liệu",
+      error: error.message,
+    });
+  }
+};
+module.exports = {
+  infoDashboard,
+  statiscialChartFlight,
+  revenueData,
+  adminChart,
+};

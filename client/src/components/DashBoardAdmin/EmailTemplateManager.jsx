@@ -134,7 +134,7 @@ const EmailTemplateManager = () => {
 
   // 3. Xác định Template đang hiển thị dựa trên BaseID và Lang
   const currentTemplateId = `${selectedBaseId}_${currentLang}`;
-  const currentTemplate = rawTemplates.find((t) => t.id === currentTemplateId);
+  let currentTemplate = rawTemplates.find((t) => t.id === currentTemplateId);
 
   if (!currentTemplate && selectedBaseId) {
     const fallbackId = `${selectedBaseId}_${currentLang === "vi" ? "en" : "vi"}`;
