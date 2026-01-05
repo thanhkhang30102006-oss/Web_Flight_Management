@@ -30,7 +30,12 @@
     "todesc": "Sân bay đến",
     "depart": "Ngày đi",
     "passengers": "Hành khách",
-    "passengerOptions": ["1 người", "2 người", "3 người", "4+ người"],
+    "passengerOptions": [
+      "1 người",
+      "2 người",
+      "3 người",
+      "4+ người"
+    ],
     "search": "Tìm chuyến bay"
   },
   "topRating": "Điểm Đến Được Yêu Thích Nhất",
@@ -246,7 +251,7 @@
     "createFlight": "Tạo mới/Cập nhật",
     "flightSchedule": "Xem lịch trình bay",
     "updateStatus": "Cập nhật trạng thái",
-    "flightReport": "Báo cáo/Thông kê",
+    "flightReport": "Báo cáo/Thống kê",
     "bookingOps": "Nghiệp vụ vé",
     "searchBooking": "Tra cứu vé",
     "changeBooking": "Đổi ngày/chỗ",

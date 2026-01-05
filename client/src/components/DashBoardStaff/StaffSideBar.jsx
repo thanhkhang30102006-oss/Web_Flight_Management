@@ -81,7 +81,7 @@ function StaffSidebar({ currentTab, onTabChange }) {
         },
         {
           id: "flight-report",
-          name: t("sidebar.flightReport", "Báo cáo chuyến bay"),
+          name: t("sidebar.flightReport", "Báo cáo/Thống kê"),
         },
       ],
     },

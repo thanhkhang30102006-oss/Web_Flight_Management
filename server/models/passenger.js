@@ -42,10 +42,6 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      passengerImage: {
-        type: DataTypes.STRING,
-        allowNull: true,
-      },
       passengerAccountName: {
         type: DataTypes.STRING,
         allowNull: true,
