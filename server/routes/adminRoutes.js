@@ -14,4 +14,14 @@ router.put("/email-templates/:id", AdminController.updateEmailTemplate);
 router.post("/translate", AdminController.translateText);
 
 router.get("/chart", OverviewChartController.adminChart);
+
+// UserManagement
+router.get("/passengers", AdminController.listPassenger);
+router.post("/updateStateLock", AdminController.handleLockStatePassenger);
+router.post("/updateStateUnLock", AdminController.handleUnLockStatePassenger);
+
+// StaffManagement
+router.get("/staffs", AdminController.staffList);
+router.post("/staff/add", AdminController.addStaff);
+router.post("/staff/delete", AdminController.deleteStaff);
 module.exports = router;

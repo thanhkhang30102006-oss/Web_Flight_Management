@@ -4,6 +4,8 @@ const Passenger = db.Passenger;
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
+const tempLogger = require("../utils/tempLogger");
+const loginLimiter = require("../utils/loginLimiter");
 const registerInformation = async (req, res) => {
   try {
     const {
@@ -80,7 +82,6 @@ const loginUser = async (req, res) => {
         passengerName: passengerName,
         passengerEmail: passengerEmail,
         passengerMobile: passengerMobile,
-        passengerState: "active",
       },
     });
     if (!passenger) {
@@ -89,12 +90,34 @@ const loginUser = async (req, res) => {
         message: "Thông tin không đúng hoặc tài khoản của bạn đã bị khóa!",
       });
     }
+
+    if (passenger.passengerState === "blocked") {
+      // Gửi Log DANGER cho Admin biết có người đang cố đăng nhập tài khoản bị khóa
+      tempLogger.add(
+        "WARNING",
+        `Cố gắng đăng nhập tài khoản bị KHÓA: ${passengerEmail}`
+      );
+
+      return res.status(403).json({
+        success: false,
+        message:
+          "Tài khoản đã bị khóa do nhập sai quá nhiều lần. Vui lòng liên hệ Admin!",
+      });
+    }
+
+    if (passenger.passengerState !== "active") {
+      return res
+        .status(401)
+        .json({ success: false, message: "Tài khoản không hoạt động" });
+    }
+
     const isMatch = await bcrypt.compare(
       passengerPassword,
       passenger.passengerPassword
     );
 
     if (isMatch) {
+      loginLimiter.reset(passengerEmail);
       const userData = {
         id: passenger.passengerID,
         name: passenger.passengerName,
@@ -119,7 +142,7 @@ const loginUser = async (req, res) => {
         process.env.REFRESH_TOKEN_SECRET || "refresh_token_default",
         { expiresIn: "7d" }
       );
-
+      tempLogger.add("INFO", `User ${passengerName} đăng nhập thành công`);
       res.cookie("refreshToken", refreshToken, cookieOptions);
       return res.status(200).json({
         success: true,
@@ -128,10 +151,33 @@ const loginUser = async (req, res) => {
         accessToken: accessToken,
       });
     } else {
-      return res.status(401).json({
-        success: false,
-        message: "Mật khẩu không đúng!",
-      });
+      const isJustLocked = loginLimiter.addFail(passengerEmail);
+      const currentFails = loginLimiter.getAttempts(passengerEmail);
+
+      if (isJustLocked) {
+        passenger.passengerState = "blocked";
+        await passenger.save();
+
+        tempLogger.add(
+          "ERROR",
+          `BLOCK USER: ${passengerEmail} đã bị khóa (Sai 5 lần)`
+        );
+
+        return res.status(403).json({
+          success: false,
+          message: "Bạn đã nhập sai 5 lần. Tài khoản đã bị khóa!",
+        });
+      } else {
+        tempLogger.add(
+          "WARNING",
+          `User ${passengerEmail} sai mật khẩu (Lần ${currentFails})`
+        );
+
+        return res.status(401).json({
+          success: false,
+          message: `Mật khẩu sai! Bạn còn ${5 - currentFails} lần thử.`,
+        });
+      }
     }
   } catch (error) {
     console.log("Lỗi Login:", error);

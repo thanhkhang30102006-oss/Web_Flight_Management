@@ -18,7 +18,6 @@ const path = require("path");
 const FONT_PATH = path.resolve(__dirname, "../fonts/times.ttf");
 const { translateAirport } = require("../storeInformation/mappingAirport");
 // Config cho account gmail
-
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
@@ -42,12 +41,6 @@ const formatCurrency = (amount) => {
 const formatEmail = async (req, res) => {
   const { flight, passenger, totalPrice, ticketInfo, selectedSeats, language } =
     req.body;
-
-  const lang =
-    language && language.toString().toLowerCase().startsWith("en")
-      ? "en"
-      : "vi";
-  const suffix = `_${lang}`;
 
   // Chuẩn bị dữ liệu chung
   const ticketIds = ticketInfo.tickets.map((t) => t.ticketID).join(", ");
@@ -92,7 +85,7 @@ const formatEmail = async (req, res) => {
   try {
     // Template 1: Booking Success (Cảm ơn)
     const bookingTemplate = renderTemplate(
-      `booking_success${suffix}`,
+      `booking_success_vi`,
       emailVariables
     );
     const sub1 = bookingTemplate
@@ -103,10 +96,7 @@ const formatEmail = async (req, res) => {
       : `<p>Booking Success. Ticket: ${ticketIds}</p>`;
 
     // Template 2: Ticket Info (Vé điện tử)
-    const ticketTemplate = renderTemplate(
-      `ticket_info${suffix}`,
-      emailVariables
-    );
+    const ticketTemplate = renderTemplate(`ticket_info_vi`, emailVariables);
     const sub2 = ticketTemplate
       ? ticketTemplate.subject
       : `E-Ticket ${flight.flightNumber}`;
@@ -167,7 +157,7 @@ const formatEmail = async (req, res) => {
 const sendCancellationEmail = async (passengerEmail, ticketID) => {
   try {
     const variables = { ticketID: ticketID };
-    const template = renderTemplate("cancellation_confirm", variables);
+    const template = renderTemplate(`cancellation_confirm_vi`, variables);
 
     const subject = template
       ? template.subject
@@ -191,7 +181,7 @@ const sendCancellationEmail = async (passengerEmail, ticketID) => {
 const sendRefundSuccessEmail = async (passengerEmail, ticketID) => {
   try {
     const variables = { ticketID: ticketID };
-    const template = renderTemplate("refund_success", variables);
+    const template = renderTemplate("refund_success_vi", variables);
 
     const subject = template
       ? template.subject
@@ -224,7 +214,7 @@ const sendFlightCancellationToAll = async (
     reason: reason,
   };
 
-  const template = renderTemplate("flight_cancellation_notice", variables);
+  const template = renderTemplate("flight_cancellation_notice_vi", variables);
   const subject = template
     ? template.subject
     : `[QUAN TRỌNG] Hủy chuyến ${flightNumber}`;
@@ -286,7 +276,7 @@ const sendSystemReportEmail = async (req, res) => {
       tableRows: rowsHtml,
     };
 
-    const template = renderTemplate("system_report", variables);
+    const template = renderTemplate("system_report_vi", variables);
     const subject = template ? template.subject : `[BAO CAO] Hệ thống FlightHK`;
     const html = template ? template.content : `<p>Báo cáo hệ thống...</p>`;
 
@@ -390,6 +380,89 @@ const sendRestoreTicketEmail = async (
     return false;
   }
 };
+
+// Mail xác nhận gửi tài khoản staff
+const sendNewStaffAccountEmail = async (
+  email,
+  staffName,
+  username,
+  password,
+  position
+) => {
+  try {
+    const subject = `[FlightHK] Chào mừng nhân viên mới - Thông tin tài khoản`;
+
+    // HTML email template
+    const html = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e0e0e0; padding: 20px;">
+        <h2 style="color: #0056b3;">Chào mừng gia nhập đội ngũ FlightHK</h2>
+        <p>Xin chào <strong>${staffName}</strong>,</p>
+        <p>Tài khoản nhân viên của bạn đã được khởi tạo thành công. Dưới đây là thông tin đăng nhập hệ thống:</p>
+        
+        <div style="background-color: #f1f5f9; padding: 15px; border-radius: 8px; margin: 20px 0;">
+            <p style="margin: 5px 0;"><strong>Tên đăng nhập:</strong> ${username}</p>
+            <p style="margin: 5px 0;"><strong>Mật khẩu mặc định:</strong> <span style="color: #d9534f; font-weight: bold;">${password}</span></p>
+            <p style="margin: 5px 0;"><strong>Quyền hạn:</strong> ${position}</p>
+        </div>
+
+        <p><em>Vui lòng đăng nhập và đổi mật khẩu ngay trong lần đầu tiên để bảo mật tài khoản.</em></p>
+        <hr>
+        <p style="font-size: 12px; color: #666;">Đây là email tự động từ hệ thống quản trị FlightHK.</p>
+      </div>
+    `;
+
+    await transporter.sendMail({
+      from: `"FlightHK Admin Team" <${process.env.EMAIL_USER}>`,
+      to: email,
+      subject: subject,
+      html: html,
+    });
+
+    console.log(`Đã gửi email cấp tài khoản cho nhân viên: ${email}`);
+    return true;
+  } catch (error) {
+    console.error("Lỗi gửi email cấp tài khoản staff:", error);
+    return false;
+  }
+};
+const sendDeleteStaffAccountEmail = async (email, staffName, staffID) => {
+  try {
+    const subject = `[FlightHK] Thông báo hủy kích hoạt tài khoản nhân viên`;
+
+    // HTML email template cho việc XÓA
+    const html = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e0e0e0; padding: 20px;">
+        <h2 style="color: #dc3545;">Thông báo ngừng quyền truy cập</h2>
+        <p>Xin chào <strong>${staffName}</strong>,</p>
+        <p>Chúng tôi xin thông báo tài khoản nhân viên của bạn tại hệ thống <strong>FlightHK</strong> đã bị xóa và ngừng kích hoạt.</p>
+        
+        <div style="background-color: #fff5f5; padding: 15px; border-radius: 8px; margin: 20px 0; border-left: 5px solid #dc3545;">
+            <p style="margin: 5px 0;"><strong>Mã nhân viên bị xóa:</strong> ${staffID}</p>
+            <p style="margin: 5px 0;"><strong>Trạng thái:</strong> <span style="color: #dc3545; font-weight: bold;">Đã xóa (Deactivated)</span></p>
+            <p style="margin: 5px 0;"><strong>Thời gian hiệu lực:</strong> Ngay lập tức</p>
+        </div>
+
+        <p>Bạn sẽ không thể đăng nhập vào hệ thống quản trị kể từ thời điểm này.</p>
+        <p><em>Nếu đây là sự nhầm lẫn, vui lòng liên hệ với bộ phận Quản trị viên (Admin) ngay lập tức.</em></p>
+        <hr>
+        <p style="font-size: 12px; color: #666;">Đây là email tự động từ hệ thống quản trị FlightHK.</p>
+      </div>
+    `;
+
+    await transporter.sendMail({
+      from: `"FlightHK Admin Team" <${process.env.EMAIL_USER}>`,
+      to: email,
+      subject: subject,
+      html: html,
+    });
+
+    console.log(`Đã gửi email thông báo xóa tài khoản tới: ${email}`);
+    return true;
+  } catch (error) {
+    console.error("Lỗi gửi email xóa staff:", error);
+    return false;
+  }
+};
 module.exports = {
   formatEmail,
   sendCancellationEmail,
@@ -398,4 +471,6 @@ module.exports = {
   sendSystemReportEmail,
   sendPersonalCancellationEmail,
   sendRestoreTicketEmail,
+  sendNewStaffAccountEmail,
+  sendDeleteStaffAccountEmail,
 };

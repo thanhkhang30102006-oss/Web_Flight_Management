@@ -11,53 +11,33 @@ import {
 } from "lucide-react";
 import "./SystemLogsMonitor.css";
 
-// Mock Logs ban đầu
-const INITIAL_LOGS = [
-  {
-    id: 1,
-    time: "10:30:05",
-    level: "info",
-    message: "System started successfully. Version 1.0.2",
-  },
-  {
-    id: 2,
-    time: "10:31:12",
-    level: "info",
-    message: "Connected to Database: MongoDB Atlas",
-  },
-  {
-    id: 3,
-    time: "10:35:00",
-    level: "warn",
-    message: "High latency detected on API /flight/search (405ms)",
-  },
-  {
-    id: 4,
-    time: "10:40:22",
-    level: "error",
-    message: "Payment Gateway Timeout: Transaction #9921 failed",
-  },
-  {
-    id: 5,
-    time: "10:42:10",
-    level: "info",
-    message: "User [admin] updated flight VN002 status",
-  },
-];
-
 const SystemLogsMonitor = () => {
-  const [logs, setLogs] = useState(INITIAL_LOGS);
+  const [logs, setLogs] = useState([]);
   const [isPaused, setIsPaused] = useState(false);
 
   // Giả lập log chạy realtime
   useEffect(() => {
     if (isPaused) return;
 
-    const interval = setInterval(() => {
-      const newLog = generateRandomLog();
-      setLogs((prev) => [newLog, ...prev].slice(0, 100)); // Giữ tối đa 100 dòng
-    }, 3000); // 3 giây sinh 1 log mới
+    const fetchLogs = async () => {
+      try {
+        const res = await fetch("http://localhost:3001/api/logs/live");
+        const data = await res.json();
 
+        const formattedLogs = data.map((log) => ({
+          id: log.id,
+          time: new Date(log.timestamp).toLocaleTimeString("vi-VN"),
+          level: log.type.toUpperCase(),
+          message: log.message,
+        }));
+        setLogs(formattedLogs);
+      } catch (e) {
+        console.error(e);
+      }
+    };
+
+    fetchLogs();
+    const interval = setInterval(fetchLogs, 2000); // 2 giây cập nhật 1 lần
     return () => clearInterval(interval);
   }, [isPaused]);
 
@@ -191,9 +171,6 @@ const SystemLogsMonitor = () => {
           <button className="btn-action" onClick={() => setIsPaused(!isPaused)}>
             {isPaused ? <Play size={14} /> : <Pause size={14} />}{" "}
             {isPaused ? "Tiếp tục" : "Tạm dừng"}
-          </button>
-          <button className="btn-action" onClick={() => setLogs([])}>
-            <Trash2 size={14} /> Xóa Logs
           </button>
         </div>
       </div>

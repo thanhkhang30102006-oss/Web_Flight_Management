@@ -14,53 +14,14 @@ import {
 } from "lucide-react";
 import "./UserRoleManagement.css";
 
-// --- MOCK DATA PASSENGERS ---
-const MOCK_PASSENGERS = [
-  {
-    passengerID: "PSG001",
-    passengerName: "Nguyễn Văn An",
-    passengerEmail: "an.nguyen@example.com",
-    passengerMobile: "0909111222",
-    passengerNationality: "Vietnam",
-    passengerPassport: "B1234567",
-    passengerState: "active", // Trạng thái bình thường
-  },
-  {
-    passengerID: "PSG002",
-    passengerName: "Tran Thi Binh",
-    passengerEmail: "binh.tran@example.com",
-    passengerMobile: "0909333444",
-    passengerNationality: "Vietnam",
-    passengerPassport: "C9876543",
-    passengerState: "blocked", // Bị khóa do sai pass
-  },
-];
-
-// --- MOCK DATA STAFF ---
-const MOCK_STAFF = [
-  {
-    staffID: "25HIEUDZ1231",
-    staffName: "Admin User",
-    staffAccountName: "admin@flighthk.com",
-    staffPosition: "admin",
-    status: "active",
-  },
-  {
-    staffID: "25HIEUDZ1231",
-    staffName: "Le Van Ke Toan",
-    staffAccountName: "ketoan",
-    staffPosition: "accountant",
-    status: "active",
-  },
-];
 const UserRoleManagement = () => {
   const [activeTab, setActiveTab] = useState("passenger"); // 'passenger' | 'staff'
   const [searchTerm, setSearchTerm] = useState("");
 
   // State quản lý danh sách (để demo chức năng sửa/xóa)
-  const [passengers, setPassengers] = useState(MOCK_PASSENGERS);
-  const [staffs, setStaffs] = useState(MOCK_STAFF);
-
+  const [passengers, setPassengers] = useState([]);
+  const [staffs, setStaffs] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   // State Modal tạo nhân viên
   const [isStaffModalOpen, setStaffModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -69,42 +30,78 @@ const UserRoleManagement = () => {
     staffID: "",
     staffName: "",
     staffAccountName: "",
+    emailPrivate: "",
     staffPosition: "staff",
   });
 
   // --- LOGIC PASSENGER ---
+  const fetchPassengers = async () => {
+    try {
+      const response = await fetch(`api/admin/passengers`);
+      const dataRes = await response.json();
 
+      if (dataRes && dataRes.success) {
+        setPassengers(dataRes.data);
+      }
+    } catch (error) {
+      console.error("Lỗi lấy danh sách khách:", error);
+    }
+  };
   // Hàm mở khóa / khóa tài khoản khách hàng
-  const togglePassengerState = (id) => {
-    setPassengers((prev) =>
-      prev.map((p) => {
-        if (p.passengerID === id) {
-          // Nếu đang active thì block, đang blocked thì active (Unblock)
-          return {
-            ...p,
-            passengerState:
-              p.passengerState === "active" ? "blocked" : "active",
-          };
-        }
-        return p;
-      })
+  const togglePassengerState = async (id, currentState) => {
+    const actionName = currentState === "active" ? "KHÓA" : "MỞ KHÓA";
+    const confirm = window.confirm(
+      `Bạn có chắc chắn muốn ${actionName} tài khoản khách hàng này?`
     );
+    if (!confirm) return;
+    const url =
+      currentState === "active"
+        ? `api/admin/updateStateLock`
+        : `api/admin/updateStateUnLock`;
+    try {
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ passengerID: id }),
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        alert(data.message);
+        fetchPassengers(); // Load lại danh sách
+      } else {
+        alert("Thất bại: " + data.message);
+      }
+    } catch (error) {
+      console.error("Lỗi đổi trạng thái khách:", error);
+      alert("Có lỗi xảy ra khi cập nhật trạng thái.");
+    }
   };
 
   // --- LOGIC STAFF ---
-  // Sửa lại chỗ này nhé Khang
-  /*
-  const createdStaff = {
-        staffID: staffs.length + 1, // Giả lập ID tự tăng
-        staffName: newStaff.staffName,
-        staffAccountName: newStaff.staffAccountName,
-        staffPosition: newStaff.staffPosition,
-        status: "active",
-      };
-      */
+
+  const fetchStaffs = async () => {
+    try {
+      const response = await fetch(`api/admin/staffs`);
+      const dataRes = await response.json();
+
+      if (dataRes && dataRes.success) {
+        setStaffs(dataRes.data);
+      }
+    } catch (error) {
+      console.error("Lỗi lấy danh sách staff:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === "passenger") {
+      fetchPassengers();
+    } else {
+      fetchStaffs();
+    }
+  }, [activeTab]);
   const handleCreateStaff = async (e) => {
     e.preventDefault();
-    setIsSubmitting(true);
 
     // Validate
     if (!newStaff.staffName || !newStaff.staffAccountName) {
@@ -112,41 +109,66 @@ const UserRoleManagement = () => {
       setIsSubmitting(false);
       return;
     }
+    const confirm = window.confirm(
+      `Xác nhận tạo nhân viên: ${newStaff.staffName}?`
+    );
+    if (!confirm) return;
 
+    setIsSubmitting(true);
     try {
-      // Giả lập API call
-      await new Promise((resolve) => setTimeout(resolve, 800));
-
-      // Tạo object nhân viên mới với cấu trúc staffID, staffName...
-      const createdStaff = {
-        staffID: newStaff.staffID,
-        staffName: newStaff.staffName,
-        staffAccountName: newStaff.staffAccountName,
-        staffPosition: newStaff.staffPosition,
-        status: "active",
-      };
-
-      setStaffs((prev) => [...prev, createdStaff]);
-
-      alert(
-        `Đã tạo tài khoản: ${createdStaff.staffAccountName}\nMật khẩu đã gửi về email.`
-      );
-      setStaffModalOpen(false);
-
-      // Reset form với các trường mới
-      setNewStaff({
-        staffID: "",
-        staffName: "",
-        staffAccountName: "",
-        staffPosition: "staff",
+      const res = await fetch(`api/admin/staff/add`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ formData: newStaff }),
       });
+      const data = await res.json();
+      // Tạo object nhân viên mới với cấu trúc staffID, staffName...
+      if (data.success) {
+        alert(data.message);
+        setStaffModalOpen(false);
+        fetchStaffs();
+        // Reset form
+        setNewStaff({
+          staffID: "",
+          staffName: "",
+          staffAccountName: "",
+          emailPrivate: "",
+          staffPosition: "staff",
+        });
+      } else {
+        alert(data.message || "Tạo thất bại");
+      }
     } catch (error) {
       console.error("Lỗi:", error);
     } finally {
       setIsSubmitting(false);
     }
   };
+  const handleDeleteStaff = async (staffID, staffName) => {
+    // Confirm xóa
+    const confirm = window.confirm(
+      `CẢNH BÁO: Bạn có chắc muốn XÓA nhân viên "${staffName}" (ID: ${staffID}) không?\nHành động này không thể hoàn tác.`
+    );
+    if (!confirm) return;
 
+    try {
+      const res = await fetch(`api/admin/staff/delete`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ staffID: staffID }),
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        alert("Đã xóa thành công.");
+        fetchStaffs();
+      } else {
+        alert("Xóa thất bại: " + data.message);
+      }
+    } catch (error) {
+      alert("Lỗi kết nối server khi xóa.");
+    }
+  };
   return (
     <div
       className="fade-in"
@@ -239,97 +261,120 @@ const UserRoleManagement = () => {
               </tr>
             </thead>
             <tbody>
-              {passengers
-                .filter((p) =>
-                  p.passengerName
-                    .toLowerCase()
-                    .includes(searchTerm.toLowerCase())
-                )
-                .map((p) => (
-                  <tr key={p.passengerID}>
-                    <td>
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "10px",
-                        }}
-                      >
+              {passengers.length > 0 ? (
+                passengers
+                  .filter((p) =>
+                    p.passengerName
+                      .toLowerCase()
+                      .includes(searchTerm.toLowerCase())
+                  )
+                  .map((p) => (
+                    <tr key={p.passengerID}>
+                      <td>
                         <div
                           style={{
-                            width: 35,
-                            height: 35,
-                            borderRadius: "50%",
-                            background: "#64748b",
                             display: "flex",
                             alignItems: "center",
-                            justifyContent: "center",
+                            gap: "10px",
                           }}
                         >
-                          <Users size={18} color="white" />
-                        </div>
-                        <div>
-                          <div style={{ fontWeight: "bold" }}>
-                            {p.passengerName}
+                          <div
+                            style={{
+                              width: 35,
+                              height: 35,
+                              borderRadius: "50%",
+                              background: "#64748b",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                            }}
+                          >
+                            <Users size={18} color="white" />
                           </div>
-                          <div style={{ fontSize: "12px", color: "#f2f2f2ff" }}>
-                            ID: {p.passengerID}
+                          <div>
+                            <div style={{ fontWeight: "bold" }}>
+                              {p.passengerName}
+                            </div>
+                            <div
+                              style={{ fontSize: "12px", color: "#f2f2f2ff" }}
+                            >
+                              ID: {p.passengerID}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div style={{ fontSize: "13px" }}>
-                        <Mail size={12} /> {p.passengerEmail}
-                      </div>
-                      <div style={{ fontSize: "13px" }}>
-                        <Phone size={12} /> {p.passengerMobile}
-                      </div>
-                    </td>
-                    <td>
-                      <div>{p.passengerPassport}</div>
-                      <div style={{ fontSize: "12px", color: "#f2f2f2ff" }}>
-                        {p.passengerNationality}
-                      </div>
-                    </td>
-                    <td>
-                      <span
-                        className={`badge ${p.passengerState === "active" ? "badge-active" : "badge-blocked"}`}
-                      >
-                        {p.passengerState === "active"
-                          ? "Hoạt động"
-                          : "Đang Khóa"}
-                      </span>
-                    </td>
-                    <td style={{ textAlign: "center" }}>
-                      {p.passengerState === "blocked" ? (
-                        <button
-                          className="btn-action"
-                          title="Mở khóa tài khoản"
-                          onClick={() => togglePassengerState(p.passengerID)}
-                          style={{
-                            background: "rgba(34, 197, 94, 0.2)",
-                            color: "#4ade80",
-                          }}
+                      </td>
+                      <td>
+                        <div style={{ fontSize: "13px" }}>
+                          <Mail size={12} /> {p.passengerEmail}
+                        </div>
+                        <div style={{ fontSize: "13px" }}>
+                          <Phone size={12} /> {p.passengerMobile}
+                        </div>
+                      </td>
+                      <td>
+                        <div>{p.passengerPassport}</div>
+                        <div style={{ fontSize: "12px", color: "#f2f2f2ff" }}>
+                          {p.passengerNationality}
+                        </div>
+                      </td>
+                      <td>
+                        <span
+                          className={`badge ${p.passengerState === "active" ? "badge-active" : "badge-blocked"}`}
                         >
-                          <Unlock size={16} /> Mở khóa
-                        </button>
-                      ) : (
-                        <button
-                          className="btn-action"
-                          title="Khóa tài khoản"
-                          onClick={() => togglePassengerState(p.passengerID)}
-                          style={{
-                            background: "rgba(239, 68, 68, 0.2)",
-                            color: "#f87171",
-                          }}
-                        >
-                          <Lock size={16} /> Khóa
-                        </button>
-                      )}
-                    </td>
-                  </tr>
-                ))}
+                          {p.passengerState === "active"
+                            ? "Hoạt động"
+                            : "Đang Khóa"}
+                        </span>
+                      </td>
+                      <td style={{ textAlign: "center" }}>
+                        {p.passengerState === "blocked" ? (
+                          <button
+                            className="btn-action"
+                            title="Mở khóa tài khoản"
+                            onClick={() =>
+                              togglePassengerState(
+                                p.passengerID,
+                                p.passengerState
+                              )
+                            }
+                            style={{
+                              background: "rgba(34, 197, 94, 0.2)",
+                              color: "#4ade80",
+                            }}
+                          >
+                            <Unlock size={16} /> Mở khóa
+                          </button>
+                        ) : (
+                          <button
+                            className="btn-action"
+                            title="Khóa tài khoản"
+                            onClick={() =>
+                              togglePassengerState(
+                                p.passengerID,
+                                p.passengerState
+                              )
+                            }
+                            style={{
+                              background: "rgba(239, 68, 68, 0.2)",
+                              color: "#f87171",
+                            }}
+                          >
+                            <Lock size={16} /> Khóa
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  ))
+              ) : (
+                <tr>
+                  <td
+                    colSpan="5"
+                    style={{ textAlign: "center", padding: "20px" }}
+                  >
+                    Không có dữ liệu
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         )}
@@ -396,6 +441,7 @@ const UserRoleManagement = () => {
                     <button
                       className="btn-action"
                       style={{ color: "#ffffffff" }}
+                      onClick={() => handleDeleteStaff(s.staffID, s.staffName)}
                     >
                       <X size={16} /> Xóa
                     </button>
@@ -496,7 +542,26 @@ const UserRoleManagement = () => {
                   required
                 />
               </div>
-
+              {/**INPUT 4: emailStaff */}
+              <div>
+                <label style={{ fontSize: "13px", color: "#94a3b8" }}>
+                  Email tài khoản (Email Account)
+                </label>
+                <input
+                  type="text"
+                  className="glass-input"
+                  style={{ width: "100%", marginTop: "5px" }}
+                  value={newStaff.emailPrivate}
+                  onChange={(e) =>
+                    setNewStaff({
+                      ...newStaff,
+                      emailPrivate: e.target.value,
+                    })
+                  }
+                  placeholder="VD: abcd@gamil.com"
+                  required
+                />
+              </div>
               {/* INPUT 3: staffPosition */}
               <div>
                 <label style={{ fontSize: "13px", color: "#94a3b8" }}>
