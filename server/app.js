@@ -293,3 +293,7 @@ app.use("/api/admin", adminRoutes);
 // Router quản lý nghiệp vụ vé
 const ticketBusinessRouter = require("./routes/ticketBusinessRoutes.js");
 app.use("/api/staff/ticket-business", ticketBusinessRouter);
+
+// Logger
+const logRouter = require("./routes/logRoutes.js");
+app.use("/api/logs", logRouter);

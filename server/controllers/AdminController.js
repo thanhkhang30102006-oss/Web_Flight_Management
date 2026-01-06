@@ -10,6 +10,8 @@ const {
   getAllTemplates,
   updateTemplate,
 } = require("../service/editFormEmail/templateManager");
+const { sendNewStaffAccountEmail } = require("./EmailServiceController");
+const { sendDeleteStaffAccountEmail } = require("./EmailServiceController");
 const db = require("../models");
 const { DATEONLY } = require("sequelize");
 const Flight = db.FlightInformation;
@@ -17,10 +19,12 @@ const Passenger = db.Passenger;
 const Payment = db.Payment;
 const Seat = db.Seat;
 const Ticket = db.Ticket;
+const Staff = db.Staff;
 const { Op } = require("sequelize");
+const bcrypt = require("bcrypt");
 const AdminController = {
   // API: Lấy danh sách
-  getAllEmailTemplates: (req, res) => {
+  getAllEmailTemplates: async (req, res) => {
     try {
       console.log("Đang lấy danh sách template..."); // Log để debug
       const templates = getAllTemplates();
@@ -38,12 +42,15 @@ const AdminController = {
   },
 
   // API: Cập nhật
-  updateEmailTemplate: (req, res) => {
+  updateEmailTemplate: async (req, res) => {
     try {
       const { id } = req.params;
-      const { subject, content } = req.body;
+      const subject = req.body.subject || "";
+      const content = req.body.content || "";
       console.log(`Đang cập nhật template: ${id}`); // Log để debug
-
+      if (!content.trim()) {
+        console.warn("Cảnh báo: Nội dung email đang được lưu rỗng.");
+      }
       const updatedTemplate = updateTemplate(id, subject, content);
 
       if (!updatedTemplate) {
@@ -125,7 +132,7 @@ const listPassenger = async (req, res) => {
       ],
     });
 
-    if (!passnegers) {
+    if (!passengers) {
       return res
         .status(401)
         .json({ success: false, message: "Không thấy passneger nào cả" });
@@ -176,5 +183,114 @@ const handleUnLockStatePassenger = async (req, res) => {
 };
 
 // LẤY DANH SÁCH STAFF
+const staffList = async (req, res) => {
+  try {
+    const staffs = await Staff.findAll({
+      attributes: ["staffID", "staffName", "staffAccountName", "staffPosition"],
+    });
 
-module.exports = AdminController;
+    if (!staffs) {
+      return res
+        .status(401)
+        .json({ success: false, message: "Không thấy staff nào cả" });
+    }
+    return res.status(200).json({
+      success: true,
+      data: staffs,
+    });
+  } catch (error) {
+    console.error("Lỗi tính giá:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Lỗi Server" + error.message,
+    });
+  }
+};
+
+const addStaff = async (req, res) => {
+  const { formData } = req.body;
+  if (!formData.emailPrivate) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Thiếu email nhân viên" });
+  }
+  try {
+    const existingStaff = await Staff.findOne({
+      where: { staffID: formData.staffID },
+    });
+    if (existingStaff) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Mã nhân viên đã tồn tại" });
+    }
+    const defaultPassword = "staffpassword123@A";
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(defaultPassword, salt);
+    const staff = await Staff.create({
+      staffID: formData.staffID,
+      staffName: formData.staffName,
+      staffAccountName: formData.staffAccountName,
+      emailPrivate: formData.emailPrivate,
+      staffPosition: formData.staffPosition,
+      staffPassword: hashedPassword,
+    });
+    sendNewStaffAccountEmail(
+      formData.emailPrivate,
+      formData.staffName,
+      formData.staffAccountName,
+      defaultPassword,
+      formData.staffPosition
+    );
+    return res.status(200).json({ message: "Thêm tài khoản thành công" });
+  } catch (error) {
+    return res.status(500).json({ message: "Lỗi server" + error.message });
+  }
+};
+const deleteStaff = async (req, res) => {
+  const { staffID } = req.body;
+  try {
+    const staffToDelete = await Staff.findOne({
+      where: { staffID: staffID },
+    });
+
+    if (!staffToDelete) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Không tìm thấy nhân viên" });
+    }
+
+    if (staffToDelete.emailPrivate) {
+      sendDeleteStaffAccountEmail(
+        staffToDelete.emailPrivate,
+        staffToDelete.staffName,
+        staffToDelete.staffID
+      );
+    }
+    const result = await Staff.destroy({
+      where: { staffID: staffID },
+    });
+
+    if (result) {
+      return res
+        .status(200)
+        .json({ success: true, message: "Xóa nhân viên thành công" });
+    } else {
+      return res
+        .status(401)
+        .json({ success: false, message: "Không tìm thấy nhân viên" });
+    }
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ success: false, message: "Lỗi server: " + error.message });
+  }
+};
+module.exports = {
+  ...AdminController,
+  listPassenger,
+  handleLockStatePassenger,
+  handleUnLockStatePassenger,
+  staffList,
+  addStaff,
+  deleteStaff,
+};
