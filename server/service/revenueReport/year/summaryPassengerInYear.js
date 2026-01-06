@@ -4,55 +4,55 @@ const Flight = db.FlightInformation;
 const Seat = db.Seat;
 const Ticket = db.Ticket;
 const Payment = db.Payment;
+const Passenger = db.Passenger;
 const { Op } = require("sequelize");
 const {
   getCurrentYearQuery,
   getPreviousYearQuery,
 } = require("../../../utils/weekData");
 
-const countTicketYearFunc = async () => {
+const countPassengerYearFunc = async () => {
   try {
     const weekRange = getCurrentYearQuery();
     const previousRange = getPreviousYearQuery();
 
-    const countTicket = await Ticket.count({
+    const countPassenger = await Passenger.count({
       where: {
-        ticketState: "valid",
         createdAt: {
           [Op.between]: [weekRange.startQuery, weekRange.endQuery],
         },
       },
     });
 
-    const countTicketPrevious = await Ticket.count({
+    const countPassengerPrevious = await Passenger.count({
       where: {
-        ticketState: "valid",
         createdAt: {
           [Op.between]: [previousRange.startQuery, previousRange.endQuery],
         },
       },
     });
+
     let percentage = null;
-    if (countTicketPrevious !== 0) {
-      if (countTicket !== 0) {
-        percentage = (countTicket / countTicketPrevious - 1) * 100;
+    if (countPassengerPrevious !== 0) {
+      if (countPassenger !== 0) {
+        percentage = (countPassenger / countPassengerPrevious - 1) * 100;
       } else {
         percentage = -100;
       }
     } else {
       percentage = 100;
-      if (countTicket === 0) {
+      if (countPassenger === 0) {
         percentage = 0;
       }
     }
 
     return {
-      countTicketYear: countTicket,
-      percentageTicketYear: percentage,
+      countPassengerYear: countPassenger,
+      percentagePassengerYear: percentage,
     };
   } catch (error) {
     console.error("Lỗi tính toán:", error);
     throw error;
   }
 };
-module.exports = { countTicketYearFunc };
+module.exports = { countPassengerYearFunc };

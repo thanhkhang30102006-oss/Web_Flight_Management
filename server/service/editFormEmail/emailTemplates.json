@@ -129,6 +129,6 @@
       "{{averageSeatFill}}",
       "{{tableRows}}"
     ],
-    "content": "<div style='font-family: Arial, sans-serif; padding: 20px;'>\n  <h2 style='color: #2563eb;'>SYSTEM OVERVIEW REPORT</h2>\n  <p>\n  <b>Total Flights:</b> {{totalFlights}}</p>\n  <p>\n  <b>Avg Revenue:</b> {{averageRevenue}}</p>\n  <p>\n  <b>Fill Rate:</b> {{averageSeatFill}}%</p>\n  <h3>Details:</h3>\n  <table>\n    <thead>\n      <tr>\n        <th>Flight No</th>\n        <th>Route</th>\n        <th>Status</th>\n        <th>Revenue (Hieu Dep Trai)</th>\n      </tr>\n    </thead>\n    <tbody>{{tableRows}}</tbody>\n  </table>\n</div>"
+    "content": "<div style='font-family: Arial, sans-serif; padding: 20px;'><h2 style='color: #2563eb;'>SYSTEM OVERVIEW REPORT</h2><p><b>Total Flights:</b> {{totalFlights}}</p><p><b>Avg Revenue:</b> {{averageRevenue}}</p><p><b>Fill Rate:</b> {{averageSeatFill}}%</p><h3>Details:</h3><table><thead><tr><th>Flight No</th><th>Route</th><th>Status</th><th>Revenue</th></tr></thead><tbody>{{tableRows}}</tbody></table></div>"
   }
 ]

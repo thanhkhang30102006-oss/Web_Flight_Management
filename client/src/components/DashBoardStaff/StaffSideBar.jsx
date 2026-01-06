@@ -12,10 +12,11 @@ import {
   SquareCheckBig,
 } from "lucide-react";
 import "./StaffSideBar.css";
-
+import { useNavigate } from "react-router-dom";
+const API_BASE_URL = "http://localhost:3001/api/staff";
 function StaffSidebar({ currentTab, onTabChange }) {
   const { t } = useTranslation();
-
+  const navigate = useNavigate();
   // State quản lý menu nào đang được mở (Expand)
   // Ví dụ: ['flight-mgt'] nghĩa là menu Quản lý chuyến bay đang mở
   const [expandedMenus, setExpandedMenus] = useState([]);
@@ -104,7 +105,26 @@ function StaffSidebar({ currentTab, onTabChange }) {
       type: "single",
     },
   ];
+  const handleLogout = async () => {
+    if (!window.confirm("Bạn có chắc chắn muốn đăng xuất?")) return;
+    try {
+      const token = localStorage.getItem("accessToken");
+      await fetch(`${API_BASE_URL}/logout`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+    } catch (error) {
+      console.error("Lỗi khi gọi API logout:", error);
+    } finally {
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("userData");
 
+      navigate("/loginsignup");
+    }
+  };
   return (
     <aside className="sidebar">
       {/* Logo */}
@@ -181,7 +201,7 @@ function StaffSidebar({ currentTab, onTabChange }) {
 
       {/* Footer */}
       <div className="sidebar-footer">
-        <button className="menu-item logout-btn">
+        <button className="menu-item logout-btn" onClick={handleLogout}>
           <span className="icon-wrapper">
             <LogOut size={20} />
           </span>

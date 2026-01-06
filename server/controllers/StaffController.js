@@ -127,4 +127,18 @@ const LoginAdmin = async (req, res) => {
     return res.status(500).json({ error: "Lỗi Server: " + error.message });
   }
 };
-module.exports = { LoginStaff, LoginAdmin };
+const logout = (req, res) => {
+  try {
+    res.clearCookie("refreshToken", {
+      httpOnly: true,
+      secure: false,
+      sameSite: "strict",
+      path: "/",
+    });
+
+    res.status(200).json({ success: true, message: "Đăng xuất thành công" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+module.exports = { LoginStaff, LoginAdmin, logout };

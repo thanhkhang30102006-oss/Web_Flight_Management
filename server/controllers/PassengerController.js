@@ -80,12 +80,13 @@ const loginUser = async (req, res) => {
         passengerName: passengerName,
         passengerEmail: passengerEmail,
         passengerMobile: passengerMobile,
+        passengerState: "active",
       },
     });
     if (!passenger) {
       return res.status(404).json({
         success: false,
-        message: "Thông tin không đúng!",
+        message: "Thông tin không đúng hoặc tài khoản của bạn đã bị khóa!",
       });
     }
     const isMatch = await bcrypt.compare(
