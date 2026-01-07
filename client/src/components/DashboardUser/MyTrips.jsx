@@ -201,7 +201,7 @@ const MyTrips = () => {
             });
 
             alert(
-              "Đã hủy vé thành công. Bạn vẫn có 1 tiếng để liên hệ hoàn lại vé"
+              "Đã hủy vé thành công. Bạn vẫn có 15 phút để liên hệ hoàn lại vé"
             );
           }, 1500);
         } else {

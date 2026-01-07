@@ -55,56 +55,42 @@
     "id": "cancellation_confirm_vi",
     "name": "3. Xác nhận hủy vé (Cancellation)",
     "subject": "[Thông báo hủy vé] Mã đặt chỗ: {{ticketID}}",
-    "variables": [
-      "{{ticketID}}"
-    ],
+    "variables": ["{{ticketID}}"],
     "content": "<h3>Hủy vé thành công!</h3><p>Chào bạn, chúng tôi xác nhận vé <b>{{ticketID}}</b> của bạn đã được hủy thành công.</p><p>Để tiến hành hoàn tiền, hệ thống sẽ dựa theo số tài khoản khách hàng đã chuyển từ trước.</p><p>Trân trọng, FlightHK Team.</p>"
   },
   {
     "id": "cancellation_confirm_en",
     "name": "3. Xác nhận hủy vé (Cancellation)",
     "subject": "[Cancellation Confirmed] Booking ID: {{ticketID}}",
-    "variables": [
-      "{{ticketID}}"
-    ],
+    "variables": ["{{ticketID}}"],
     "content": "<h3>Cancellation Successful!</h3><p>Hello, we confirm that your ticket <b>{{ticketID}}</b> has been successfully cancelled.</p><p>The refund will be processed to the original payment method.</p><p>Best regards, FlightHK Team.</p>"
   },
   {
     "id": "refund_success_vi",
     "name": "4. Hoàn tiền thành công (Refund Success)",
     "subject": "Re: [Thông báo hủy vé] Hoàn tiền vé {{ticketID}}",
-    "variables": [
-      "{{ticketID}}"
-    ],
+    "variables": ["{{ticketID}}"],
     "content": "<h3>Hoàn tiền thành công!</h3><p>Chúng tôi đã thực hiện lệnh chuyển khoản hoàn tiền cho mã vé <b>{{ticketID}}</b>.</p><p>Số tiền sẽ hiển thị trong tài khoản của bạn sau 1-3 ngày làm việc.</p><p>Cảm ơn bạn đã sử dụng dịch vụ của FlightHK.</p>"
   },
   {
     "id": "refund_success_en",
     "name": "4. Hoàn tiền thành công (Refund Success)",
     "subject": "Re: [Cancellation] Refund for ticket {{ticketID}}",
-    "variables": [
-      "{{ticketID}}"
-    ],
+    "variables": ["{{ticketID}}"],
     "content": "<h3>Refund Successful!</h3><p>We have processed the refund for ticket <b>{{ticketID}}</b>.</p><p>The amount will appear in your account within 1-3 business days.</p><p>Thank you for using FlightHK services.</p>"
   },
   {
     "id": "flight_cancellation_notice_vi",
     "name": "5. Thông báo hủy chuyến bay (Flight Cancellation)",
     "subject": "[QUAN TRỌNG] Thông báo hủy chuyến bay {{flightNumber}}",
-    "variables": [
-      "{{flightNumber}}",
-      "{{reason}}"
-    ],
+    "variables": ["{{flightNumber}}", "{{reason}}"],
     "content": "<div style='border: 1px solid #d9534f; padding: 20px;'><h2 style='color: #d9534f;'>THÔNG BÁO HỦY CHUYẾN BAY</h2><p>Kính gửi Quý khách,</p><p>Chuyến bay <strong>{{flightNumber}}</strong> đã bị hủy do: <em>{{reason}}</em>.</p><p>Vui lòng liên hệ tổng đài 1900.599.997 để được hỗ trợ.</p></div>"
   },
   {
     "id": "flight_cancellation_notice_en",
     "name": "5. Thông báo hủy chuyến bay (Flight Cancellation)",
     "subject": "[IMPORTANT] Flight Cancellation Notice {{flightNumber}}",
-    "variables": [
-      "{{flightNumber}}",
-      "{{reason}}"
-    ],
+    "variables": ["{{flightNumber}}", "{{reason}}"],
     "content": "<div style='border: 1px solid #d9534f; padding: 20px;'><h2 style='color: #d9534f;'>FLIGHT CANCELLATION NOTICE</h2><p>Dear Customer,</p><p>Flight <strong>{{flightNumber}}</strong> has been cancelled due to: <em>{{reason}}</em>.</p><p>Please contact our hotline 1900.599.997 for assistance.</p></div>"
   },
   {

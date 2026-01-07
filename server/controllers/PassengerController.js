@@ -47,22 +47,45 @@ async function encryptPassword(password) {
 }
 
 function hashFunction(name, email, mobile) {
+  // 1. Tạo phần viết tắt tên (Short Name)
   let shortenName = name
     .trim()
     .split(/\s+/)
     .map((word) => word[0])
     .join("")
     .toUpperCase();
-  let raw = name + email + mobile;
-  const hash = crypto
-    .createHash("sha256")
-    .update(raw)
-    .digest("hex")
-    .toUpperCase();
-  const digits = hash.slice(0, 4);
-  const year = new Date().getFullYear().toString().slice(2);
 
-  const passengerID = `${year}${shortenName}${digits}`;
+  // EDGE CASE: Nếu tên khách hàng vô tình viết tắt thành "AD" (vd: An Dung) hoặc "STF"
+  // Ta phải xử lý ngay, nếu không vòng lặp phía dưới sẽ chạy vĩnh viễn.
+  // Cách xử lý: Thêm chữ 'X' vào sau.
+  if (shortenName.includes("AD") || shortenName.includes("STF")) {
+    shortenName += "X";
+  }
+
+  const year = new Date().getFullYear().toString().slice(2);
+  let nonce = 0;
+  let passengerID = "";
+
+  while (true) {
+    let raw = name + email + mobile + nonce;
+
+    const hash = crypto
+      .createHash("sha256")
+      .update(raw)
+      .digest("hex")
+      .toUpperCase();
+
+    const digits = hash.slice(0, 4);
+
+    passengerID = `${year}${shortenName}${digits}`;
+
+    if (!passengerID.includes("AD") && !passengerID.includes("STF")) {
+      break;
+    }
+
+    nonce++;
+  }
+
   return passengerID;
 }
 

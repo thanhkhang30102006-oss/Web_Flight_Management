@@ -75,7 +75,7 @@ const BookingPage = () => {
     }
   }, []);
 
-  // Lấy dữ liệu chuyến bay từ trang trước (nếu có), nếu không dùng dữ liệu giả để test
+  // Lấy dữ liệu chuyến bay có được thông qua nhập thông tin
   const flight = location.state?.flight || {};
   const { socket, connectSocket, disconnectSocket } = useSocket();
   useEffect(() => {

@@ -101,6 +101,7 @@ const SearchFlights = async (req, res) => {
       departurePoint: from,
       arrivePoint: to,
       departureDay: date,
+      flightState: "active",
     };
     if (time) {
       queryConditions.departureTime = time;
