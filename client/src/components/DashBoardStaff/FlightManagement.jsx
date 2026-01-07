@@ -1,4 +1,6 @@
 import React, { useState, useMemo, useEffect } from "react";
+import { useTranslation } from "react-i18next";
+import toast from "react-hot-toast";
 import {
   Plus,
   Search,
@@ -35,6 +37,7 @@ const calculateArrivalTime = (depTime) => {
 };
 
 const FlightManagement = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   // State quản lý
   const [searchTerm, setSearchTerm] = useState("");
@@ -75,18 +78,18 @@ const FlightManagement = () => {
         }
       );
       if (!response.ok) {
-        throw new Error("Lỗi khi tạo chuyến bay");
+        throw new Error(t("flight_mgt.msg.error_create"));
       }
       setRefreshKey((prevKey) => !prevKey);
 
-      alert(
-        `Cập nhật trạng thái chuyến bay ${currentFlightNumber} thành công!`
+      toast.success(
+        `${t("flight_mgt.msg.update_success")} (${currentFlightNumber})`
       );
       setIsEditModalOpen(false);
       setSelectedFlight(null);
     } catch (error) {
       console.error("Lỗi cập nhật:", error);
-      alert("Cập nhật thất bại.");
+      toast.error(t("flight_mgt.msg.update_fail"));
     }
   };
 
@@ -136,17 +139,19 @@ const FlightManagement = () => {
         throw new Error("Lỗi khi tạo chuyến bay");
       }
       setRefreshKey((prevKey) => !prevKey);
-      alert(`Đã tạo chuyến bay ${newFlightData.flightNumber} thành công!`);
+      toast.success(
+        `${t("flight_mgt.msg.create_success")} (${newFlightData.flightNumber})`
+      );
       setIsCreateModalOpen(false);
     } catch (err) {
       console.error(err);
+      toast.error(t("flight_mgt.msg.update_fail"));
     }
-    alert(`Đã tạo chuyến bay ${newFlight.flightNumber} thành công!`);
   };
   // Hàm xử lý hủy chuyến bay
   const handleCancelledFlight = async (flight) => {
     const isConfirmed = window.confirm(
-      `Bạn có chắc chắn muốn HỦY chuyến bay ${flight.flightNumber} không? Hành động này không thể hoàn tác.`
+      t("flight_mgt.msg.cancel_confirm", { flightNumber: flight.flightNumber })
     );
     if (!isConfirmed) return;
     try {
@@ -162,17 +167,17 @@ const FlightManagement = () => {
         }
       );
       if (!response.ok) {
-        throw new Error("Lỗi khi tạo chuyến bay");
+        throw new Error(t("flight_mgt.msg.error_create"));
       }
       setRefreshKey((prevKey) => !prevKey);
 
-      alert(
-        `Hủy chuyến bay ${flight.flightNumber} thành công!. Hãy kiểm tra kĩ lại thông tin!`
+      toast.success(
+        `${t("flight_mgt.msg.cancel_success")} (${flight.flightNumber})`
       );
-      setSelectedFlight(null);
+      null;
     } catch (error) {
       console.error("Lỗi cập nhật:", error);
-      alert("Cập nhật thất bại.");
+      toast.error(t("flight_mgt.msg.update_fail"));
     }
   };
   // 1. Lọc dữ liệu
@@ -213,12 +218,12 @@ const FlightManagement = () => {
       {/* HEADER: Tiêu đề + Nút thêm */}
       <div className="panel-header">
         <div>
-          <h2 className="panel-title">Quản lý chuyến bay</h2>
+          <h2 className="panel-title">{t("flight_mgt.title")}</h2>
           <p
             className="sub-text"
             style={{ fontSize: "13px", color: "#dfe6f0ff" }}
           >
-            Tổng số chuyến bay:{""}
+            {t("flight_mgt.total_flights")}:{" "}
             <strong style={{ color: "#fff" }}>{flights.length}</strong>
           </p>
         </div>
@@ -232,7 +237,8 @@ const FlightManagement = () => {
             color: "#0f172a",
           }}
         >
-          <Plus size={18} /> Thêm chuyến mới
+          <Plus size={18} />
+          {t("flight_mgt.btn_add")}
         </button>
       </div>
 
@@ -242,7 +248,7 @@ const FlightManagement = () => {
           <Search size={18} className="search-icon" />
           <input
             type="text"
-            placeholder="Tìm số hiệu (VN123) hoặc sân bay (HAN)..."
+            placeholder={t("flight_mgt.search_placeholder")}
             value={searchTerm}
             onChange={(e) => {
               setSearchTerm(e.target.value);
@@ -260,10 +266,12 @@ const FlightManagement = () => {
               setCurrentPage(1);
             }}
           >
-            <option value="all">Tất cả trạng thái</option>
-            <option value="active">Active (Hoạt động)</option>
-            <option value="delayed">Delayed (Hoãn)</option>
-            <option value="cancelled">Cancelled (Hủy)</option>
+            <option value="all">{t("flight_mgt.filter_all")}</option>
+            <option value="active">{t("flight_mgt.filter_active")}</option>
+            <option value="delayed">{t("flight_mgt.filter_delayed")}</option>
+            <option value="cancelled">
+              {t("flight_mgt.filter_cancelled")}
+            </option>
           </select>
         </div>
       </div>
@@ -273,12 +281,14 @@ const FlightManagement = () => {
         <table className="glass-table">
           <thead>
             <tr>
-              <th>Chuyến bay</th>
-              <th>Hành trình</th>
-              <th>Thời gian (Dự kiến)</th>
-              <th>Loại tàu bay</th>
-              <th>Trạng thái</th>
-              <th style={{ textAlign: "center" }}>Thao tác</th>
+              <th>{t("flight_mgt.table.flight")}</th>
+              <th>{t("flight_mgt.table.route")}</th>
+              <th>{t("flight_mgt.table.time")}</th>
+              <th>{t("flight_mgt.table.plane_type")}</th>
+              <th>{t("flight_mgt.table.status")}</th>
+              <th style={{ textAlign: "center" }}>
+                {t("flight_mgt.table.action")}
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -313,7 +323,7 @@ const FlightManagement = () => {
                         <div
                           style={{
                             fontSize: "10px",
-                            color: "#94a3b8",
+                            color: "#e7e7e7ff",
                             marginTop: "2px",
                           }}
                         >
@@ -329,17 +339,17 @@ const FlightManagement = () => {
                         className={`status-badge state-${flight.flightState}`}
                       >
                         {flight.flightState === "active"
-                          ? "Đúng giờ"
+                          ? t("flight_mgt.status.on_time")
                           : flight.flightState === "delayed"
-                            ? "Delay"
-                            : "Đã hủy"}
+                            ? t("flight_mgt.status.delayed")
+                            : t("flight_mgt.status.cancelled")}
                       </span>
                     </td>
                     <td style={{ textAlign: "center" }}>
                       {flight.flightState !== "cancelled" && (
                         <button
                           className="action-icon-btn view-seat"
-                          title="Xem sơ đồ ghế & Hành khách"
+                          title={t("flight_mgt.tooltip.view_seat")}
                           onClick={() =>
                             navigate(
                               `/staff/flight-seats/${flight.flightNumber}`,
@@ -353,7 +363,7 @@ const FlightManagement = () => {
                       )}
                       <button
                         className="action-icon-btn edit"
-                        title="Sửa trạng thái & giờ"
+                        title={t("flight_mgt.tooltip.edit")}
                         onClick={() => handleEditClick(flight)}
                       >
                         <Edit size={16} />
@@ -362,7 +372,7 @@ const FlightManagement = () => {
                       {flight.flightState !== "cancelled" && (
                         <button
                           className="action-icon-btn delete"
-                          title="Hủy chuyến bay"
+                          title={t("flight_mgt.tooltip.delete")}
                           onClick={() => handleCancelledFlight(flight)}
                         >
                           <X size={16} />
@@ -382,7 +392,7 @@ const FlightManagement = () => {
                     color: "#64748b",
                   }}
                 >
-                  Không tìm thấy chuyến bay nào phù hợp.
+                  {t("flight_mgt.msg.no_data")}{" "}
                 </td>
               </tr>
             )}

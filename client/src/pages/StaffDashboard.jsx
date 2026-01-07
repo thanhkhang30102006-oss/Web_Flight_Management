@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Toaster } from "react-hot-toast";
 import { Header } from "../components/DashboardUser/header";
 import StaffSidebar from "../components/DashBoardStaff/StaffSideBar";
 import videoWallpaper from "../assets//videos/backgroud-wallpaper-staff.mp4";
@@ -63,6 +64,17 @@ const StaffDashboard = () => {
   };
   return (
     <div className="dashboard-layout">
+      <Toaster
+        position="top-center"
+        reverseOrder={false}
+        toastOptions={{
+          style: {
+            background: "#333",
+            color: "#fff",
+            zIndex: 9999, // Đảm bảo nổi lên trên video/overlay
+          },
+        }}
+      />
       {/* Background Video */}
       <video className="background-video" autoPlay muted loop playsInline>
         <source src={videoWallpaper} type="video/webm" />

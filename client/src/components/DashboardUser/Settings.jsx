@@ -556,7 +556,7 @@ const Settings = () => {
                 rel="noopener noreferrer"
                 className="github-link"
               >
-                <Github size={20} /> Xem mã nguồn trên GitHub
+                <Github size={20} /> GitHub
               </a>
             </div>
 

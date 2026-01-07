@@ -149,6 +149,15 @@ const LoginRegis = () => {
   //const [showLoginPass, setShowLoginPass] = useState(false);
 
   const handleLoginSubmit = async (e) => {
+    const VALIDATORS = {
+      EMAIL: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+      PHONE: /(84|0[2|3|4|5|7|8|9])+([0-9]{8})\b/, // Validate số điện thoại VN (đầu 03, 05, 07...)
+      NO_SPACE_SPECIAL: /^[a-zA-Z0-9_]+$/,
+    };
+
+    // Hàm loại bỏ khoảng trắng thừa
+    const cleanInput = (str) => (str ? str.trim() : "");
+
     e.preventDefault();
 
     let apiEndpoint = "";
@@ -160,11 +169,15 @@ const LoginRegis = () => {
       apiEndpoint = "api/user/login";
       redirectPath = "/user";
 
+      const emailClean = cleanInput(passengerLogin.passengerEmail);
+      if (!VALIDATORS.EMAIL.test(emailClean)) {
+        return toast.error("Định dạng Email không hợp lệ");
+      }
       // Dữ liệu chuẩn của Passenger
       payload = {
-        passengerName: passengerLogin.passengerName,
-        passengerEmail: passengerLogin.passengerEmail,
-        passengerMobile: passengerLogin.passengerMobile,
+        passengerName: cleanInput(passengerLogin.passengerName),
+        passengerEmail: emailClean,
+        passengerMobile: cleanInput(passengerLogin.passengerMobile),
         passengerPassword: passengerLogin.passengerPassword,
       };
     } else {
@@ -174,9 +187,12 @@ const LoginRegis = () => {
       redirectPath =
         userRole === "staff" ? "/staff-dashboard" : "/admin-dashboard";
 
-      // Dữ liệu chuẩn của Staff/Admin
+      const staffIdClean = cleanInput(staffLogin.staffID);
+      if (!staffIdClean) {
+        return toast.error("Vui lòng nhập ID đăng nhập");
+      }
       payload = {
-        staffID: staffLogin.staffID,
+        staffID: staffIdClean,
         staffPassword: staffLogin.staffPassword,
       };
     }
@@ -304,10 +320,62 @@ const LoginRegis = () => {
   const toggleView = () => setIsLoginView(!isLoginView);
 
   const handleRegisterSubmit = async (e) => {
+    const VALIDATORS = {
+      EMAIL: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+      PHONE: /(84|0[2|3|4|5|7|8|9])+([0-9]{8})\b/,
+      NO_SPACE_SPECIAL: /^[a-zA-Z0-9_]+$/,
+    };
+
+    // Hàm loại bỏ khoảng trắng thừa
+    const cleanInput = (str) => (str ? str.trim() : "");
+
     e.preventDefault();
     if (!passCriteria.isValid || !isMatch) {
-      alert("Vui lòng kiểm tra lại mật khẩu!");
+      toast.error("Vui lòng kiểm tra lại mật khẩu!");
       return;
+    }
+    const cleanData = {
+      ...registerData,
+      passengerName: cleanInput(registerData.passengerName),
+      passengerEmail: cleanInput(registerData.passengerEmail),
+      passengerMobile: cleanInput(registerData.passengerMobile),
+      passengerAccountName: cleanInput(registerData.passengerAccountName),
+      passengerPassport: cleanInput(registerData.passengerPassport),
+    };
+    if (cleanData.passengerName.length < 2) {
+      return toast.error("Họ tên phải có ít nhất 2 ký tự");
+    }
+
+    if (!VALIDATORS.EMAIL.test(cleanData.passengerEmail)) {
+      return toast.error("Email không hợp lệ (Ví dụ: abc@gmail.com)");
+    }
+
+    if (!VALIDATORS.PHONE.test(cleanData.passengerMobile)) {
+      return toast.error("Số điện thoại không hợp lệ (Phải là số VN, 10 số)");
+    }
+
+    if (cleanData.passengerPassport.length < 6) {
+      return toast.error("Số Hộ chiếu/CCCD quá ngắn");
+    }
+
+    // Nếu có nhập Account Name thì check, không thì thôi (nếu optional)
+    if (
+      cleanData.passengerAccountName &&
+      !VALIDATORS.NO_SPACE_SPECIAL.test(cleanData.passengerAccountName)
+    ) {
+      return toast.error(
+        "Tên tài khoản không được chứa khoảng trắng hoặc ký tự đặc biệt"
+      );
+    }
+
+    // Check mật khẩu cũ
+    if (!passCriteria.isValid) {
+      return toast.error(
+        "Mật khẩu chưa đủ mạnh (Cần 8 ký tự, hoa, thường, số, ký tự đặc biệt)"
+      );
+    }
+    if (!isMatch) {
+      return toast.error("Mật khẩu nhập lại không khớp");
     }
     try {
       const response = await fetch(`api/user/register`, {
@@ -318,19 +386,19 @@ const LoginRegis = () => {
 
       const data = await response.json();
       if (!response.ok) {
-        alert(data.message || "Đăng ký thất bại");
+        toast.error(data.message || "Đăng ký thất bại");
       } else {
         // Chuyển hướng qua login
         if (data.privateKey) {
           localStorage.setItem("PASSENGER_PRIVATE_KEY", data.privateKey);
           console.log("Đã lưu Private Key ngay sau khi đăng ký!");
         }
-        alert("Đăng ký thành công");
+        toast.success("Đăng ký thành công");
         toggleView();
       }
     } catch (error) {
       console.error("Register Error:", error);
-      alert("Lỗi kết nối khi đăng ký");
+      toast.error("Lỗi kết nối khi đăng ký");
     }
   };
 

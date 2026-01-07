@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
+import toast from "react-hot-toast";
 import {
   X,
   Save,
@@ -10,6 +12,7 @@ import {
 } from "lucide-react";
 
 const EditFlightStatusModal = ({ isOpen, onClose, flight, onSave }) => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     flightState: "active",
     departureDay: "",
@@ -49,7 +52,7 @@ const EditFlightStatusModal = ({ isOpen, onClose, flight, onSave }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!formData.reason.trim()) {
-      alert("Vui lòng nhập lý do thay đổi!");
+      toast.error(t("edit_modal.error_reason"));
       return;
     }
     // Gửi dữ liệu ngược lại cho component cha
@@ -68,7 +71,7 @@ const EditFlightStatusModal = ({ isOpen, onClose, flight, onSave }) => {
       >
         <div className="modal-header">
           <h3 className="modal-title">
-            Cập nhật chuyến bay:{" "}
+            {t("edit_modal.title")}:{" "}
             <span style={{ color: "#3b82f6" }}>{flight?.flightNumber}</span>
           </h3>
           <button className="close-btn" onClick={onClose}>
@@ -79,7 +82,7 @@ const EditFlightStatusModal = ({ isOpen, onClose, flight, onSave }) => {
         <form onSubmit={handleSubmit} className="modal-form">
           {/* 1. Trạng thái */}
           <div className="form-group">
-            <label>Trạng thái chuyến bay</label>
+            <label>{t("edit_modal.lbl_status")}</label>{" "}
             <select
               name="flightState"
               value={formData.flightState}
@@ -87,8 +90,8 @@ const EditFlightStatusModal = ({ isOpen, onClose, flight, onSave }) => {
               className="custom-select"
               style={{ width: "100%", padding: "10px", borderRadius: "8px" }}
             >
-              <option value="active">Active (Hoạt động)</option>
-              <option value="delayed">Delayed (Hoãn)</option>
+              <option value="active">{t("edit_modal.opt_active")}</option>
+              <option value="delayed">{t("edit_modal.opt_delayed")}</option>
             </select>
           </div>
 
@@ -96,7 +99,7 @@ const EditFlightStatusModal = ({ isOpen, onClose, flight, onSave }) => {
           <div className="row-2-input">
             <div className="form-group">
               <label>
-                <Calendar size={14} /> Ngày khởi hành
+                <Calendar size={14} /> {t("edit_modal.lbl_dep_day")}{" "}
               </label>
               <input
                 type="date"
@@ -108,7 +111,7 @@ const EditFlightStatusModal = ({ isOpen, onClose, flight, onSave }) => {
             </div>
             <div className="form-group">
               <label>
-                <Clock size={14} /> Giờ khởi hành
+                <Clock size={14} /> {t("edit_modal.lbl_dep_time")}
               </label>
               <input
                 type="time"
@@ -124,7 +127,8 @@ const EditFlightStatusModal = ({ isOpen, onClose, flight, onSave }) => {
           <div className="row-2-input">
             <div className="form-group">
               <label>
-                <Calendar size={14} /> Ngày đến
+                <Calendar size={14} />
+                {t("edit_modal.lbl_arr_day")}
               </label>
               <input
                 type="date"
@@ -136,7 +140,7 @@ const EditFlightStatusModal = ({ isOpen, onClose, flight, onSave }) => {
             </div>
             <div className="form-group">
               <label>
-                <Clock size={14} /> Giờ đến
+                <Clock size={14} /> {t("edit_modal.lbl_arr_time")}
               </label>
               <input
                 type="time"
@@ -152,12 +156,12 @@ const EditFlightStatusModal = ({ isOpen, onClose, flight, onSave }) => {
           <div className="form-group">
             <label style={{ color: "#f87171" }}>
               <AlertTriangle size={14} style={{ marginRight: 5 }} />
-              Lý do thay đổi (Bắt buộc)
+              {t("edit_modal.lbl_reason")}
             </label>
             <textarea
               name="reason"
               rows="3"
-              placeholder="Ví dụ: Thời tiết xấu, bảo trì kỹ thuật..."
+              placeholder={t("edit_modal.placeholder_reason")}
               value={formData.reason}
               onChange={handleChange}
               className="form-input"
@@ -208,14 +212,14 @@ const EditFlightStatusModal = ({ isOpen, onClose, flight, onSave }) => {
                   <>
                     <MailCheck size={18} color="#4ade80" />
                     <span style={{ color: "#4ade80" }}>
-                      Gửi email thông báo cho hành khách
+                      {t("edit_modal.email_send")}
                     </span>
                   </>
                 ) : (
                   <>
                     <MailX size={18} color="#f87171" />
                     <span style={{ color: "#f87171" }}>
-                      Không gửi email thông báo
+                      {t("edit_modal.email_no_send")}{" "}
                     </span>
                   </>
                 )}
@@ -242,7 +246,7 @@ const EditFlightStatusModal = ({ isOpen, onClose, flight, onSave }) => {
                 cursor: "pointer",
               }}
             >
-              Hủy
+              {t("edit_modal.btn_cancel")}{" "}
             </button>
             <button
               type="submit"
@@ -259,7 +263,7 @@ const EditFlightStatusModal = ({ isOpen, onClose, flight, onSave }) => {
                 cursor: "pointer",
               }}
             >
-              <Save size={18} /> Lưu thay đổi
+              <Save size={18} /> {t("edit_modal.btn_save")}
             </button>
           </div>
         </form>

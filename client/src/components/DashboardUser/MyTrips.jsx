@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import "./MyTrips.css";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 const userData = localStorage.getItem("userData");
 const loggedInUser = userData ? JSON.parse(userData) : null;
 const passengerID = loggedInUser?.id;
@@ -132,7 +133,8 @@ const MyTrips = () => {
   });
   // Đổi chỗ ngồi
   const handleChangeSeat = (trip) => {
-    if (trip.status !== "valid") return alert("Vé này không thể đổi ghế!");
+    if (trip.status !== "valid")
+      return toast.error("Vé này không thể đổi ghế!");
     // Logic: Navigate to SeatMap với thông tin vé ticketID
     navigate("/seat-change", {
       state: {
@@ -148,7 +150,7 @@ const MyTrips = () => {
       },
     });
     console.log("Điều hướng đến trang đổi ghế cho:", trip.ticketID);
-    alert(
+    toast.success(
       `Đang chuyển đến sơ đồ ghế chuyến ${trip.flightNumber} để đổi ghế...`
     );
   };

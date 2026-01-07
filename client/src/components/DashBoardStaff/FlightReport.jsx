@@ -1,4 +1,6 @@
 import React, { useState, useMemo, useEffect } from "react";
+import { useTranslation } from "react-i18next";
+import toast from "react-hot-toast";
 import {
   BarChart,
   Bar,
@@ -30,6 +32,7 @@ import html2canvas from "html2canvas";
 const COLORS = ["#4ade80", "#fbbf24", "#ef4444"]; // Xanh (Active), Vàng (Delayed), Đỏ (Cancelled)
 
 const FlightReport = () => {
+  const { t, i18n } = useTranslation();
   const [tableData, setTableData] = useState([]);
   const [statusChartData, setStatusChartData] = useState([]);
   const [popularRouteData, setPopularRouteData] = useState([]);
@@ -82,14 +85,9 @@ const FlightReport = () => {
 
           const mappedStatus = apiResponse.data.charts.flightStates.map(
             (item) => ({
-              name:
-                item.flightState === "active"
-                  ? "Đúng giờ"
-                  : item.flightState === "delayed"
-                    ? "Trễ chuyến"
-                    : "Đã hủy",
-              value: parseInt(item.totalState),
               key: item.flightState,
+              value: parseInt(item.totalState),
+              name: item.flightState,
             })
           );
           setStatusChartData(mappedStatus);
@@ -105,7 +103,7 @@ const FlightReport = () => {
         }
       } catch (err) {
         console.error("Lỗi khi lấy dữ liệu:", err);
-        setError("Không thể tải dữ liệu báo cáo.");
+        setError(t("flight_report.msg.error_fetch"));
       } finally {
         setLoading(false);
       }
@@ -131,40 +129,25 @@ const FlightReport = () => {
   // Tính toán chỉ số tổng hợp (KPI)
   const stats = useMemo(() => {
     const totalFlights = filteredData.length;
-    const totalRevenue = filteredData.reduce(
-      (sum, f) => sum + (f.revenue || 0),
-      0
-    );
-    const totalSeats = filteredData.reduce(
-      (sum, f) => sum + (f.totalSeats || 0),
-      0
-    );
-    const totalBooked = filteredData.reduce(
-      (sum, f) => sum + (f.bookedSeats || 0),
-      0
-    );
-    const avgOccupancy = totalSeats > 0 ? (totalBooked / totalSeats) * 100 : 0;
 
-    // Data cho Pie Chart (Trạng thái)
+    // Dữ liệu PieChart (Lấy từ filteredData để phản ánh đúng bộ lọc hiện tại)
     const statusCount = { active: 0, delayed: 0, cancelled: 0 };
     filteredData.forEach((f) => {
       if (statusCount[f.status] !== undefined) statusCount[f.status]++;
     });
+
+    // Map data pie chart có translation
     const pieData = [
-      { name: "Đúng giờ", value: statusCount.active },
-      { name: "Delay", value: statusCount.delayed },
-      { name: "Đã hủy", value: statusCount.cancelled },
+      { name: t("flight_report.status.active"), value: statusCount.active },
+      { name: t("flight_report.status.delayed"), value: statusCount.delayed },
+      {
+        name: t("flight_report.status.cancelled"),
+        value: statusCount.cancelled,
+      },
     ];
 
-    return {
-      totalFlights,
-      totalRevenue,
-      avgOccupancy,
-      pieData,
-    };
-  }, [filteredData]);
-
-  // Data cho Bar Chart (Top 5 chuyến bay đông nhất)
+    return { totalFlights, pieData };
+  }, [filteredData, t]);
 
   // --- 2. HÀM XỬ LÝ SỰ KIỆN ---
   const arrayBufferToBase64 = (buffer) => {
@@ -193,85 +176,109 @@ const FlightReport = () => {
   };
   const exportToPDF = async () => {
     const doc = new jsPDF("p", "pt", "a4");
-    const base64Font = await loadFont();
 
-    if (base64Font) {
-      doc.addFileToVFS("Times.ttf", base64Font);
-      doc.addFont("Times.ttf", "TimesCustom", "normal");
-      doc.addFont("Times.ttf", "TimesCustom", "bold");
-      doc.setFont("TimesCustom");
+    // Tải font online để hỗ trợ tiếng Việt (Roboto)
+    const fontURL =
+      "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Regular.ttf";
+
+    try {
+      const response = await fetch(fontURL);
+      const blob = await response.blob();
+      const reader = new FileReader();
+
+      reader.readAsDataURL(blob);
+      reader.onloadend = () => {
+        const base64data = reader.result.split(",")[1];
+        doc.addFileToVFS("Roboto-Regular.ttf", base64data);
+        doc.addFont("Roboto-Regular.ttf", "Roboto", "normal");
+        doc.setFont("Roboto");
+
+        // --- NỘI DUNG PDF ---
+        doc.setFontSize(20);
+        doc.text(t("flight_report.pdf.title"), 40, 50);
+        doc.setFontSize(10);
+        const dateStr = new Date().toLocaleDateString(
+          i18n.language === "vi" ? "vi-VN" : "en-US"
+        );
+        doc.text(`${t("flight_report.pdf.date")}: ${dateStr}`, 40, 70);
+
+        // 1. Overview
+        doc.setFontSize(14);
+        doc.text(t("flight_report.pdf.section_overview"), 40, 110);
+        doc.setFontSize(11);
+        doc.text(
+          `- ${t("flight_report.pdf.total_flights")}: ${totalFlight}`,
+          60,
+          130
+        );
+
+        const revenueStr = new Intl.NumberFormat(
+          i18n.language === "vi" ? "vi-VN" : "en-US",
+          {
+            style: "currency",
+            currency: "VND",
+          }
+        ).format(revenueChartData);
+
+        doc.text(
+          `- ${t("flight_report.pdf.avg_revenue")}: ${revenueStr}`,
+          60,
+          150
+        );
+        doc.text(
+          `- ${t("flight_report.pdf.avg_occupancy")}: ${seatChartData.toFixed(2)}%`,
+          60,
+          170
+        );
+
+        // 2. Table
+        doc.setFontSize(14);
+        doc.text(t("flight_report.pdf.section_list"), 40, 210);
+
+        const tableColumn = [
+          t("flight_report.pdf.col_flight"),
+          t("flight_report.pdf.col_route"),
+          t("flight_report.pdf.col_date"),
+          t("flight_report.pdf.col_status"),
+          t("flight_report.pdf.col_occupancy"),
+          t("flight_report.pdf.col_revenue"),
+        ];
+
+        const tableRows = tableData.map((item) => [
+          item.flightNumber,
+          item.route,
+          item.date,
+          // Dịch trạng thái cho PDF
+          item.status === "active"
+            ? t("flight_report.status.active")
+            : item.status === "delayed"
+              ? t("flight_report.status.delayed")
+              : t("flight_report.status.cancelled"),
+          `${item.bookedSeats}/${item.totalSeats}`,
+          new Intl.NumberFormat(
+            i18n.language === "vi" ? "vi-VN" : "en-US"
+          ).format(item.revenue),
+        ]);
+
+        autoTable(doc, {
+          startY: 230,
+          head: [tableColumn],
+          body: tableRows,
+          theme: "grid",
+          styles: { font: "Roboto", fontStyle: "normal", fontSize: 9 },
+          headStyles: { fillColor: [59, 130, 246] },
+        });
+
+        doc.save(`Report_${new Date().getTime()}.pdf`);
+      };
+    } catch (e) {
+      console.error("PDF Font Error", e);
+      toast.error(t("flight_report.msg.error_font"));
     }
-
-    // --- 1. TIÊU ĐỀ (Y: 50 - 70) ---
-    doc.setFontSize(20);
-    doc.text("BÁO CÁO THỐNG KÊ CHUYẾN BAY", 40, 50);
-    doc.setFontSize(10);
-    doc.text(`Ngày xuất: ${new Date().toLocaleString("vi-VN")}`, 40, 70);
-
-    // --- 2. MỤC 1: TỔNG QUAN (Đưa lên trên, Y: 110 - 180) ---
-    doc.setFontSize(14);
-    doc.text("1. Tổng quan", 40, 110);
-    doc.setFontSize(11);
-    doc.text(`- Tổng số chuyến bay: ${totalFlight}`, 60, 130);
-    doc.text(
-      `- Doanh thu trung bình: ${new Intl.NumberFormat("vi-VN").format(revenueChartData)} VND`,
-      60,
-      150
-    );
-    doc.text(
-      `- Tỷ lệ lấp đầy trung bình: ${seatChartData.toFixed(2)}%`,
-      60,
-      170
-    );
-
-    doc.setFontSize(14);
-    doc.text("2. Danh sách chi tiết", 40, 210);
-
-    const tableColumn = [
-      "Số hiệu",
-      "Chặng",
-      "Ngày",
-      "Trạng thái",
-      "Khách/Ghế",
-      "Doanh thu",
-    ];
-
-    const tableRows = tableData.map((item) => [
-      item.flightNumber,
-      item.route,
-      item.date,
-      item.status === "active"
-        ? "Đúng giờ"
-        : item.status === "delayed"
-          ? "Trễ chuyến"
-          : "Đã hủy",
-      `${item.bookedSeats}/${item.totalSeats}`,
-      new Intl.NumberFormat("vi-VN").format(item.revenue),
-    ]);
-
-    autoTable(doc, {
-      startY: 230,
-      head: [tableColumn],
-      body: tableRows,
-      theme: "grid",
-      styles: {
-        font: "TimesCustom",
-        fontStyle: "normal",
-        fontSize: 9,
-      },
-      headStyles: {
-        fillColor: [59, 130, 246],
-        font: "TimesCustom",
-        fontStyle: "normal",
-      },
-    });
-
-    // 5. Lưu file
-    doc.save(`Bao_Cao_${new Date().getTime()}.pdf`);
   };
   const handleSendMail = async () => {
     try {
-      const email = prompt("Nhập email người nhận báo cáo:");
+      const email = prompt(t("flight_report.prompt_email"));
       if (email) {
         const reportPayload = {
           overview: {
@@ -291,17 +298,22 @@ const FlightReport = () => {
         });
 
         if (response.status === "success") {
-          alert("Đã gửi email báo cáo thành công!");
+          toast.success(t("flight_report.msg.email_success"));
         }
       }
     } catch (error) {
       console.error("Lỗi khi gọi API gửi mail:", error);
+      toast.error(t("flight_report.msg.email_fail"));
     } finally {
       setLoading(false);
     }
   };
   if (loading)
-    return <div className="p-10 text-center">Đang tải dữ liệu...</div>;
+    return (
+      <div className="p-10 text-center text-white">
+        {t("flight_report.msg.loading")}
+      </div>
+    );
   if (error)
     return <div className="p-10 text-center text-red-500">{error}</div>;
   return (
@@ -309,17 +321,15 @@ const FlightReport = () => {
       {/* --- HEADER --- */}
       <div className="report-header">
         <div>
-          <h2 className="panel-title">Báo Cáo Tình Trạng Chuyến Bay</h2>
-          <p className="sub-text">
-            Tổng hợp dữ liệu vận hành, tỷ lệ lấp đầy và doanh thu
-          </p>
+          <h2 className="panel-title">{t("flight_report.title")}</h2>
+          <p className="sub-text">{t("flight_report.subtitle")}</p>
         </div>
         <div className="header-actions">
           <button className="btn-export excel" onClick={handleSendMail}>
-            <Mail size={16} /> Gửi Mail
+            <Mail size={16} /> {t("flight_report.btn_email")}
           </button>
           <button className="btn-export pdf" onClick={exportToPDF}>
-            <Download size={16} /> Xuất PDF
+            <Download size={16} /> {t("flight_report.btn_pdf")}
           </button>
         </div>
       </div>
@@ -331,12 +341,17 @@ const FlightReport = () => {
             <TrendingUp size={24} />
           </div>
           <div className="kpi-info">
-            <span className="kpi-label">Doanh Thu trung bình(Ước tính)</span>
+            <span className="kpi-label">
+              {t("flight_report.kpi_avg_revenue")}
+            </span>{" "}
             <h3 className="kpi-value">
-              {new Intl.NumberFormat("vi-VN", {
-                style: "currency",
-                currency: "VND",
-              }).format(revenueChartData)}
+              {new Intl.NumberFormat(
+                i18n.language === "vi" ? "vi-VN" : "en-US",
+                {
+                  style: "currency",
+                  currency: "VND",
+                }
+              ).format(revenueChartData)}
             </h3>
           </div>
         </div>
@@ -346,9 +361,13 @@ const FlightReport = () => {
             <CheckCircle size={24} />
           </div>
           <div className="kpi-info">
-            <span className="kpi-label">Tỷ lệ lấp đầy TB</span>
+            <span className="kpi-label">
+              {t("flight_report.kpi_occupancy")}
+            </span>
             <h3 className="kpi-value">{seatChartData.toFixed(1)}%</h3>
-            <span className="kpi-sub">Trên tổng số ghế cung ứng</span>
+            <span className="kpi-sub">
+              {t("flight_report.kpi_occupancy_sub")}
+            </span>
           </div>
         </div>
 
@@ -357,9 +376,13 @@ const FlightReport = () => {
             <FileText size={24} />
           </div>
           <div className="kpi-info">
-            <span className="kpi-label">Tổng Chuyến Bay</span>
+            <span className="kpi-label">
+              {t("flight_report.kpi_total_flights")}
+            </span>
             <h3 className="kpi-value">{totalFlight}</h3>
-            <span className="kpi-sub">Trong phạm vi lọc</span>
+            <span className="kpi-sub">
+              {t("flight_report.kpi_total_flights_sub")}
+            </span>
           </div>
         </div>
       </div>
@@ -368,8 +391,8 @@ const FlightReport = () => {
       <div className="charts-section">
         {/* Biểu đồ tròn: Trạng thái */}
         <div className="chart-card glass-panel">
-          <h3>Tỷ lệ Trạng thái Chuyến bay</h3>
-          <ResponsiveContainer width="100%" height={250}>
+          <h3>{t("flight_report.chart_status_title")}</h3>{" "}
+          <ResponsiveContainer width="100%" height={275}>
             <PieChart>
               <Pie
                 data={statusChartData}
@@ -389,21 +412,31 @@ const FlightReport = () => {
               </Pie>
               <Tooltip
                 contentStyle={{
-                  background: "#1e293b",
+                  backgroundColor: "#1f2937",
                   border: "none",
-                  color: "#fff",
+                  color: "#ffffff",
                   borderRadius: "8px",
                 }}
+                itemStyle={{ color: "#ffffff" }}
               />
-              <Legend verticalAlign="bottom" height={36} iconType="circle" />
+              <Legend
+                verticalAlign="bottom"
+                height={36}
+                iconType="circle"
+                formatter={(value) => (
+                  <span style={{ color: "#ffffff", fontSize: "14px" }}>
+                    {value}
+                  </span>
+                )}
+              />
             </PieChart>
           </ResponsiveContainer>
         </div>
 
         {/* Biểu đồ cột: Tỷ lệ lấp đầy */}
         <div className="chart-card glass-panel">
-          <h3>Top 5 Chuyến Bay Đông Khách Nhất (%)</h3>
-          <ResponsiveContainer width="100%" height={250}>
+          <h3>{t("flight_report.chart_popular_title")}</h3>{" "}
+          <ResponsiveContainer width="100%" height={300}>
             <BarChart data={popularRouteData} layout="vertical">
               <CartesianGrid
                 strokeDasharray="3 3"
@@ -444,7 +477,7 @@ const FlightReport = () => {
           <Search size={16} />
           <input
             type="text"
-            placeholder="Tìm theo số hiệu, điểm đi/đến..."
+            placeholder={t("flight_report.search_placeholder")}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -457,10 +490,16 @@ const FlightReport = () => {
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
             >
-              <option value="all">Tất cả trạng thái</option>
-              <option value="active">Active (Hoạt động)</option>
-              <option value="delayed">Delayed (Hoãn)</option>
-              <option value="cancelled">Cancelled (Hủy)</option>
+              <option value="all">
+                {t("flight_report.filter_status_all")}
+              </option>
+              <option value="active">{t("flight_report.status.active")}</option>
+              <option value="delayed">
+                {t("flight_report.status.delayed")}
+              </option>
+              <option value="cancelled">
+                {t("flight_report.status.cancelled")}
+              </option>
             </select>
           </div>
           <div className="filter-item">
@@ -469,10 +508,16 @@ const FlightReport = () => {
               value={dateFilter}
               onChange={(e) => setDateFilter(e.target.value)}
             >
-              <option value="all">Tất cả thời gian</option>
-              <option value="today">Hôm nay</option>
-              <option value="week">Tuần này</option>
-              <option value="month">Tháng này</option>
+              <option value="all">{t("flight_report.filter_date_all")}</option>
+              <option value="today">
+                {t("flight_report.filter_date_today")}
+              </option>
+              <option value="week">
+                {t("flight_report.filter_date_week")}
+              </option>
+              <option value="month">
+                {t("flight_report.filter_date_month")}
+              </option>
             </select>
           </div>
         </div>
@@ -483,12 +528,12 @@ const FlightReport = () => {
         <table className="glass-table report-table">
           <thead>
             <tr>
-              <th>Chuyến bay</th>
-              <th>Hành trình & Ngày</th>
-              <th>Trạng thái</th>
-              <th>Tỷ lệ chỗ ngồi</th>
-              <th>Chi tiết ghế</th>
-              <th>Doanh thu</th>
+              <th>{t("flight_report.table.flight")}</th>
+              <th>{t("flight_report.table.route_date")}</th>
+              <th>{t("flight_report.table.status")}</th>
+              <th>{t("flight_report.table.occupancy")}</th>
+              <th>{t("flight_report.table.seats")}</th>
+              <th>{t("flight_report.table.revenue")}</th>
             </tr>
           </thead>
           <tbody>
@@ -520,17 +565,17 @@ const FlightReport = () => {
                           fontWeight: "bold",
                           color:
                             flight.status === "active"
-                              ? "#4ade80" // Màu Xanh lá (Đúng giờ)
+                              ? "#4ade80"
                               : flight.status === "delayed"
-                                ? "#facc15" // Màu Vàng (Trễ chuyến)
-                                : "#ef4444", // Màu Đỏ (Đã hủy)
+                                ? "#facc15"
+                                : "#ef4444",
                         }}
                       >
                         {flight.status === "active"
-                          ? "Đúng giờ"
+                          ? t("flight_report.status.active")
                           : flight.status === "delayed"
-                            ? "Trễ chuyến"
-                            : "Đã hủy"}
+                            ? t("flight_report.status.delayed")
+                            : t("flight_report.status.cancelled")}
                       </span>
                     </td>
                     <td style={{ width: "25%" }}>
@@ -550,14 +595,18 @@ const FlightReport = () => {
                     <td>
                       <div className="seat-stats">
                         <span className="booked">
-                          {flight.bookedSeats} đã đặt
+                          {flight.bookedSeats} {t("flight_report.seats_booked")}
                         </span>
                         <span className="divider">/</span>
-                        <span className="total">{flight.totalSeats} tổng</span>
+                        <span className="total">
+                          {flight.totalSeats} {t("flight_report.seats_total")}
+                        </span>
                       </div>
                     </td>
                     <td className="revenue-cell">
-                      {new Intl.NumberFormat("vi-VN").format(flight.revenue)} ₫
+                      {new Intl.NumberFormat(
+                        i18n.language === "vi" ? "vi-VN" : "en-US"
+                      ).format(flight.revenue)}
                     </td>
                   </tr>
                 );
@@ -565,7 +614,7 @@ const FlightReport = () => {
             ) : (
               <tr>
                 <td colSpan="6" className="empty-row">
-                  Không có dữ liệu phù hợp với bộ lọc.
+                  {t("flight_report.no_data")}{" "}
                 </td>
               </tr>
             )}

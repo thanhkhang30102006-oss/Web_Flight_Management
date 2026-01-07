@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next"; // 1. Import hook
 import {
   Search,
   Plane,
@@ -11,8 +12,10 @@ import {
 import { useNavigate } from "react-router-dom";
 import "./CheckInCounter.css";
 import { getAirportInfo } from "../../../utils/AirportData";
+import toast from "react-hot-toast";
 
 const CheckInCounter = () => {
+  const { t } = useTranslation();
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const [ticketData, setTicketData] = useState(null);
@@ -40,7 +43,7 @@ const CheckInCounter = () => {
       });
 
       if (!response.ok) {
-        throw new Error("Lỗi kết nối mạng hoặc API sai đường dẫn");
+        throw new Error(t("checkin.error_network"));
       }
 
       const data = await response.json();
@@ -67,8 +70,9 @@ const CheckInCounter = () => {
 
       setTicketData(mockTicket);
       setIsCheckedIn(isAlreadyCheckedIn);
+      toast.success("Đã tìm thấy vé!");
     } catch (error) {
-      alert("Không tìm thấy vé!");
+      toast.error(t("checkin.error_not_found"));
     } finally {
       setLoading(false);
     }
@@ -91,8 +95,9 @@ const CheckInCounter = () => {
 
       await new Promise((r) => setTimeout(r, 500)); // Delay xử lý
       setIsCheckedIn(true);
+      toast.success(t("checkin.btn_success"));
     } catch (error) {
-      alert("Lỗi check-in");
+      toast.error(t("checkin.error_failed"));
     } finally {
       setLoading(false);
     }
@@ -102,21 +107,20 @@ const CheckInCounter = () => {
     <div className="checkin-container fade-in">
       {/* Search Box */}
       <div className="checkin-search-box">
-        <h2 style={{ margin: 0, fontSize: "28px" }}>Quầy Thủ Tục (Check-in)</h2>
+        <h2 style={{ margin: 0, fontSize: "28px" }}>{t("checkin.title")}</h2>{" "}
         <p style={{ color: "#e8ecf1ff", marginBottom: "20px" }}>
-          Quét mã vé, nhập số Passport hoặc Mã đặt chỗ
+          {t("checkin.subtitle")}
         </p>
-
         <form onSubmit={handleSearch} className="input-group-lg">
           <input
             type="text"
             className="input-lg"
-            placeholder="VD: TKT-8822109..."
+            placeholder={t("checkin.placeholder")}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
           />
           <button type="submit" className="btn-search-lg" disabled={loading}>
-            {loading ? "Đang tìm..." : <Search size={24} />}
+            {loading ? t("checkin.searching") : <Search size={24} />}
           </button>
         </form>
       </div>
@@ -126,13 +130,17 @@ const CheckInCounter = () => {
         <div className="boarding-pass-wrapper">
           <div className="boarding-pass">
             {/* Dấu đóng dấu Check-in */}
-            {isCheckedIn && <div className="status-stamp">CHECKED-IN</div>}
+            {isCheckedIn && (
+              <div className="status-stamp">{t("checkin.stamp")}</div>
+            )}
 
             {/* Phần Trái */}
             <div className="pass-main">
               <div className="airline-header">
                 <span className="brand-name">FlightHK</span>
-                <span className="pass-type">{ticketData.class} Class</span>
+                <span className="pass-type">
+                  {ticketData.class} {t("checkin.class_suffix")}
+                </span>
               </div>
 
               <div className="flight-route-large">
@@ -153,27 +161,27 @@ const CheckInCounter = () => {
 
               <div className="pass-details-grid">
                 <div className="detail-item">
-                  <label>Hành khách / Passenger</label>
+                  <label>{t("checkin.label_passenger")}</label>
                   <span>{ticketData.passengerName}</span>
                 </div>
                 <div className="detail-item">
-                  <label>Chuyến bay / Flight</label>
+                  <label>{t("checkin.label_flight")}</label>
                   <span>{ticketData.flightNumber}</span>
                 </div>
                 <div className="detail-item">
-                  <label>Ngày / Date</label>
+                  <label>{t("checkin.label_date")}</label>
                   <span>{ticketData.date}</span>
                 </div>
                 <div className="detail-item">
-                  <label>Giờ bay / Time</label>
-                  <span>{ticketData.time}</span>
+                  <label>{t("checkin.label_time")}</label>
+                  <span>{ticketData.departureTime}</span>
                 </div>
                 <div className="detail-item">
-                  <label>Cổng / Gate</label>
+                  <label>{t("checkin.label_gate")}</label>
                   <span>{ticketData.gate}</span>
                 </div>
                 <div className="detail-item">
-                  <label>Mã vé/ Ticket ID</label>
+                  <label>{t("checkin.label_ticket_id")}</label>
                   <span style={{ fontSize: "14px" }}>
                     {ticketData.ticketID}
                   </span>
@@ -190,7 +198,7 @@ const CheckInCounter = () => {
                   fontWeight: "bold",
                 }}
               >
-                GHẾ / SEAT
+                {t("checkin.label_seat")}
               </label>
               <div className="seat-large">{ticketData.seatNumber}</div>
 
@@ -212,7 +220,8 @@ const CheckInCounter = () => {
                   "Đang xử lý..."
                 ) : (
                   <>
-                    <UserCheck size={24} /> Xác nhận Check-in
+                    <UserCheck size={24} />
+                    {t("checkin.btn_confirm")}
                   </>
                 )}
               </button>
@@ -221,7 +230,8 @@ const CheckInCounter = () => {
                 className="btn-confirm"
                 style={{ background: "#1aff00ff" }}
               >
-                <CircleCheckBig size={24} /> Check-in thành công
+                <CircleCheckBig size={24} />
+                {t("checkin.btn_success")}
               </button>
             )}
           </div>

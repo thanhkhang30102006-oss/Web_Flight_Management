@@ -268,7 +268,7 @@
 .page-controls { display: flex; gap: 8px; }
 .page-btn {
   background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
-  color: white; width: 32px; height: 32px; border-radius: 6px;
+  color: white;  border-radius: 6px;
   display: flex; align-items: center; justify-content: center; cursor: pointer;
   transition: 0.2s;
 }

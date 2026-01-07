@@ -1,11 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
-import {
-  AlertCircle,
-  CheckCircle,
-  Clock,
-  Loader2,
-  Thermometer,
-} from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { Loader2, Thermometer } from "lucide-react";
 import {
   AreaChart,
   Area,
@@ -55,17 +50,7 @@ const processPlaneTypes = (flightsData) => {
 };
 // Xử lý báo cáo doanh thu theo tuần
 
-const processRevenue = (paymentsData) => {
-  const daysMap = {
-    Monday: "T2",
-    Tuesday: "T3",
-    Wednesday: "T4",
-    Thursday: "T5",
-    Friday: "T6",
-    Saturday: "T7",
-    Sunday: "CN",
-  };
-
+const processRevenueRaw = (paymentsData) => {
   const stats = {
     Monday: 0,
     Tuesday: 0,
@@ -78,16 +63,13 @@ const processRevenue = (paymentsData) => {
 
   if (Array.isArray(paymentsData)) {
     paymentsData.forEach((payment) => {
-      // payment.createdAt format ISO string
       const date = parseISO(payment.createdAt);
-      const dayName = format(date, "EEEE");
-
+      const dayName = format(date, "EEEE"); // Trả về "Monday", "Tuesday"...
       if (stats[dayName] !== undefined) {
         stats[dayName] += Number(payment.paymentPrice);
       }
     });
   }
-
   const order = [
     "Monday",
     "Tuesday",
@@ -98,7 +80,7 @@ const processRevenue = (paymentsData) => {
     "Sunday",
   ];
   return order.map((day) => ({
-    day: daysMap[day],
+    rawDay: day, // Key dùng để dịch
     revenue: stats[day],
   }));
 };
@@ -173,6 +155,7 @@ const Weather3Regions = () => {
 };
 
 const DashboardOverview = () => {
+  const { t, i18n } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [realData, setRealData] = useState({
     groupFlight: [],
@@ -208,10 +191,13 @@ const DashboardOverview = () => {
     () => processHourlyFlights(realData.groupFlight),
     [realData.groupFlight]
   );
-  const revenueData = useMemo(
-    () => processRevenue(realData.payments),
-    [realData.payments]
-  );
+  const revenueData = useMemo(() => {
+    const raw = processRevenueRaw(realData.payments);
+    return raw.map((item) => ({
+      ...item,
+      displayDay: t(`days.${item.rawDay}`),
+    }));
+  }, [realData.payments, t]);
   const planeData = useMemo(
     () => processPlaneTypes(realData.flights),
     [realData.flights]
@@ -220,6 +206,16 @@ const DashboardOverview = () => {
     () => processTopRoutes(realData.popularRoutes),
     [realData.popularRoutes]
   );
+
+  const formatCurrency = (value) => {
+    const locale = i18n.language === "vi" ? "vi-VN" : "en-US";
+    const currency = i18n.language === "vi" ? "VND" : "USD";
+    return new Intl.NumberFormat(locale, {
+      style: "currency",
+      currency: currency,
+      maximumFractionDigits: 0,
+    }).format(value);
+  };
 
   if (loading) {
     return (
@@ -231,16 +227,14 @@ const DashboardOverview = () => {
 
   return (
     <div className="glass-panel fade-in overview-panel">
-      <h2 className="welcome-text">Xin chào, Staff Manager!</h2>
-      <p className="sub-text">
-        Cập nhật tình hình vận hành dựa trên cơ sở dữ liệu mới nhất.
-      </p>
+      <h2 className="welcome-text">{t("dashboard.welcome")}</h2>
+      <p className="sub-text">{t("dashboard.subtitle")}</p>
 
       {/* --- GRID 4 BIỂU ĐỒ --- */}
       <div className="dashboard-charts-grid">
         {/* 1. BIỂU ĐỒ MẬT ĐỘ (Dùng Area Chart cho đẹp) */}
         <div className="chart-card">
-          <h3 className="chart-title">Mật độ chuyến bay trong ngày (24h)</h3>
+          <h3 className="chart-title">{t("dashboard.density_title")}</h3>{" "}
           <ResponsiveContainer width="100%" height={220}>
             <AreaChart data={hourlyData}>
               <defs>
@@ -287,7 +281,7 @@ const DashboardOverview = () => {
                 strokeWidth={3}
                 fillOpacity={1}
                 fill="url(#colorFlight)"
-                name="Số chuyến"
+                name={t("dashboard.density_label")}
                 activeDot={{ r: 6, strokeWidth: 0 }}
               />
             </AreaChart>
@@ -296,7 +290,7 @@ const DashboardOverview = () => {
 
         {/* 2. BIỂU ĐỒ CỘT: Doanh thu tuần */}
         <div className="chart-card">
-          <h3 className="chart-title">Doanh thu 7 ngày qua</h3>
+          <h3 className="chart-title">{t("dashboard.revenue_title")}</h3>{" "}
           <ResponsiveContainer width="100%" height={250}>
             <BarChart data={revenueData}>
               <CartesianGrid
@@ -304,19 +298,14 @@ const DashboardOverview = () => {
                 stroke="#334155"
                 vertical={false}
               />
-              <XAxis dataKey="day" stroke="#94a3b8" />
+              <XAxis dataKey="displayDay" stroke="#94a3b8" />
               <YAxis
                 stroke="#94a3b8"
                 tickFormatter={(value) => `${value / 1000000}M`}
                 width={40}
               />
               <Tooltip
-                formatter={(value) =>
-                  new Intl.NumberFormat("vi-VN", {
-                    style: "currency",
-                    currency: "VND",
-                  }).format(value)
-                }
+                formatter={(value) => formatCurrency(value)}
                 contentStyle={{
                   background: "#1e293b",
                   border: "none",
@@ -327,7 +316,7 @@ const DashboardOverview = () => {
                 dataKey="revenue"
                 fill="#4ade80"
                 radius={[4, 4, 0, 0]}
-                name="Doanh thu"
+                name={t("dashboard.revenue_label")}
               />
             </BarChart>
           </ResponsiveContainer>
@@ -335,7 +324,7 @@ const DashboardOverview = () => {
 
         {/* 3. BIỂU ĐỒ TRÒN: Phân bổ đội bay */}
         <div className="chart-card">
-          <h3 className="chart-title">Đội bay đang vận hành</h3>
+          <h3 className="chart-title">{t("dashboard.fleet_title")}</h3>{" "}
           <ResponsiveContainer width="100%" height={250}>
             <PieChart>
               <Pie
@@ -379,7 +368,7 @@ const DashboardOverview = () => {
 
         {/* 4. BIỂU ĐỒ CỘT NGANG: Top chặng bay */}
         <div className="chart-card">
-          <h3 className="chart-title">Chặng bay phổ biến</h3>
+          <h3 className="chart-title">{t("dashboard.routes_title")}</h3>{" "}
           <ResponsiveContainer width="100%" height={250}>
             <BarChart
               layout="vertical"
@@ -412,7 +401,7 @@ const DashboardOverview = () => {
                 fill="#facc15"
                 radius={[0, 4, 4, 0]}
                 barSize={20}
-                name="Số chuyến"
+                name={t("dashboard.density_label")}
               />
             </BarChart>
           </ResponsiveContainer>
@@ -426,13 +415,10 @@ const DashboardOverview = () => {
               size={16}
               style={{ display: "inline", marginBottom: -2 }}
             />{" "}
-            Thời tiết 3 miền
+            {t("dashboard.weather_title")}
           </h3>
           <Weather3Regions />
-
-          <div className="weather-note">
-            *Dữ liệu cập nhật từ Open-Meteo API
-          </div>
+          <div className="weather-note">{t("dashboard.weather_note")}</div>{" "}
         </div>
       </div>
     </div>

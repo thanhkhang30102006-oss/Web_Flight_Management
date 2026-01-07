@@ -166,6 +166,14 @@ export const AIRPORT_DATA = {
 
 // Danh sách mảng để dùng cho Dropdown/Select/Map (Loop)
 export const AIRPORT_LIST = Object.values(AIRPORT_DATA);
+// Danh sách loại máy bay để dùng trong Modal
+export const AIRCRAFT_TYPES = [
+  "Boeing 787",
+  "Airbus A321",
+  "Airbus A350",
+  "Embraer 190",
+  "ATR 72"
+];
 
 // Hàm tiện ích: Lấy thông tin sân bay theo mã (An toàn)
 export const getAirportInfo = (code) => {

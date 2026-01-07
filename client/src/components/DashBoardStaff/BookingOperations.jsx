@@ -1,4 +1,6 @@
 import React, { useState, useMemo, useEffect } from "react";
+import { useTranslation } from "react-i18next";
+import toast from "react-hot-toast";
 import {
   Search,
   Filter,
@@ -11,9 +13,9 @@ import {
   CheckCircle,
   AlertCircle,
 } from "lucide-react";
-import { DB_TICKETS } from "../../data/staffMockData";
 
 const BookingOperations = () => {
+  const { t, i18n } = useTranslation();
   const [tickets, setTickets] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
@@ -37,6 +39,7 @@ const BookingOperations = () => {
       }
     } catch (error) {
       console.error("Failed to fetch report data:", error);
+      toast.error(t("booking_ops.msg.error_network"));
     } finally {
       setLoading(false);
     }
@@ -98,22 +101,24 @@ const BookingOperations = () => {
       if (resData.success) {
         setSelectedTicket(resData);
       } else {
-        alert("Không thể lấy thông tin chi tiết vé");
+        toast.error(t("booking_ops.msg.error_fetch_detail"));
       }
     } catch (error) {
       console.error("Lỗi lấy chi tiết vé:", error);
+      toast.error(t("booking_ops.msg.error_network"));
     } finally {
       setModalLoading(false);
     }
   };
   // --- LOGIC XỬ LÝ VÉ (HỦY / KHÔI PHỤC) ---
   const handleUpdateTicketStatus = async (ticketID, actionType) => {
-    if (
-      !window.confirm(
-        `Bạn có chắc muốn ${actionType === "cancel" ? "HỦY" : "KHÔI PHỤC"} vé này không?`
-      )
-    )
-      return;
+    const confirmMsg =
+      actionType === "cancel"
+        ? t("booking_ops.msg.confirm_cancel")
+        : t("booking_ops.msg.confirm_restore");
+
+    if (!window.confirm(confirmMsg)) return;
+
     try {
       const endpoint =
         actionType === "cancel"
@@ -129,16 +134,15 @@ const BookingOperations = () => {
       const resData = await response.json();
 
       if (resData.success) {
-        alert(resData.message);
-        // Refresh lại danh sách sau khi thao tác thành công
+        toast.success(resData.message || t("booking_ops.msg.action_success"));
         fetchData();
         setSelectedTicket(null); // Đóng modal
       } else {
-        alert(resData.message || "Có lỗi xảy ra");
+        toast.error(resData.message || t("booking_ops.msg.action_fail"));
       }
     } catch (error) {
       console.error(`Lỗi ${actionType} vé:`, error);
-      alert("Lỗi kết nối đến server");
+      toast.error(t("booking_ops.msg.error_network"));
     }
   };
   // --- XỬ LÝ CLICK RA NGOÀI MODAL (Overlay) ---
@@ -148,6 +152,17 @@ const BookingOperations = () => {
       setSelectedTicket(null);
     }
   };
+  const formatCurrency = (val) =>
+    new Intl.NumberFormat(i18n.language === "vi" ? "vi-VN" : "en-US").format(
+      val
+    );
+  const formatDate = (dateStr) => {
+    if (!dateStr) return "N/A";
+    return new Date(dateStr).toLocaleDateString(
+      i18n.language === "vi" ? "vi-VN" : "en-US"
+    );
+  };
+
   return (
     <div
       className="glass-panel fade-in"
@@ -156,25 +171,15 @@ const BookingOperations = () => {
       {/* HEADER */}
       <div className="panel-header">
         <div>
-          <h2 className="panel-title">Quản lý vé & Đặt chỗ (Booking Ops)</h2>
+          <h2 className="panel-title">{t("booking_ops.title")}</h2>{" "}
           <p
             className="sub-text"
             style={{ fontSize: "13px", color: "#e9eef6ff" }}
           >
-            Tổng số vé trong hệ thống:{" "}
+            {t("booking_ops.total_tickets")}:{" "}
             <strong style={{ color: "#fff" }}>{tickets.length}</strong>
           </p>
         </div>
-        <button
-          className="btn-action primary"
-          style={{
-            background: "rgba(59, 130, 246, 0.2)",
-            border: "1px solid rgba(59, 130, 246, 0.4)",
-            color: "#60a5fa",
-          }}
-        >
-          <Download size={18} /> Xuất báo cáo
-        </button>
       </div>
 
       {/* TOOLBAR */}
@@ -183,7 +188,7 @@ const BookingOperations = () => {
           <Search size={18} className="search-icon" />
           <input
             type="text"
-            placeholder="Tìm theo Ticket ID, Tên hành khách hoặc Số hiệu..."
+            placeholder={t("booking_ops.search_placeholder")}
             value={searchTerm}
             onChange={(e) => {
               setSearchTerm(e.target.value);
@@ -201,9 +206,11 @@ const BookingOperations = () => {
               setCurrentPage(1);
             }}
           >
-            <option value="all">Tất cả vé</option>
-            <option value="valid">Valid (Hợp lệ)</option>
-            <option value="cancelled">Cancelled (Đã hủy)</option>
+            <option value="all">{t("booking_ops.filter_all")}</option>
+            <option value="valid">{t("booking_ops.filter_valid")}</option>
+            <option value="cancelled">
+              {t("booking_ops.filter_cancelled")}
+            </option>
           </select>
         </div>
       </div>
@@ -213,14 +220,16 @@ const BookingOperations = () => {
         <table className="glass-table">
           <thead>
             <tr>
-              <th>Ticket ID</th>
-              <th>Hành khách</th>
-              <th>Chuyến bay</th>
-              <th>Ghế</th>
-              <th>Ngày đặt</th>
-              <th>Giá vé</th>
-              <th>Trạng thái</th>
-              <th style={{ textAlign: "center" }}>Xử lý</th>
+              <th>{t("booking_ops.table.ticket_id")}</th>
+              <th>{t("booking_ops.table.passenger")}</th>
+              <th>{t("booking_ops.table.flight")}</th>
+              <th>{t("booking_ops.table.seat")}</th>
+              <th>{t("booking_ops.table.date")}</th>
+              <th>{t("booking_ops.table.price")}</th>
+              <th>{t("booking_ops.table.status")}</th>
+              <th style={{ textAlign: "center" }}>
+                {t("booking_ops.table.action")}
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -256,7 +265,7 @@ const BookingOperations = () => {
                           )
                         : "N/A"}
                     </span>
-                    <div style={{ fontSize: "11px", color: "#94a3b8" }}>
+                    <div style={{ fontSize: "11px", color: "#e9e9e9ff" }}>
                       {ticket.ticketBookTime
                         ? new Date(ticket.ticketBookTime).toLocaleTimeString(
                             "vi-VN",
@@ -277,7 +286,9 @@ const BookingOperations = () => {
                     <span
                       className={`status-badge state-${ticket.ticketState}`}
                     >
-                      {ticket.ticketState === "valid" ? "Hợp lệ" : "Đã hủy"}
+                      {ticket.ticketState === "valid"
+                        ? t("booking_ops.status.valid")
+                        : t("booking_ops.status.cancelled")}
                     </span>
                   </td>
                   <td style={{ textAlign: "center" }}>
@@ -302,7 +313,7 @@ const BookingOperations = () => {
                     color: "#64748b",
                   }}
                 >
-                  Không tìm thấy vé nào phù hợp.
+                  {t("booking_ops.msg.no_data")}{" "}
                 </td>
               </tr>
             )}
@@ -314,7 +325,8 @@ const BookingOperations = () => {
       {totalPages > 1 && (
         <div className="pagination-container">
           <span className="page-info">
-            Trang <strong>{currentPage}</strong> / {totalPages}
+            {t("booking_ops.pagination")}
+            <strong>{currentPage}</strong> / {totalPages}
           </span>
           <div className="page-controls">
             <button
@@ -322,14 +334,14 @@ const BookingOperations = () => {
               onClick={() => handlePageChange(currentPage - 1)}
               className="page-btn"
             >
-              <ChevronLeft size={18} />
+              <ChevronLeft size={20} />
             </button>
             <button
               disabled={currentPage === totalPages}
               onClick={() => handlePageChange(currentPage + 1)}
               className="page-btn"
             >
-              <ChevronRight size={18} />
+              <ChevronRight size={20} />
             </button>
           </div>
         </div>
@@ -341,7 +353,7 @@ const BookingOperations = () => {
           <div className="modal-content-glass">
             <div className="modal-header">
               <h3>
-                Chi tiết vé:{" "}
+                {t("booking_ops.modal.title")}:{" "}
                 <span style={{ color: "#60a5fa" }}>
                   {selectedTicket.ticketID}
                 </span>
@@ -357,61 +369,84 @@ const BookingOperations = () => {
             <div className="modal-body">
               {/* Cột 1: Thông tin chuyến bay */}
               <div className="info-section">
-                <h4 className="section-title">Thông tin vé</h4>
+                <h4 className="section-title">
+                  {t("booking_ops.modal.section_info")}
+                </h4>
                 <div className="info-row">
-                  <span className="label">Mã vé:</span>
+                  <span className="label">
+                    {t("booking_ops.modal.lbl_code")}:
+                  </span>
                   <span className="value">{selectedTicket.ticketID}</span>
                 </div>
                 <div className="info-row">
-                  <span className="label">Chuyến bay:</span>
+                  <span className="label">
+                    {t("booking_ops.modal.lbl_flight")}:
+                  </span>
                   <span className="value">{selectedTicket.flightNumber}</span>
                 </div>
                 <div className="info-row">
-                  <span className="label">Ghế:</span>
+                  <span className="label">
+                    {t("booking_ops.modal.lbl_seat")}:
+                  </span>
                   <span className="value box-value">
                     {selectedTicket.seatNumber}
                   </span>
                 </div>
                 <div className="info-row">
-                  <span className="label">Thời gian đặt:</span>
-                  <span className="value">{selectedTicket.ticketBookTime}</span>
+                  <span className="label">
+                    {t("booking_ops.modal.lbl_time")}:
+                  </span>
+                  <span className="value">
+                    {formatDate(selectedTicket.ticketBookTime)}
+                  </span>
                 </div>
                 <div className="info-row">
-                  <span className="label">Trạng thái:</span>
-
+                  <span className="label">
+                    {t("booking_ops.modal.lbl_status")}:
+                  </span>
                   <span
-                    className={`status-badge state-${selectedTicket.ticketState === "valid" ? "Hợp lệ" : "Đã hủy"}`}
+                    className={`status-badge state-${selectedTicket.ticketState === "valid" ? "valid" : "cancelled"}`}
                   >
                     {selectedTicket.ticketState === "valid"
-                      ? "Hợp lệ"
-                      : "Đã hủy"}
+                      ? t("booking_ops.status.valid")
+                      : t("booking_ops.status.cancelled")}
                   </span>
                 </div>
               </div>
 
               {/* Cột 2: Thông tin liên hệ */}
               <div className="info-section">
-                <h4 className="section-title">Thông tin liên hệ</h4>
+                <h4 className="section-title">
+                  {t("booking_ops.modal.section_contact")}
+                </h4>
                 <div className="info-row">
-                  <span className="label">Họ tên:</span>
+                  <span className="label">
+                    {t("booking_ops.modal.lbl_name")}:
+                  </span>
                   <span className="value highlight">
                     {selectedTicket.contactName || "N/A"}
                   </span>
                 </div>
                 <div className="info-row">
-                  <span className="label">Email:</span>
+                  <span className="label">
+                    {t("booking_ops.modal.lbl_email")}:
+                  </span>
                   <span className="value">
                     {selectedTicket.contactEmail || "N/A"}
                   </span>
                 </div>
                 <div className="info-row">
-                  <span className="label">SĐT:</span>
+                  <span className="label">
+                    {t("booking_ops.modal.lbl_phone")}:
+                  </span>
                   <span className="value">
                     {selectedTicket.contactPhone || "N/A"}
                   </span>
                 </div>
                 <div className="info-row">
-                  <span className="label">Hộ chiếu/CCCD:</span>
+                  <span className="label">
+                    {t("booking_ops.modal.lbl_passport")}:
+                  </span>
                   <span className="value">
                     {selectedTicket.contactPassport || "N/A"}
                   </span>
@@ -420,7 +455,6 @@ const BookingOperations = () => {
             </div>
 
             <div className="modal-footer">
-              {/* Nút Khôi phục - Chỉ hiện nếu vé đang hủy hoặc muốn cho phép luôn */}
               {selectedTicket.ticketState === "cancelled" ? (
                 <button
                   className="modal-action-btn restore"
@@ -428,17 +462,16 @@ const BookingOperations = () => {
                     handleUpdateTicketStatus(selectedTicket.ticketID, "restore")
                   }
                 >
-                  <CheckCircle size={16} /> Khôi phục vé
+                  <CheckCircle size={16} /> {t("booking_ops.modal.btn_restore")}
                 </button>
               ) : (
-                // Nút Hủy vé - Chỉ hiện nếu vé đang Valid
                 <button
                   className="modal-action-btn cancel"
                   onClick={() =>
                     handleUpdateTicketStatus(selectedTicket.ticketID, "cancel")
                   }
                 >
-                  <AlertCircle size={16} /> Hủy vé
+                  <AlertCircle size={16} /> {t("booking_ops.modal.btn_cancel")}
                 </button>
               )}
             </div>
@@ -539,6 +572,13 @@ const BookingOperations = () => {
           display: flex;
           flex-direction: column;
           margin-bottom: 10px;
+        }
+        .info-row.label {
+          color: #64748b;
+
+          display: flex;
+          align-items: center;
+          gap: 8px;
         }
         .label {
           font-size: 12px;

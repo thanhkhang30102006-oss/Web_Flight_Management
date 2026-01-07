@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Search,
   Calendar as CalendarIcon,
@@ -48,6 +49,7 @@ const calculateArrivalTime = (depTime) => {
 };
 
 const FlightScheduleMap = () => {
+  const { t } = useTranslation();
   const [flights, setFlights] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedFlight, setSelectedFlight] = useState(null);
@@ -134,12 +136,12 @@ const FlightScheduleMap = () => {
       {/* HEADER QUẢN LÝ */}
       <div className="panel-header">
         <div>
-          <h2 className="panel-title">Điều Phối & Lịch Trình Bay </h2>
+          <h2 className="panel-title">{t("schedule_map.title")}</h2>{" "}
           <p
             className="sub-text"
             style={{ fontSize: "13px", color: "#dfe6f0ff" }}
           >
-            Theo dõi vị trí và tiến độ thời gian thực
+            {t("schedule_map.subtitle")}
           </p>
         </div>
       </div>
@@ -153,7 +155,7 @@ const FlightScheduleMap = () => {
               <Search size={18} className="search-icon" />
               <input
                 type="text"
-                placeholder="Tìm chuyến bay..."
+                placeholder={t("schedule_map.search_placeholder")}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 style={{ width: "100%" }}
@@ -188,7 +190,7 @@ const FlightScheduleMap = () => {
             }}
           >
             <MapIcon size={14} style={{ display: "inline", marginRight: 5 }} />
-            Bản đồ trực tuyến
+            {t("schedule_map.map_legend")}{" "}
           </div>
         </div>
       </div>
@@ -204,7 +206,8 @@ const FlightScheduleMap = () => {
               margin: 0,
             }}
           >
-            <BarChart2 size={20} color="#3b82f6" /> Lịch trình bay trong ngày
+            <BarChart2 size={20} color="#3b82f6" />{" "}
+            {t("schedule_map.timeline_title")}{" "}
           </h3>
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
             <CalendarIcon size={16} />
@@ -285,7 +288,7 @@ const FlightScheduleMap = () => {
                   fontStyle: "italic",
                 }}
               >
-                Không có chuyến bay nào trong ngày {selectedDate}
+                {t("schedule_map.no_flights")} {selectedDate}{" "}
               </div>
             )}
           </div>

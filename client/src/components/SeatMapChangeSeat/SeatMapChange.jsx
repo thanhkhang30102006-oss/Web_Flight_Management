@@ -13,6 +13,8 @@ import {
   AlertTriangle,
   Plane,
   Loader2,
+  X,
+  CheckCircle,
 } from "lucide-react";
 import "./SeatMapChange.css";
 import videoWallpaper from "../../assets/videos/background-wallpaper-bookingpage.mp4";
@@ -25,7 +27,6 @@ const SeatMapChange = () => {
   const { ticket } = location.state || {};
   const [flightFullInfo, setFlightFullInfo] = useState(null);
   const [loading, setLoading] = useState(true);
-  // Không còn là mảng array để lưu nhiều ghế nữa rồi
   const [newSelectedSeat, setNewSelectedSeat] = useState(null);
 
   const [liveSelections, setLiveSelections] = useState({});
@@ -35,6 +36,9 @@ const SeatMapChange = () => {
   const socketRef = useRef(socket);
   const [isProcessing, setIsProcessing] = useState(false);
   const displaySelections = liveSelections;
+
+  // xác nhận
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
   // Lấy thông tin cụ thể của chuyến bay và những ghế đã bán
   useEffect(() => {
     const fetchFlightDetail = async () => {
@@ -91,7 +95,7 @@ const SeatMapChange = () => {
         newSelectedSeat &&
         seats.some((s) => s.includes(newSelectedSeat.id))
       ) {
-        alert("Ghế bạn chọn vừa bị người khác thanh toán!");
+        toast.error("Ghế bạn chọn vừa bị người khác thanh toán!");
         setNewSelectedSeat(null);
       }
     };
@@ -129,7 +133,7 @@ const SeatMapChange = () => {
     const targetClass = type.toLowerCase();
 
     if (currentClass !== targetClass) {
-      alert(
+      toast.error(
         `Vé của bạn là hạng ${ticket.class}, bạn không thể chọn ghế hạng ${type}. Vui lòng hủy vé để đặt lại nếu muốn nâng hạng.`
       );
       return;
@@ -140,7 +144,7 @@ const SeatMapChange = () => {
     const myCurrentId = socket.id;
 
     if (holderId && holderId !== myCurrentId) {
-      alert("Ghế này đang có người khác chọn!");
+      toast.error("Ghế này đang có người khác chọn!");
       return;
     }
 
@@ -171,11 +175,11 @@ const SeatMapChange = () => {
 
   const handleConfirmChange = async () => {
     if (!newSelectedSeat) return;
+    setShowConfirmModal(true);
+  };
 
-    const confirm = window.confirm(
-      `Bạn xác nhận đổi từ ghế ${ticket.seatNumber} sang ghế ${newSelectedSeat.id}?`
-    );
-    if (!confirm) return;
+  const executeChangeSeat = async () => {
+    setShowConfirmModal(false); // Đóng modal trước
     setIsProcessing(true);
     try {
       const token = localStorage.getItem("accessToken");
@@ -200,13 +204,13 @@ const SeatMapChange = () => {
       await new Promise((resolve) => setTimeout(resolve, 2000));
       if (res.success === "success") {
         toast.success("Đổi ghế thành công!");
-        navigate("/user");
+        navigate("/user?tab=mytrips");
       } else {
         toast.error(res.message || "Đổi ghế thất bại");
       }
     } catch (e) {
       console.error(e);
-      alert("Lỗi kết nối server");
+      toast.error("Lỗi kết nối server");
     } finally {
       setIsProcessing(false);
     }
@@ -225,6 +229,7 @@ const SeatMapChange = () => {
         <source src={videoWallpaper} type="video/webm" />
         <source src={videoWallpaper.replace("webm", "mp4")} type="video/mp4" />
       </video>
+      <Toaster />
       <div className="seatmap-overlay"></div>
 
       <div className="seatmap-content-wrapper">
@@ -373,6 +378,48 @@ const SeatMapChange = () => {
           </div>
         </div>
       </div>
+      {/* 4. MODAL XÁC NHẬN */}
+      {showConfirmModal && (
+        <div className="modal-overlay-custom">
+          <div className="modal-content-glass">
+            <div className="modal-header">
+              <h3>Xác nhận đổi ghế</h3>
+              <button
+                className="close-btn"
+                onClick={() => setShowConfirmModal(false)}
+              >
+                <X size={20} />
+              </button>
+            </div>
+            <div className="modal-body">
+              <p>
+                Bạn có chắc chắn muốn đổi từ ghế <b>{ticket.seatNumber}</b> sang
+                ghế <b>{newSelectedSeat?.id}</b> không?
+              </p>
+              <div className="change-summary">
+                <span>{ticket.seatNumber}</span> <ArrowRight size={16} />{" "}
+                <span>{newSelectedSeat?.id}</span>
+              </div>
+              <p className="note">
+                Lưu ý: Hành động này không thể hoàn tác ngay lập tức.
+              </p>
+            </div>
+            <div className="modal-footer">
+              <button
+                className="btn-cancel"
+                onClick={() => setShowConfirmModal(false)}
+              >
+                Hủy bỏ
+              </button>
+              <button className="btn-confirm" onClick={executeChangeSeat}>
+                <CheckCircle size={18} /> Đồng ý đổi
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Loading Screen */}
       {isProcessing && (
         <div className="fullscreen-loading">
           <div className="loading-content">
@@ -384,6 +431,107 @@ const SeatMapChange = () => {
           </div>
         </div>
       )}
+
+      {/* Style CSS cho Modal (Bạn có thể move vào file CSS riêng) */}
+      <style jsx>{`
+        .modal-overlay-custom {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(0, 0, 0, 0.7);
+          backdrop-filter: blur(5px);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          z-index: 9999;
+        }
+        .modal-content-glass {
+          background: rgba(30, 41, 59, 0.95);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 12px;
+          width: 400px;
+          max-width: 90%;
+          color: white;
+          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+          overflow: hidden;
+        }
+        .modal-header {
+          padding: 16px 20px;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+        .modal-header h3 {
+          margin: 0;
+          font-size: 18px;
+          color: #fff;
+        }
+        .close-btn {
+          background: none;
+          border: none;
+          color: #94a3b8;
+          cursor: pointer;
+        }
+        .close-btn:hover {
+          color: #fff;
+        }
+        .modal-body {
+          padding: 24px;
+          text-align: center;
+        }
+        .change-summary {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 15px;
+          margin: 15px 0;
+          font-size: 24px;
+          font-weight: bold;
+          color: #3b82f6;
+        }
+        .note {
+          font-size: 13px;
+          color: #94a3b8;
+          font-style: italic;
+          margin-top: 10px;
+        }
+        .modal-footer {
+          padding: 16px 20px;
+          background: rgba(0, 0, 0, 0.2);
+          display: flex;
+          justify-content: flex-end;
+          gap: 10px;
+        }
+        .btn-cancel {
+          padding: 8px 16px;
+          border-radius: 6px;
+          background: transparent;
+          border: 1px solid #475569;
+          color: #cbd5e1;
+          cursor: pointer;
+        }
+        .btn-cancel:hover {
+          background: rgba(255, 255, 255, 0.05);
+          color: #fff;
+        }
+        .btn-confirm {
+          padding: 8px 16px;
+          border-radius: 6px;
+          background: #2563eb;
+          border: none;
+          color: white;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          gap: 6px;
+        }
+        .btn-confirm:hover {
+          background: #1d4ed8;
+        }
+      `}</style>
     </div>
   );
 };

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import airplaneIcon from "../../assets/Image/airplane-plane-flight-white.svg";
 import {
   Plane,
   Info,
@@ -313,7 +314,7 @@ const FlightResults = ({ searchTriggered, flights = [] }) => {
     }
     /* Các class cũ giữ nguyên... */
     .fc-airline { display: flex; align-items: center; gap: 12px; min-width: 200px; }
-    .fc-logo { width: 45px; height: 45px; object-fit: contain; background: white; border-radius: 8px; padding: 4px; }
+    .fc-logo { width: 45px; height: 45px; object-fit: contain; border-radius: 8px; padding: 4px; }
     .fc-name { font-weight: bold; color: white; margin: 0; font-size: 15px; }
     .fc-number { font-size: 12px; color: rgba(255,255,255,0.9); }
     .fc-status { font-size: 11px; padding: 2px 8px; border-radius: 10px; display: inline-block; margin-top: 4px; font-weight: 600; }
@@ -374,7 +375,7 @@ const FlightResults = ({ searchTriggered, flights = [] }) => {
             <div className="flight-card-main">
               {/* Cột 1 */}
               <div className="fc-airline">
-                <img src={flight.logo} alt="logo" className="fc-logo" />
+                <img src={airplaneIcon} alt="Flight Logo" className="fc-logo" />{" "}
                 <div>
                   <h4 className="fc-name">{flight.planeType}</h4>
                   <div className="fc-number">{flight.flightNumber}</div>

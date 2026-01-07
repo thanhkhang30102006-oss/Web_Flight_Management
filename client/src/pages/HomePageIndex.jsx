@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from "react";
 import "./Homepage.css"; // Import the CSS file
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 import {
   Shield,
   Clock,
@@ -230,6 +231,7 @@ const getWeatherIcon = (type) => {
 };
 
 const DestinationPopup = ({ destination, onClose }) => {
+  const navigate = useNavigate();
   if (!destination) return null;
   const destName = t(`home.destinations.${destination.id}.name`);
   const mapUrl = `https://maps.google.com/maps?q=${encodeURIComponent(
@@ -321,7 +323,10 @@ const DestinationPopup = ({ destination, onClose }) => {
               </div>
             </div>
 
-            <button className="btn-book-now">
+            <button
+              className="btn-book-now"
+              onClick={() => navigate("/loginsignup")}
+            >
               {t("home.popup.bookBtn", { name: destName })}{" "}
             </button>
           </div>

@@ -1,4 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useTranslation } from "react-i18next"; // 1. Import i18n
+import toast from "react-hot-toast"; // 2. Import toast
 import {
   Search,
   Send,
@@ -21,6 +23,7 @@ import "../../pages/StaffDashboard.css";
 const { socket } = useSocket;
 const API_URL = `http://localhost:3001`;
 const CustomerSupport = () => {
+  const { t } = useTranslation();
   const { socket } = useSocket();
 
   const [currentStaff, setCurrentStaff] = useState(null);
@@ -61,7 +64,7 @@ const CustomerSupport = () => {
             id: conv.passengerID,
             name: conv.passengerName || conv.passengerID,
             avatar: conv.passengerImage,
-            lastMsg: conv.lastMsg || "Hình ảnh/File",
+            lastMsg: conv.lastMsg || t("customer_support.default_msg_file"),
             time: conv.lastTime
               ? new Date(conv.lastTime).toLocaleTimeString("vi-VN", {
                   hour: "2-digit",
@@ -79,7 +82,7 @@ const CustomerSupport = () => {
     fetchConversations();
     const interval = setInterval(fetchConversations, 5000);
     return () => clearInterval(interval);
-  }, [currentStaff]);
+  }, [currentStaff, t]);
 
   // --- 2. KHI CHỌN KHÁCH HÀNG -> JOIN ROOM & LOAD HISTORY ---
   useEffect(() => {
@@ -218,7 +221,7 @@ const CustomerSupport = () => {
       await socket.emit("send_message", msgData);
     } catch (error) {
       console.error("Lỗi upload file:", error);
-      alert("Không thể gửi file. Vui lòng thử lại.");
+      toast.error(t("customer_support.error_upload"));
     }
     e.target.value = null;
   };
@@ -238,9 +241,9 @@ const CustomerSupport = () => {
           flexDirection: "column",
         }}
       >
-        <h3>Đang tải dữ liệu...</h3>
+        <h3>{t("customer_support.loading")}</h3>
         <p style={{ color: "#aaa", fontSize: 12 }}>
-          Vui lòng đảm bảo bạn đã đăng nhập Staff
+          {t("customer_support.loading_sub")}
         </p>
       </div>
     );
@@ -250,15 +253,17 @@ const CustomerSupport = () => {
       className="glass-panel fade-in"
       style={{ height: "650px", display: "flex", flexDirection: "column" }}
     >
-      <h2 className="panel-title">Hỗ trợ trực tuyến</h2>
-
+      <h2 className="panel-title">{t("customer_support.title")}</h2>
       <div className="chat-layout">
         {/* --- CỘT TRÁI: DANH SÁCH KHÁCH --- */}
         <div className="chat-sidebar">
           {/* Search Bar */}
           <div className="chat-search">
             <Search size={16} className="text-gray-400" />
-            <input type="text" placeholder="Tìm khách hàng..." />
+            <input
+              type="text"
+              placeholder={t("customer_support.search_placeholder")}
+            />{" "}
           </div>
 
           {/* User List */}
@@ -299,7 +304,9 @@ const CustomerSupport = () => {
                   </div>
                   <div>
                     <h4 className="chat-username">{selectedUser.name}</h4>
-                    <span className="chat-status">Đang kết nối</span>
+                    <span className="chat-status">
+                      {t("customer_support.status_connecting")}
+                    </span>{" "}
                   </div>
                 </div>
                 <button className="icon-btn">
@@ -381,7 +388,7 @@ const CustomerSupport = () => {
                 </button>
                 <input
                   type="text"
-                  placeholder="Nhập tin nhắn..."
+                  placeholder={t("customer_support.input_placeholder")}
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
                 />
@@ -396,7 +403,7 @@ const CustomerSupport = () => {
           ) : (
             <div className="empty-chat">
               <MessageSquare size={48} color="#475569" />
-              <p>Chọn một khách hàng để bắt đầu cuộc trò chuyện</p>
+              <p>{t("customer_support.empty_state")}</p>{" "}
             </div>
           )}
         </div>

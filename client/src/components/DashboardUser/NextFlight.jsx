@@ -100,7 +100,7 @@ const NoFlightView = () => {
       </div>
       <button
         className="btn-primary-glass"
-        onClick={() => navigate("/user/booking-details")}
+        onClick={() => navigate("/user?tab=booking")}
       >
         {t("next_flight.no_ticket.btn")}
         <ArrowRight size={18} />

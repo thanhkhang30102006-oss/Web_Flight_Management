@@ -29,7 +29,13 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-const formatCurrency = (amount) => {
+const formatCurrency = (amount, lang = 'vi') => {
+ if (lang === 'en') {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "VND", 
+    }).format(amount);
+  }
   return new Intl.NumberFormat("vi-VN", {
     style: "currency",
     currency: "VND",
@@ -42,6 +48,7 @@ const formatEmail = async (req, res) => {
   const { flight, passenger, totalPrice, ticketInfo, selectedSeats, language } =
     req.body;
 
+  const lang = language || "vi";  
   // Chuẩn bị dữ liệu chung
   const ticketIds = ticketInfo.tickets.map((t) => t.ticketID).join(", ");
   const departureName =
@@ -79,15 +86,17 @@ const formatEmail = async (req, res) => {
     departureDay: flight.departureDay,
     arriveTime: flight.arriveTime,
     arriveDay: flight.arriveDay,
+    totalPrice: formatCurrency(totalPrice, lang),
     seatDetails: seatListHtml,
   };
 
   try {
     // Template 1: Booking Success (Cảm ơn)
     const bookingTemplate = renderTemplate(
-      `booking_success_vi`,
+      `booking_success_${lang}`,
       emailVariables
     );
+    
     const sub1 = bookingTemplate
       ? bookingTemplate.subject
       : `[FlightHK] Booking Confirmed ${ticketIds}`;
@@ -96,7 +105,7 @@ const formatEmail = async (req, res) => {
       : `<p>Booking Success. Ticket: ${ticketIds}</p>`;
 
     // Template 2: Ticket Info (Vé điện tử)
-    const ticketTemplate = renderTemplate(`ticket_info_vi`, emailVariables);
+    const ticketTemplate = renderTemplate(`ticket_info_${lang}`, emailVariables);
     const sub2 = ticketTemplate
       ? ticketTemplate.subject
       : `E-Ticket ${flight.flightNumber}`;

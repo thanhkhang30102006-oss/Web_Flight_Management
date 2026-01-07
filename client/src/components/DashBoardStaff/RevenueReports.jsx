@@ -32,6 +32,7 @@ import { autoTable } from "jspdf-autotable";
 import "./RevenueReports.css";
 import "../../pages/StaffDashboard.css"; // Dùng chung CSS
 import { format, parseISO, getDay, getMonth } from "date-fns";
+import toast from "react-hot-toast";
 
 const RevenueReports = () => {
   const { t, i18n } = useTranslation();
@@ -55,6 +56,7 @@ const RevenueReports = () => {
         }
       } catch (error) {
         console.error("Failed to fetch report data:", error);
+        toast.error(t("common.error_network") || "Lỗi kết nối");
       } finally {
         setLoading(false);
       }
@@ -70,38 +72,58 @@ const RevenueReports = () => {
     let dataMap = {};
 
     if (type === "week") {
-      const daysOrder = ["T2", "T3", "T4", "T5", "T6", "T7", "CN"];
+      const dayKeys = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
+      // Thứ tự hiển thị mong muốn: T2 -> CN
+      const displayOrder = [1, 2, 3, 4, 5, 6, 0];
 
-      daysOrder.forEach((day) => {
-        dataMap[day] = { name: day, revenue: 0, ticket: 0 };
+      displayOrder.forEach((dayIdx) => {
+        const key = dayKeys[dayIdx];
+        const label = t(`revenue_report.chart_labels.${key}`); // Dịch: "Mon" hoặc "T2"
+        dataMap[dayIdx] = {
+          name: label,
+          revenue: 0,
+          ticket: 0,
+          rawIndex: dayIdx,
+        };
       });
 
       payments.forEach((item) => {
         const date = parseISO(item.createdAt);
-        const dayIndex = getDay(date);
-
-        let label = dayIndex === 0 ? "CN" : `T${dayIndex + 1}`;
-
-        if (dataMap[label]) {
-          dataMap[label].revenue += parseFloat(item.paymentPrice || 0);
+        const dayIndex = getDay(date); // 0 = Sunday
+        if (dataMap[dayIndex]) {
+          dataMap[dayIndex].revenue += parseFloat(item.paymentPrice || 0);
+          dataMap[dayIndex].ticket += 1; // Giả sử mỗi payment là 1 vé (hoặc logic khác từ BE)
         }
       });
 
-      return daysOrder.map((day) => dataMap[day]);
+      return displayOrder.map((idx) => dataMap[idx]);
     } else {
-      for (let i = 1; i <= 12; i++) {
-        const label = `T${i}`;
-        dataMap[label] = { name: label, revenue: 0, ticket: 0 };
-      }
+      const monthKeys = [
+        "jan",
+        "feb",
+        "mar",
+        "apr",
+        "may",
+        "jun",
+        "jul",
+        "aug",
+        "sep",
+        "oct",
+        "nov",
+        "dec",
+      ];
+
+      monthKeys.forEach((key, index) => {
+        const label = t(`revenue_report.chart_labels.${key}`); // Dịch: "Jan" hoặc "T1"
+        dataMap[index] = { name: label, revenue: 0, ticket: 0 };
+      });
 
       payments.forEach((item) => {
         const date = parseISO(item.createdAt);
-        const monthIndex = getMonth(date) + 1;
-        const label = `T${monthIndex}`;
-
-        if (dataMap[label]) {
-          dataMap[label].revenue += parseFloat(item.paymentPrice || 0);
-          dataMap[label].ticket += 1;
+        const monthIndex = getMonth(date); // 0 = Jan
+        if (dataMap[monthIndex]) {
+          dataMap[monthIndex].revenue += parseFloat(item.paymentPrice || 0);
+          dataMap[monthIndex].ticket += 1;
         }
       });
 
@@ -161,25 +183,20 @@ const RevenueReports = () => {
       .slice(0, 5);
     const recentTransactions = apiData.income?.tickets || [];
     return { stats, chartData, routeData, recentTransactions };
-  }, [apiData, filterType]);
+  }, [apiData, filterType, t]);
 
   const handleExportExcel = () => {
     // 1. Chuẩn bị dữ liệu (Format lại key tiếng Việt cho đẹp)
     const excelData = dashboardData.chartData.map((item) => ({
-      [t("report.fileExport.colTime")]: item.name,
-      [t("report.fileExport.colRevenue")]: item.revenue,
-      [t("report.fileExport.colTickets")]: item.ticket,
+      [t("revenue_report.export.col_time")]: item.name,
+      [t("revenue_report.export.col_revenue")]: item.revenue,
+      [t("revenue_report.export.col_tickets")]: item.ticket,
     }));
 
     const worksheet = XLSX.utils.json_to_sheet(excelData);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
-    XLSX.writeFile(workbook, `Report_FlightHK_${filterType}.xlsx`);
-
-    // 4. Xuất file
-    const fileName = `BaoCao_FlightHK_${
-      filterType === "week" ? "Tuan" : "Nam"
-    }.xlsx`;
+    const fileName = `Report_FlightHK_${filterType}_${new Date().getTime()}.xlsx`;
     XLSX.writeFile(workbook, fileName);
   };
 
@@ -208,47 +225,35 @@ const RevenueReports = () => {
 
         // 4. Viết nội dung
         doc.setFontSize(18);
-        doc.text(t("report.fileExport.title"), 14, 22);
-
+        doc.text(t("revenue_report.export.title"), 14, 22);
         doc.setFontSize(11);
         const periodText =
           filterType === "week"
-            ? t("report.fileExport.periodWeek")
-            : t("report.fileExport.periodYear");
-        doc.text(`${t("report.fileExport.period")}: ${periodText}`, 14, 30);
+            ? t("revenue_report.period_week")
+            : t("revenue_report.period_year");
+        doc.text(`${t("revenue_report.export.period")}: ${periodText}`, 14, 30);
 
         const dateStr = new Date().toLocaleDateString(
           i18n.language === "vi" ? "vi-VN" : "en-US"
         );
-        doc.text(`${t("report.fileExport.exportDate")}: ${dateStr}`, 14, 36);
+        doc.text(`${t("revenue_report.export.date")}: ${dateStr}`, 14, 36);
 
-        const revenueStr = dashboardData.stats.revenue.toLocaleString(
-          i18n.language === "vi" ? "vi-VN" : "en-US"
-        );
-        const ticketStr = dashboardData.stats.tickets.toLocaleString(
-          i18n.language === "vi" ? "vi-VN" : "en-US"
-        );
+        // Summary
+        const revenueStr = dashboardData.stats.revenue.toLocaleString();
+        const ticketStr = dashboardData.stats.tickets.toLocaleString();
 
         doc.text(
-          `${t("report.fileExport.totalRevenue")}: ${revenueStr} ${t(
-            "report.fileExport.currency"
-          )}`,
+          `${t("revenue_report.kpi_revenue")}: ${revenueStr} ${t("revenue_report.unit_currency")}`,
           14,
           45
         );
-        doc.text(
-          `${t("report.fileExport.totalTickets")}: ${ticketStr} ${t(
-            "report.fileExport.ticketUnit"
-          )}`,
-          14,
-          51
-        );
+        doc.text(`${t("revenue_report.kpi_tickets")}: ${ticketStr}`, 14, 51);
 
         // 5. Vẽ bảng (Sử dụng autoTable trực tiếp)
         const tableColumn = [
-          t("report.fileExport.colTime"),
-          t("report.fileExport.colRevenue"),
-          t("report.fileExport.colTickets"),
+          t("revenue_report.export.col_time"),
+          t("revenue_report.export.col_revenue"),
+          t("revenue_report.export.col_tickets"),
         ];
         const tableRows = dashboardData.chartData.map((item) => [
           item.name,
@@ -270,22 +275,28 @@ const RevenueReports = () => {
       };
     } catch (error) {
       console.error("Lỗi xuất PDF:", error);
-      alert("Không thể tải font. Vui lòng kiểm tra mạng.");
+      toast.error(t("revenue_report.error_font"));
     }
   };
   if (loading)
     return (
-      <div className="p-10 text-center text-white">Đang tải dữ liệu...</div>
+      <div className="p-10 text-center text-white">
+        {t("revenue_report.loading")}
+      </div>
     );
   if (!dashboardData)
-    return <div className="p-10 text-center text-white">Không có dữ liệu</div>;
+    return (
+      <div className="p-10 text-center text-white">
+        {t("revenue_report.no_data")}
+      </div>
+    );
   return (
     <div className="fade-in revenue-container">
       {/* --- HEADER: TITLE & FILTER --- */}
       <div className="report-header">
         <div>
-          <h2 className="panel-title">{t("sidebar.revenueReports")}</h2>
-          <p className="sub-text">{t("report.subTitle")}</p>
+          <h2 className="panel-title">{t("revenue_report.title")}</h2>
+          <p className="sub-text">{t("revenue_report.subtitle")}</p>{" "}
         </div>
 
         <div className="report-actions">
@@ -294,23 +305,22 @@ const RevenueReports = () => {
               className={`filter-btn ${filterType === "week" ? "active" : ""}`}
               onClick={() => setFilterType("week")}
             >
-              {t("report.fileExport.periodWeek")}
+              {t("revenue_report.period_week")}{" "}
             </button>
             <button
               className={`filter-btn ${filterType === "year" ? "active" : ""}`}
               onClick={() => setFilterType("year")}
             >
-              {t("report.fileExport.periodYear")}
+              {t("revenue_report.period_year")}{" "}
             </button>
           </div>
-          {/* NÚT EXCEL */}
+          {/* NÚT EXCEL/ PDF */}
           <button className="btn-export excel" onClick={handleExportExcel}>
-            <Download size={16} /> Excel
+            <Download size={16} /> {t("revenue_report.btn_excel")}
           </button>
 
-          {/* NÚT PDF (Thêm mới) */}
           <button className="btn-export pdf" onClick={handleExportPDF}>
-            <FileText size={16} /> PDF
+            <FileText size={16} /> {t("revenue_report.btn_pdf")}
           </button>
         </div>
       </div>
@@ -333,12 +343,12 @@ const RevenueReports = () => {
               {Math.abs(dashboardData.stats.revenuePct)}%
             </span>
           </div>
-          <h3>{t("report.fileExport.totalRevenue")}</h3>
+          <h3>{t("revenue_report.kpi_revenue")}</h3>{" "}
           <div className="value">
             {dashboardData.stats.revenue?.toLocaleString()}{" "}
-            {t("report.fileExport.currency")}
+            {t("revenue_report.unit_currency")}
           </div>
-          <small>{t("report.comparePeriod")}</small>
+          <small>{t("revenue_report.compare_period")}</small>{" "}
         </div>
 
         <div className="stat-card">
@@ -357,11 +367,11 @@ const RevenueReports = () => {
               {Math.abs(dashboardData.stats.ticketPct)}%
             </span>
           </div>
-          <h3>{t("report.fileExport.totalTickets")}</h3>
+          <h3>{t("revenue_report.kpi_tickets")}</h3>{" "}
           <div className="value">
             {dashboardData.stats.tickets?.toLocaleString()}
           </div>
-          <small>{t("report.ticketPerPeriod")}</small>
+          <small>{t("revenue_report.unit_ticket")}</small>{" "}
         </div>
 
         <div className="stat-card">
@@ -380,18 +390,20 @@ const RevenueReports = () => {
               {Math.abs(dashboardData.stats.avgPricePct)}%
             </span>
           </div>
-          <h3>{t("report.avgTicketPrice")}</h3>
+          <h3>{t("revenue_report.kpi_avg_price")}</h3>
           <div className="value">
             {dashboardData.stats.avgPrice?.toLocaleString()}{" "}
-            {t("report.fileExport.currency")}
+            {t("revenue_report.unit_currency")}
           </div>
-          <small>{t("report.vndPerTicket")}</small>
+          <small>{t("revenue_report.unit_vnd_ticket")}</small>
         </div>
       </div>
 
       {/* --- SECTION 2: MAIN CHART (AREA) --- */}
       <div className="glass-panel chart-section">
-        <h3 className="panel-title-small">{t("report.growthChart")}</h3>
+        <h3 className="panel-title-small">
+          {t("revenue_report.chart_revenue_title")}
+        </h3>{" "}
         <div style={{ width: "100%", height: 350 }}>
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart
@@ -433,7 +445,9 @@ const RevenueReports = () => {
       {/* --- SECTION 3: SPLIT VIEW (ROUTES & TABLE) --- */}
       <div className="split-layout">
         <div className="glass-panel">
-          <h3 className="panel-title-small">{t("report.topRoutes")}</h3>
+          <h3 className="panel-title-small">
+            {t("revenue_report.chart_routes_title")}
+          </h3>{" "}
           <div style={{ width: "100%", height: 250 }}>
             <ResponsiveContainer>
               <BarChart
@@ -476,10 +490,10 @@ const RevenueReports = () => {
         <div className="glass-panel">
           <div className="flex justify-between items-center mb-3">
             <h3 className="panel-title-small" style={{ marginBottom: 0 }}>
-              {t("report.recentTransactions")}{" "}
+              {t("revenue_report.recent_trans_title")}
             </h3>
             <button className="text-xs text-blue-400 hover:text-white">
-              {t("report.viewAll")}{" "}
+              {t("revenue_report.view_all")}
             </button>
           </div>
 
@@ -490,10 +504,10 @@ const RevenueReports = () => {
             <table className="glass-table">
               <thead>
                 <tr>
-                  <th>{t("report.transId")}</th>
-                  <th>{t("report.customer")}</th>
-                  <th>{t("report.amount")}</th>
-                  <th>{t("report.status")}</th>
+                  <th>{t("revenue_report.table.id")}</th>
+                  <th>{t("revenue_report.table.customer")}</th>
+                  <th>{t("revenue_report.table.amount")}</th>
+                  <th>{t("revenue_report.table.status")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -508,7 +522,9 @@ const RevenueReports = () => {
                     </td>
                     <td>
                       <span className="status-badge state-active">
-                        {i.ticketState === "valid" ? " Xong" : "Chưa hoàn tất"}
+                        {i.ticketState === "valid"
+                          ? t("revenue_report.status.completed")
+                          : t("revenue_report.status.pending")}
                       </span>
                     </td>
                   </tr>

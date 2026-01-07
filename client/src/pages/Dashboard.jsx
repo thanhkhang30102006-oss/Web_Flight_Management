@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Header } from "../components/DashboardUser/header";
 import LeftSide from "../components/DashboardUser/FunctionBar";
 import { NextFlightCard } from "../components/DashboardUser/NextFlight";
@@ -15,8 +16,13 @@ import Booking from "./BookingFlow";
 import { Snowfall } from "react-snowfall";
 
 function DashBoard() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTab = searchParams.get("tab") || "home";
+  const handleTabChange = (tab) => {
+    setSearchParams({ tab });
+  };
   const [nextFlight, setNextFlight] = useState(null);
-  const [activeTab, setActiveTab] = useState("home");
+  // const [activeTab, setActiveTab] = useState("home");
   const userDataString = localStorage.getItem("userData");
   const passenger = JSON.parse(userDataString);
   const passengerID = passenger.id;
@@ -32,7 +38,7 @@ function DashBoard() {
       <div className="dashboard-video-overlay"></div>
       <Toaster position="top-center" reverseOrder={false} />
       {/* Sidebar cố định bên trái */}
-      <LeftSide currentTab={activeTab} onTabChange={setActiveTab} />
+      <LeftSide currentTab={activeTab} onTabChange={handleTabChange} />
       <Snowfall color="white" />
 
       {/* Nội dung chính bên phải */}

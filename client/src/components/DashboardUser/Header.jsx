@@ -17,7 +17,7 @@ const MOCK_NOTIFICATIONS = [
   {
     id: 2,
     type: "promo",
-    content: "Chào mừng Khang! Bạn nhận được voucher giảm 20%.",
+    content: "Chào mừng Bạn nhận được voucher giảm 20%.",
     time: "1 giờ trước",
     isRead: false,
   },

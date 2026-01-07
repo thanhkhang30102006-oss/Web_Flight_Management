@@ -96,10 +96,17 @@ const glassSelectStyles = {
 
 const FlightSearchForm = ({ onSearch }) => {
   const { t } = useTranslation();
+  const getTodayDate = () => {
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, "0"); // Tháng bắt đầu từ 0
+    const dd = String(today.getDate()).padStart(2, "0");
+    return `${yyyy}-${mm}-${dd}`;
+  };
   const [params, setParams] = useState({
     from: "",
     to: "",
-    date: "",
+    date: getTodayDate(),
     time: "",
   });
 
@@ -230,7 +237,9 @@ const FlightSearchForm = ({ onSearch }) => {
               type="date"
               className="glass-input"
               name="date"
+              value={params.date}
               onChange={handleChange}
+              min={getTodayDate()}
             />
           </div>
         </div>
